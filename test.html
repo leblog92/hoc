@@ -1,0 +1,179 @@
+<!doctype html><html><head><style>
+			html,body{
+			margin:0;
+			}
+			body{
+			text-align:left;
+			font-size:40px;
+			background-color:#ff9955;
+			color:rgba(255,255,0,0.4);
+			font-family:sans-serif;
+			overflow:hidden;
+			}
+			#txt{
+			width:100%;
+			height:100%;
+			position:absolute;
+			top:0;
+			left:0;
+			z-index:1;
+			-webkit-touch-callout:none;
+			-webkit-user-select:none;
+			-khtml-user-select:none;
+			-moz-user-select:none;
+			-ms-user-select:none;
+			user-select:none;
+			outline:0;
+			}
+			#chrono{
+			position:absolute;
+			bottom:0;
+			right:0;
+			z-index:-1;
+			-webkit-touch-callout:none;
+			-webkit-user-select:none;
+			-khtml-user-select:none;
+			-moz-user-select:none;
+			-ms-user-select:none;
+			user-select:none;
+			outline:0;
+			}
+			svg{
+			border:1px solid #333;
+			}
+			#go{
+			color:rgba(255,255,255,0.5);
+			}
+			#win{
+			position:absolute;
+			background:rgba(0,0,0,0.5);
+			width:0;
+			height:0;
+			top:0;
+			left:0;
+			color:#fff;
+			z-index:1;
+			font-size:100px;
+			text-align:middle;
+			-webkit-touch-callout:none;
+			-webkit-user-select:none;
+			-khtml-user-select:none;
+			-moz-user-select:none;
+			-ms-user-select:none;
+			user-select:none;
+			outline:0;
+			text-align:center;
+			line-height:2;
+			}
+		</style><title>Grille</title></head><body onclick="frect(event)"><svg id="mysvg" width="0" height="0"><text x="0" y="0" font-size="0" id="n1" opacity="1" text-anchor="middle">1</text><text x="0" y="0" font-size="0" id="n2" opacity="1" text-anchor="middle">2</text><text x="0" y="0" font-size="0" id="n3" opacity="1" text-anchor="middle">3</text><text x="0" y="0" font-size="0" id="n4" opacity="1" text-anchor="middle">4</text><text x="0" y="0" font-size="0" id="n5" opacity="1" text-anchor="middle">5</text><text x="0" y="0" font-size="0" id="n6" opacity="1" text-anchor="middle">6</text><text x="0" y="0" font-size="0" id="n7" opacity="1" text-anchor="middle">7</text><text x="0" y="0" font-size="0" id="n8" opacity="1" text-anchor="middle">8</text><text x="0" y="0" font-size="0" id="n9" opacity="1" text-anchor="middle">9</text><rect x="0" y="0" width="0" height="0" id="r1" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r2" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r3" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r4" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r5" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r6" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r7" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r8" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r9" fill="#000" opacity="1"/></svg><div id="txt"></div><div id="chrono"></div><div id="win"></div><script>
+			var ww=window.innerWidth;
+			var wh=window.innerHeight;
+			var mysvg=document.getElementById("mysvg");
+			var txt=document.getElementById("txt");
+			mysvg.setAttribute("width",ww);
+			mysvg.setAttribute("height",wh);
+			var a=Math.round(ww/8);
+			var a2=Math.round(a/2);
+			var b=Math.round(wh/5);
+			var rectn;
+			var clickn=0;
+			var score=0;
+			var n=[0,n1,n2,n3,n4,n5,n6,n7,n8,n9];
+			
+			var arr=[];
+			arr.push(0);
+			
+			while(arr.length<10){
+				var r=Math.floor(Math.random()*40)+1;
+				if(arr.indexOf(r)===-1)arr.push(r);
+				}
+			
+			var order=arr[1]+" "+arr[2]+" "+arr[3]+" "+arr[4]+" "+arr[5]+" "+arr[6]+" "+arr[7]+" "+arr[8]+" "+arr[9];
+			
+			n1=document.getElementById("n1");
+			n2=document.getElementById("n2");
+			n3=document.getElementById("n3");
+			n4=document.getElementById("n4");
+			n5=document.getElementById("n5");
+			n6=document.getElementById("n6");
+			n7=document.getElementById("n7");
+			n8=document.getElementById("n8");
+			n9=document.getElementById("n9");
+			
+			for(i=1;i<=9;i++){
+			document.getElementById("n"+i).setAttribute("font-size",(a-(a/3)));
+			if(arr[i]==1||arr[i]==9||arr[i]==17||arr[i]==25||arr[i]==33){document.getElementById("n"+i).setAttribute("x",a2);}
+			if(arr[i]==2||arr[i]==10||arr[i]==18||arr[i]==26||arr[i]==34){document.getElementById("n"+i).setAttribute("x",a+a2);}
+			if(arr[i]==3||arr[i]==11||arr[i]==19||arr[i]==27||arr[i]==35){document.getElementById("n"+i).setAttribute("x",a*2+a2);}
+			if(arr[i]==4||arr[i]==12||arr[i]==20||arr[i]==28||arr[i]==36){document.getElementById("n"+i).setAttribute("x",a*3+a2);}
+			if(arr[i]==5||arr[i]==13||arr[i]==21||arr[i]==29||arr[i]==37){document.getElementById("n"+i).setAttribute("x",a*4+a2);}
+			if(arr[i]==6||arr[i]==14||arr[i]==22||arr[i]==30||arr[i]==38){document.getElementById("n"+i).setAttribute("x",a*5+a2);}
+			if(arr[i]==7||arr[i]==15||arr[i]==23||arr[i]==31||arr[i]==39){document.getElementById("n"+i).setAttribute("x",a*6+a2);}
+			if(arr[i]==8||arr[i]==16||arr[i]==24||arr[i]==32||arr[i]==40){document.getElementById("n"+i).setAttribute("x",a*7+a2);}
+			if(arr[i]<9){document.getElementById("n"+i).setAttribute("y",b-(b/6));}
+			if(arr[i]>8&&arr[i]<17){document.getElementById("n"+i).setAttribute("y",b*2-(b/6));}
+			if(arr[i]>16&&arr[i]<25){document.getElementById("n"+i).setAttribute("y",b*3-(b/6));}
+			if(arr[i]>24&&arr[i]<33){document.getElementById("n"+i).setAttribute("y",b*4-(b/6));}
+			if(arr[i]>32&&arr[i]<41){document.getElementById("n"+i).setAttribute("y",b*5-(b/6));}
+			}
+			
+			for(var i=0;i<=8;i++){
+			var path=document.createElementNS(mysvg.namespaceURI,"path");
+				path.setAttribute("d","m"+(i*a)+" 0L"+(i*a)+" "+wh);
+				path.setAttribute("stroke","#333");
+				path.setAttribute("stoke-width","1");
+			mysvg.appendChild(path);
+				}
+			
+			for(var i=0;i<=5;i++){
+			var path=document.createElementNS(mysvg.namespaceURI,"path");
+				path.setAttribute("d","m0 "+(i*b)+"L"+ww+" "+(i*b));
+				path.setAttribute("stroke","#333");
+				path.setAttribute("stoke-width","1");
+			mysvg.appendChild(path);
+				}
+			
+			var time=0;
+			function tick(){
+			if(score<9){document.getElementById("chrono").innerHTML=time;time++;}
+			if(time>700){masknumb();}
+			}
+			setInterval(tick,1);
+			
+			function frect(event){
+			var ex=event.clientX;
+			var ey=event.clientY;
+			var top=[];
+			var rown=Math.round((ey/b)-0.5)+1;
+			var coln=Math.round((ex/a)-0.5)+1;
+			var rectn=((rown-1)*8)+coln;
+			clickn++;
+			if (rectn==arr[clickn]){score++;document.getElementById("n"+clickn).setAttribute("opacity",0);document.getElementById("r"+clickn).setAttribute("opacity",0);}
+			if (rectn!=arr[clickn]&&score<9){score="<span id=\"go\">Game Over :(</span>";document.getElementById("win").style.width="100%";document.getElementById("win").style.height="100%";document.getElementById("win").innerHTML="Game Over<br>Try Again (F5) !";document.getElementById("r"+clickn).setAttribute("opacity",0.5);}
+			if (score==9){top.push(time);score="Congratulations ! "+top;document.getElementById("win").style.width="100%";document.getElementById("win").style.height="100%";document.getElementById("win").innerHTML="Congratulations !<br>"+(top/1000)+" seconde(s)"}
+			txt.innerHTML="window width: "+ww+"<br>window height: "+wh+"<br>rect width: "+a+"<br>rect height: "+b+"<br>click nb: "+clickn+"<br>click X: "+ex+"<br>click Y: "+ey+"<br>row nb: "+rown+"<br>column nb: "+coln+"<br>rect nb: "+rectn+"<br>score: "+score;
+			}
+			
+			function masknumb(){
+			for (var i=1;i<=9;i++){
+			document.getElementById("r"+i).setAttribute("width",a);
+			if(arr[i]==1||arr[i]==9||arr[i]==17||arr[i]==25||arr[i]==33){document.getElementById("r"+i).setAttribute("x",0);}
+			if(arr[i]==2||arr[i]==10||arr[i]==18||arr[i]==26||arr[i]==34){document.getElementById("r"+i).setAttribute("x",a);}
+			if(arr[i]==3||arr[i]==11||arr[i]==19||arr[i]==27||arr[i]==35){document.getElementById("r"+i).setAttribute("x",a*2);}
+			if(arr[i]==4||arr[i]==12||arr[i]==20||arr[i]==28||arr[i]==36){document.getElementById("r"+i).setAttribute("x",a*3);}
+			if(arr[i]==5||arr[i]==13||arr[i]==21||arr[i]==29||arr[i]==37){document.getElementById("r"+i).setAttribute("x",a*4);}
+			if(arr[i]==6||arr[i]==14||arr[i]==22||arr[i]==30||arr[i]==38){document.getElementById("r"+i).setAttribute("x",a*5);}
+			if(arr[i]==7||arr[i]==15||arr[i]==23||arr[i]==31||arr[i]==39){document.getElementById("r"+i).setAttribute("x",a*6);}
+			if(arr[i]==8||arr[i]==16||arr[i]==24||arr[i]==32||arr[i]==40){document.getElementById("r"+i).setAttribute("x",a*7);}
+			
+			document.getElementById("r"+i).setAttribute("height",b);
+			if(arr[i]<9){document.getElementById("r"+i).setAttribute("y",0);}
+			if(arr[i]>8&&arr[i]<17){document.getElementById("r"+i).setAttribute("y",b);}
+			if(arr[i]>16&&arr[i]<25){document.getElementById("r"+i).setAttribute("y",b*2);}
+			if(arr[i]>24&&arr[i]<33){document.getElementById("r"+i).setAttribute("y",b*3);}
+			if(arr[i]>32&&arr[i]<41){document.getElementById("r"+i).setAttribute("y",b*4);}
+			}
+			}
+			
+			txt.innerHTML="svg width: "+ww+"<br>svg height: "+wh+"<br>rect width: "+a+"<br>rect height: "+b+"<br>click nb: "+clickn+"<br>order: "+order;
+		</script></body></html>
