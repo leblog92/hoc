@@ -1,157 +1,188 @@
 <!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1"/>
-		<title>Hour of Code Médiathèque Jacques-BAUMEL</title>
-		<link rel="shortcut icon" href="favicon.ico" />
-		<link rel="stylesheet" type="text/css" href="style.css" />
-	</head>
-	<body>
-		<div class="container">
-				<div onclick="openNav()"><img src="https://image.flaticon.com/icons/png/512/8/8738.png"/></div>
-				<a href="https://code.org/minecraft/" target="_blank" title="Heure de Code Minecraft">
-				<div><img src="minecraft.jpg"/></div>
-				</a>
-				<a href="https://code.org/starwars/" target="_blank" title="Heure de Code Star Wars">
-				<div><img src="star.jpg"/></div>
-				</a>
-				<a href="https://studio.code.org/s/frozen/stage/1/puzzle/1/" target="_blank" title="Heure de Code Frozen">
-				<div><img src="frz.jpg"/></div>
-				</a>
-				<a href="https://scratch.mit.edu/" target="_blank" title="Scratch">
-				<div><img src="scratch.jpg"/></div>
-				</a>
-				<a href="https://codecombat.com/play" target="_blank" title="Code Combat">
-				<div><img src="cc.jpg"/></div>
-				</a>
-				<a href="https://www.tynker.com/dashboard/student/#/dashboard" target="_blank" title="Tynker">
-				<div><img src="tynker.png"/></div>
-				</a>
-				<a href="" title="Sonic Pi">
-				<div><img src="sonic.jpg"/></div>
-				</a>
-				<a href="https://code.org/dance" target="_blank" title="Dance">
-				<div><img src="dance.jpg"/></div>
-				</a>
-				<a href="https://www.madewithcode.com/home/" target="_blank" title="Made w/code">
-				<div><img src="mwc.png"/></div>
-				</a>
-				<a href="http://lightbot.com/flash.html" target="_blank" title="Light Bot">
-				<div><img src="light.jpg"/></div>
-				</a>
-				<a href="https://hoc.nclab.com/karel/fr/" target="_blank" title="NC LAB">
-				<div><img src="nclab.jpg"/></div>
-				</a>
-				<a href="http://compute-it.toxicode.fr/" target="_blank" title="Compute it">
-				<div><img src="compute.jpg"/></div>
-				</a>
-				<a href="test.html" target="_blank" title="Test mémoire">
-				<div><img src="test.png"/></div>
-				</a>
-				<a href="https://fr.khanacademy.org/computing/computer-programming" target="_blank" title="Khan Academy">
-				<div><img src="khan.png"/></div>
-				</a>
-				<a href="https://hourofcode.com/us/fr/learn" target="_blank" title="Khan Academy">
-				<div><img src="hoc.png"/></div>
-				</a>
-				<a href="http://little-dot.toxicode.fr/" target="_blank" title="Little Dot">
-				<div><img src="http://d107bcup7t2y2i.cloudfront.net/assets/learn/read-js-logo-7ba7d287870db34c33def180f5109bca785aff6fc20768c9386b742e3b008c6d.png"/></div>
-				</a>
-				<!-- <a href="quatre_elements.html" target="_blank" title="Les 4 éléments">
-				<div><img src="4elements.jpg"/></div>
-				</a>-->
-				<a href="http://gamejam.toxicode.fr/" target="_blank" title="Code n Slash">
-				<div><img src="http://gamejam.toxicode.fr/assets/hero.png"/></div>
-				</a>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title> LSSL 2021</title>
+<link rel="icon" type="image/png" href="https://static.thenounproject.com/png/375110-200.png" />
+<style>
+*{
+box-sizing:border-box;
+}
 
-			</div>
+html,body{
+height:100%;
+margin:0;
+}
 
-<div id="myNav" class="overlay">
-	<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-	<div class="overlay-content">
-		<a href="https://www.mediatheque-rueilmalmaison.fr/-Les-services-450-" target="_blank">A propos</a>
-		<a href="https://www.mediatheque-rueilmalmaison.fr/" target="_blank">Médiathèque</a>
-		<a href="http://catalogueinmedia.mediatheque-rueilmalmaison.fr/in/faces/homeInBook.xhtml" target="_blank">Catalogue</a>
-		<a href="https://fr-fr.facebook.com/mediathequerueil/" target="_blank">Facebook</a>
-		<a href="https://www.instagram.com/mediathequerueil/?hl=fr" target="_blank">Instagram</a>
-	</div>
+body{
+font-family:consolas;
+color:white;
+}
+
+#tit{
+text-align:center;
+width:100%;
+position:fixed;
+top:2.5%;
+font-size:40px;
+}
+
+#myVideo{
+position:fixed;
+right:0;
+bottom:0;
+min-width:100%;
+min-height:100%;
+z-index:-1;
+}
+
+.container{
+position:fixed;
+left:0;
+bottom:0;
+width:100%;
+height:85%;
+display:grid;
+grid-template-columns: 1fr 1fr 1fr 1fr;
+grid-gap:5%;
+}
+
+.container div{
+text-align:center;
+vertical-align:middle;
+}
+
+.container img{
+border:10px solid #ccc;
+}
+
+.container img{
+border-radius: 50%;
+-webkit-transition: -webkit-transform .8s ease-in-out;
+transition:transform .8s ease-in-out;
+}
+.container img:hover{
+-webkit-transform: rotate(360deg) scale(1.5);
+transform: rotate(360deg) scale(1.5);
+}
+
+.overlay{
+overflow:hidden;
+position:fixed;
+top:0;
+left:0;
+height:100%;
+background-color: rgba(0,0,0, 0.9);
+transition: 0.5s;
+}
+
+#Ech{
+width:0%;
+}
+
+#InfP{
+width:0%;
+}
+
+#InfG{
+width:0%;
+}
+.overlay-content{
+position:relative;
+top:10%;
+width:100%;
+text-align:center;
+margin-top:30px;
+}
+
+.overlay .closebtn{
+position:absolute;
+top:20px;
+right:45px;
+font-size:60px;
+}
+
+.overlay a{
+padding:8px;
+text-decoration:none;
+font-size:36px;
+color:#818181;
+display:block;
+transition:0.3s;
+}
+</style>
+</head>
+
+<body>
+
+<video autoplay muted loop id="myVideo">Your browser does not support HTML5 video.</video>
+
+<div id="tit">Infiniment Petit & Infiniment Grand</div>
+
+<div class="container">
+	<div onclick="openEch()"><img src="echelle.jpg" width="150px" height="auto"></a></div>
+	<div onclick="openInfP()"><img src="petit.jpg" width="150px" height="auto"></div>
+	<div onclick="openInfG()"><img src="grand.jpg" width="150px" height="auto"></div>
+	<div><a href="http://usefuljs.net/fractals/" target="_blank"><img src="frac.jpg" width="150px" height="auto"></a></div>
+	<div><a href="http://gigapan.com/" target="_blank"><img src="giga.png" width="150px" height="auto"></a></div>
+	<div><a href="https://www.nikonsmallworld.com//" target="_blank"><img src="nikon.jpg" width="150px" height="auto"></a></div>
+	<div><a href="https://www.youtube.com/watch?v=lAR3rry4Hjo" target="blank"><img src="museum.jpg" width="150px" height="auto"></a></div>
+	<div><a href="https://hirnsohle.de/test/fractalLab/" target="blank"><img src="frac3d.jpg" width="150px" height="auto"></a></div>
+	<div><a href="https://www.mediatheque-rueilmalmaison.fr/-La-Science-se-Livre-" target="_blank"><img src="selection.jpg" width="150px" height="auto"></a></div>
 </div>
-<svg id="svg1"><g id="g1"></g></svg>
-<div id="div1"></div>
-<div id="div2"></div>
+
+<div id="Ech" class="overlay">
+<div class="overlay-content">
+<a href="https://htwins.net/scale2/" target="_blank"><img src="https://i.gifer.com/SUk4.gif" width="800px" height="auto" padding-top="20px"/><br>L'échelle de l'Univers</a>Zoomez du bord de l'univers à la limite quantique de l'espace-temps<br>et apprenez l'échelle des choses en cours de route. 
+</div>
+<a href="javascript:void(0)" class="closebtn" onclick="closeEch()">&times;</a>
+</div>
+
+<div id="InfP" class="overlay">
+<div class="overlay-content">
+<iframe width="1120" height="630" src="https://www.youtube-nocookie.com/embed/yBNtJN9j2_I" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br>Si en levant les yeux au ciel il vous arrive de vous sentir petit, écrasé par le poids de l'immensité<br>alors dites vous qu'il existe là à proximité, un monde qui fait de vous de véritables géants ...
+</div>
+<a href="javascript:void(0)" class="closebtn" onclick="closeInfP()">&times;</a>
+</div>
+
+<div id="InfG" class="overlay">
+<div class="overlay-content">
+<iframe width="1120" height="630" src="https://www.youtube-nocookie.com/embed/MuARMr63Yoc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br>Ouvrez grands les yeux aujourd'hui, nous allons entreprendre un voyage aux confins de l'univers connu<br>et aussi loin qu'il est possible d'aller ...
+</div>
+<a href="javascript:void(0)" class="closebtn" onclick="closeInfG()">&times;</a>
+</div>
 
 <script>
-var ww=window.innerWidth;
-var wh=window.innerHeight;
-var svg1=document.getElementById("svg1");
-var g1=document.getElementById("g1");
-var div1=document.getElementById("div1");
-var x0=ww/2;
-var y0=wh/2;
-var x1,y1;
-var i=1;
-var a=100;
-var radius=25;
-var col1="#"+Math.round(0xFFFFFF * Math.random()).toString(16);
-var angle=Math.round((Math.random()*Math.PI*2)*100)/100;
 
-x1 = Math.round(x0+Math.cos(angle)*radius);
-y1 = Math.round(y0+Math.sin(angle)*radius);
-div1.innerHTML="paths : "+i+"/"+a+"<br>angle : "+angle+"<br>x0 : "+x0+"<br>y0 : "+y0+"<br>x1 : "+x1+"<br>y1 : "+y1;
+var vidElement=document.getElementById('myVideo');
+var vidSources=["fract0.mp4","fract1.mp4","fract2.mp4","fract3.mp4","fract4.mp4","fract5.mp4"];
+var activeVideo=Math.floor((Math.random()*vidSources.length));
+vidElement.src = vidSources[activeVideo];
 
-function Dopamine(){
-var path1=document.createElementNS(svg1.namespaceURI,"path");
-path1.setAttributeNS(null,"d","m"+x0+" "+y0+"L"+x1+" "+y1);
-path1.setAttributeNS(null,"stroke",col1)
-path1.setAttributeNS(null,"stroke-width","25px");
-path1.setAttributeNS(null,"fill","none");
-path1.setAttributeNS(null,"opacity","0.5");
-path1.setAttributeNS(null,"stroke-linecap","round");
-g1.appendChild(path1);
-i++;
-if(i==a+1){g1.removeChild(g1.firstChild);i=a;}
-x0=x1;
-y0=y1;
-angle=Math.round((Math.random()*Math.PI*2)*100)/100;
-x1=Math.round(x0+Math.cos(angle)*radius);
-y1=Math.round(y0+Math.sin(angle)*radius);
-if(x1<0){x1=x1+(radius*2);}
-if(x1>ww){x1=x1-(radius*2);}
-if(y1<0){y1=y1+(radius*2);}
-if(y1>wh){y1=y1-(radius*2);}
-div1.innerHTML="paths : "+i+"/"+a+"<br>angle : "+angle+"<br>x0 : "+x0+"<br>y0 : "+y0+"<br>x1 : "+x1+"<br>y1 : "+y1;
-}
-setInterval(Dopamine,20);
+vidElement.addEventListener('ended', function(e){
 
-function ccol(){
-col1="#"+Math.round(0xFFFFFF * Math.random()).toString(16);
+// update the active video index
+activeVideo=(++activeVideo) % vidSources.length;
+if(activeVideo===vidSources.length){
+activeVideo=0;
 }
 
-setInterval(ccol,1000);
+// update the video source and play
+vidElement.src=vidSources[activeVideo];
+vidElement.play();
+});
+
+var video=document.getElementById("myVideo");
+video.play();
+
+function openEch(){document.getElementById("Ech").style.width="100%";}
+function closeEch(){document.getElementById("Ech").style.width="0%";}
+
+function openInfP(){document.getElementById("InfP").style.width="100%";}
+function closeInfP(){document.getElementById("InfP").style.width="0%";}
+
+function openInfG(){document.getElementById("InfG").style.width="100%";}
+function closeInfG(){document.getElementById("InfG").style.width="0%";}
 </script>
-
-<script>
-function openNav(){
-  document.getElementById("myNav").style.width = "100%";
-}
-
-function closeNav(){
-  document.getElementById("myNav").style.width = "0%";
-}
-
-document.body.style.backgroundColor="#"+Math.round(0xFFFFFF * Math.random()).toString(16);
-
-function checkhour(){
-var div2=document.getElementById("div2");
-var d=new Date();
-var e=Math.ceil(d.getHours());
-div2.innerHTML=d+" "+e;
-}
-checkhour();
-</script>
-
-
-
-	</body>
+</body>
 </html>
