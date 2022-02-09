@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
-		<title>Hour of Code Médiathèque Jacques-BAUMEL</title>
+		<title>Hour of Code</title>
 		<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="style.css" />
 		<style>
@@ -144,7 +144,7 @@ var div1=document.getElementById("div1");
 function checkTime(){
 	var d=new Date();
 	var hour=d.getHours();
-	div1=hour;
+	div1.innerHTML=hour;
 }
 setInterval(checkTime,60000);
 </script>
