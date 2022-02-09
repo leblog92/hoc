@@ -8,7 +8,7 @@
 		<link rel="stylesheet" type="text/css" href="style.css" />
 		<style>
 			#hid{
-				visibility:hidden;
+				display:none;
 			}
 		</style>
 	</head>
@@ -144,8 +144,11 @@ var div1=document.getElementById("div1");
 function checkTime(){
 	var d=new Date();
 	var hour=d.getHours();
-	div1.innerHTML=hour;
+	var minute=d.getMinutes();
+	div1.innerHTML=hour+" "+minute;
+	if(hour==10&&minute>=50){hid.style.display="block"}
 }
+checkTime();
 setInterval(checkTime,60000);
 </script>
 
