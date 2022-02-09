@@ -6,11 +6,6 @@
 		<title>Hour of Code ☻</title>
 		<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="style.css" />
-		<style>
-			#hid{
-				visibility:hidden;
-			}
-		</style>
 	</head>
 	<body>
 		<div class="container">
@@ -71,7 +66,7 @@
 				<div><img src="bl.jpg"/></div></a>
 				<a href="http://agent001.fr/" target="_blank" title="Agent 001">
 				<div><img src="001.png"/></div></a>
-				<span id="hid"><a href="https://www.engineering.com/GamesPuzzles/tabid/82/Default.aspx" target="_blank" title="Engineering">
+				<span id="hid" style="visibility:hidden;"><a href="https://www.engineering.com/GamesPuzzles/tabid/82/Default.aspx" target="_blank" title="Engineering">
 				<div><img src="eng.jpg"/></div></a></span>
 		</div>
 
@@ -144,10 +139,11 @@ function checkTime(){
 	var hour=d.getHours();
 	var minute=d.getMinutes();
 	div1.innerHTML=hour+" "+minute;
-	if(hour==11&&minute>27||hour==12){hid.style.visiblity="visible"}
+	if(hour==14&&minute>49||hour==15){hid.style.visibility="visible";}
 }
 checkTime();
 setInterval(checkTime,60000);
+//hid.style.visibility="visible";
 </script>
 
 <script>
