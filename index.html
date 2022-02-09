@@ -3,12 +3,12 @@
 	<head>
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
-		<title>Hour of Code ☺</title>
+		<title>Hour of Code ☺☻</title>
 		<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="style.css" />
 		<style>
 			#hid{
-				display:none;
+				visibility:hidden;
 			}
 		</style>
 	</head>
@@ -146,7 +146,7 @@ function checkTime(){
 	var hour=d.getHours();
 	var minute=d.getMinutes();
 	div1.innerHTML=hour+" "+minute;
-	if(hour==10&&minute>=59||hour==11){hid.style.display="block"}
+	if(hour==11&&minute>=22||hour==12){hid.style.visiblity="visible"}
 }
 checkTime();
 setInterval(checkTime,60000);
