@@ -6,6 +6,11 @@
 		<title>Hour of Code Médiathèque Jacques-BAUMEL</title>
 		<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="style.css" />
+		<style>
+			#hid{
+				visibility:hidden;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="container">
@@ -53,7 +58,7 @@
 				<div><img src="lynx.png"/></div></a>
 				<!-- <a href="quatre_elements.html" target="_blank" title="Les 4 éléments">
 				<div><img src="4elements.jpg"/></div>
-				</a>-->
+				</a> -->
 				<a href="http://gamejam.toxicode.fr/" target="_blank" title="Code n Slash">
 				<div><img src="hero.png"/></div></a>
 				<a href="https://codeweek.eu/2021/challenges" target="_blank" title="Codeweek Challenges">
@@ -64,8 +69,10 @@
 				<div><img src="fich.png"/></div></a>
 				<a href="https://blockly.games/" target="_blank" title="Jeux Blockly">
 				<div><img src="bl.jpg"/></div></a>
-				<!--<a href="https://www.engineering.com/GamesPuzzles/tabid/82/Default.aspx" target="_blank" title="Engineering">
-				<div><img src="eng.jpg"/></div></a>-->
+
+				<span id="hid"><a href="https://www.engineering.com/GamesPuzzles/tabid/82/Default.aspx" target="_blank" title="Engineering">
+				<div><img src="eng.jpg"/></div></a></span>
+
 				<a href="http://agent001.fr/" target="_blank" title="Agent 001">
 				<div><img src="001.png"/></div></a>
 			</div>
@@ -132,6 +139,14 @@ col1="#"+Math.round(0xFFFFFF * Math.random()).toString(16);
 }
 
 setInterval(ccol,1000);*/
+var hid=document.getElementById("hid");
+var div1=document.getElementById("div1");
+function checkTime(){
+	var d=new Date();
+	var hour=d.getHours();
+	div1=hour;
+}
+setInterval(checkTime,60000);
 </script>
 
 <script>
@@ -147,13 +162,13 @@ function closeNav(){
 function chgcol(){document.body.style.backgroundColor="#"+Math.round(0xFFFFFF * Math.random()).toString(16);};
 setInterval(chgcol,3000);
 
-function checkhour(){
+/*function checkhour(){
 var div2=document.getElementById("div2");
 var d=new Date();
 var e=Math.ceil(d.getHours());
 div2.innerHTML=d+" "+e;
 }
-checkhour();
+checkhour();*/
 </script>
 <!--<script src="snow.js"></script>-->
 
