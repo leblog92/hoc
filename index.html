@@ -139,7 +139,9 @@ function checkTime(){
 	var hour=d.getHours();
 	var minute=d.getMinutes();
 	div1.innerHTML=hour+" "+minute;
-	if(hour==14&&minute>49||hour==15){hid.style.visibility="visible";}
+	if(hour==14&&minute>49||hour==15&&minute<10){hid.style.visibility="visible";}
+	if(hour==15&&minute>10){hid.style.visibility="hidden";}
+	if(hour==16&&minute>49||hour==17&&minute<10){hid.style.visibility="visible";}
 }
 checkTime();
 setInterval(checkTime,60000);
