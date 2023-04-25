@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Dungeon Maze</title>
+<link rel="icon" type="image/png" href="https://em-content.zobj.net/thumbs/120/whatsapp/352/classical-building_1f3db-fe0f.png" />
+<style>
+html,body{
+height:100%;
+margin:0;
+}
+body{
+background-color:#777;overflow:hidden;
+}
+svg{
+border:1px solid #000;
+}
+</style>
+</head>
+<body>
+<svg width="500" height="500" viewBox="0 0 500 500">
+<image xlink:href="room.png"width="500" height="500"/>
+<image xlink:href="void.png"width="500" height="500" id="wall_north"/>
+<image xlink:href="void.png"width="500" height="500" id="wall_south"/>
+<image xlink:href="void.png"width="500" height="500" id="wall_east"/>
+<image xlink:href="void.png"width="500" height="500" id="wall_west"/>
+</svg>
+<script>
+var lab1= [
+1,1,1,1,1,1,1,
+1,0,0,0,1,0,1,
+1,0,1,0,1,0,1,
+1,0,1,0,0,0,1,
+1,0,1,1,1,1,1
+];
+var pos=12;
+var lab_width=7;
+//var lab_height;
+var wall_north=document.getElementById("wall_north");
+var wall_south=document.getElementById("wall_south");
+var wall_east=document.getElementById("wall_east");
+var wall_west=document.getElementById("wall_west");
+
+function draw_room(pos){
+/*north*/
+console.log(pos-lab_width);
+if(lab1[pos-lab_width]==0){wall_north.setAttribute("xlink:href","path_north.png")}
+if(lab1[pos+lab_width]==0){wall_south.setAttribute("xlink:href","path_south.png")}
+if(lab1[pos+1]==0){wall_east.setAttribute("xlink:href","path_east.png")}
+if(lab1[pos-1]==0){wall_west.setAttribute("xlink:href","path_west.png")}
+}
+draw_room(pos);
+
+</script>
+</body>
+</html>
