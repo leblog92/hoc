@@ -18,12 +18,15 @@ border:1px solid #000;
 </style>
 </head>
 <body>
-<svg width="500" height="500" viewBox="0 0 500 500">
+<svg width="100%" height="100%" viewBox="0 0 500 500">
 <image xlink:href="room.png"width="500" height="500"/>
 <image xlink:href="void.png"width="500" height="500" id="wall_north"/>
 <image xlink:href="void.png"width="500" height="500" id="wall_south"/>
 <image xlink:href="void.png"width="500" height="500" id="wall_east"/>
 <image xlink:href="void.png"width="500" height="500" id="wall_west"/>
+<g id="player" transform="translate(250,250)">
+<circle cx="0" cy="0" r="25" fill="#fff"/>
+</g>
 </svg>
 <script>
 var lab1= [
@@ -33,9 +36,9 @@ var lab1= [
 1,0,1,0,0,0,1,
 1,0,1,1,1,1,1
 ];
-var pos=12;
-var lab_width=7;
-var lab=lab1;
+var pos;
+var lab_width;
+var lab;
 //var lab_height;
 var wall_north=document.getElementById("wall_north");
 var wall_south=document.getElementById("wall_south");
@@ -49,7 +52,7 @@ if(lab1[pos+lab_width]==0){wall_south.setAttribute("xlink:href","path_south.png"
 if(lab1[pos+1]==0){wall_east.setAttribute("xlink:href","path_east.png")}
 if(lab1[pos-1]==0){wall_west.setAttribute("xlink:href","path_west.png")}
 }
-draw_room(lab,pos,lab_width);
+draw_room(lab1,12,7);
 
 </script>
 </body>
