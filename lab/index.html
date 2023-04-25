@@ -52,19 +52,18 @@
 	var player=document.getElementById("player");
 
 	function draw_room(lab,lab_width,pos,px,py){
-		if(lab[pos-lab_width]==0){wall_north.setAttribute("xlink:href","path_north.png")}
-		if(lab[pos+lab_width]==0){wall_south.setAttribute("xlink:href","path_south.png")}
-		if(lab[pos+1]==0){wall_east.setAttribute("xlink:href","path_east.png")}
-		if(lab[pos-1]==0){wall_west.setAttribute("xlink:href","path_west.png")}
+		px_min=50;
+		px_max=450;
+		py_min=50;
+		py_max=450;
+		if(lab[pos-lab_width]==0){wall_north.setAttribute("xlink:href","path_north.png");py_min=0;}
+		if(lab[pos+lab_width]==0){wall_south.setAttribute("xlink:href","path_south.png");py_max=500;}
+		if(lab[pos+1]==0){wall_east.setAttribute("xlink:href","path_east.png");px_max=500;}
+		if(lab[pos-1]==0){wall_west.setAttribute("xlink:href","path_west.png");px_min=0;}
 		player.setAttribute("transform","translate("+px+","+py+")");
 	}
 
 	draw_room(lab1,7,12,250,250);
-
-	px_min=50;
-	px_max=450;
-	py_min=50;
-	py_max=450;
 
 </script>
 </body>
