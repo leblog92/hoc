@@ -98,14 +98,14 @@
 			px+=Math.round(velX);
 
 			if(px>px_max){
-				if(px_max==460){px=50;pos++;draw_room(lab,lab_width,pos,px,py);console.log(pos);}else{px=px_max;}
+				if(px_max==460&&py>200&&py<300){px=50;pos++;draw_room(lab,lab_width,pos,px,py);console.log(pos);}else{px=px_max;}
 			}else if(px<px_min){
-				if(px_min==40){px=450;pos--;draw_room(lab,lab_width,pos,px,py);console.log(pos);}else{px=px_min;}
+				if(px_min==40&&py>200&&py<300){px=450;pos--;draw_room(lab,lab_width,pos,px,py);console.log(pos);}else{px=px_min;}
 			}
 			if(py>py_max){
-				if(py_max==460){py=50;pos=pos+lab_width;draw_room(lab,lab_width,pos,px,py);console.log(pos);}else{py=py_max;}
+				if(py_max==460&&px>200&&px<300){py=50;pos=pos+lab_width;draw_room(lab,lab_width,pos,px,py);console.log(pos);}else{py=py_max;}
 			}else if(py<py_min){
-				if(py_min==40){py=450;pos=pos-lab_width;draw_room(lab,lab_width,pos,px,py);console.log(pos);}else{py=py_min;}
+				if(py_min==40&&px>200&&px<300){py=450;pos=pos-lab_width;draw_room(lab,lab_width,pos,px,py);console.log(pos);}else{py=py_min;}
 			}
 
 			player.setAttribute("transform","translate("+px+","+py+")");
