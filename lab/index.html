@@ -93,7 +93,7 @@
 			px+=Math.round(velX);
 
 			if(px>450){px=px_max;}else if(px<50){px=px_min;}
-			if(py>450){py=50;pos=pos+lab_width;draw_room(lab,7,pos,250,50);console.log(pos)}else if(py<50){py=py_min;}
+			if(py>450){py=50;pos=pos+lab_width;draw_room(lab,lab_width,pos,px,py);console.log(pos)}else if(py<50){py=py_min;}
 
 			player.setAttribute("transform","translate("+px+","+py+")");
 
