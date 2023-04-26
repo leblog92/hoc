@@ -24,7 +24,7 @@
 		<image xlink:href="void.png"width="500" height="500" id="wall_south"/>
 		<image xlink:href="void.png"width="500" height="500" id="wall_east"/>
 		<image xlink:href="void.png"width="500" height="500" id="wall_west"/>
-		<g id="player" transform="translate(250,250)">
+		<g id="player" transform="translate(250,250)" opacity="0.6">
 			<ellipse cx="7" cy="30" rx="15" ry="5" fill="#000" opacity="0.4"/>
 			<image xlink:href="ghost.png" width="50" height="50" x="-25" y="-25"/>
 		</g>
@@ -39,11 +39,12 @@
 		1,0,1,0,0,0,1,
 		1,1,1,1,1,1,1
 	];
-	var lab;
-	var lab_width;
+	var lab=lab1;
+	var lab_width=7;
 	//var lab_height;
-	var pos;
-	var px,py;
+	var pos=12;
+	var px=250;
+	var py=250;
 	var px_min,px_max,py_min,py_max;
 
 	var wall_north=document.getElementById("wall_north");
@@ -53,11 +54,14 @@
 	var player=document.getElementById("player");
 
 	function draw_room(lab,lab_width,pos,px,py){
+		//begin initialization
 		wall_north.setAttribute("xlink:href","void.png");
 		wall_south.setAttribute("xlink:href","void.png");
 		wall_east.setAttribute("xlink:href","void.png");
 		wall_west.setAttribute("xlink:href","void.png");
 		px_min=50;px_max=450;py_min=50;py_max=450;
+		//end initialization
+
 		if(lab[pos-lab_width]==0){wall_north.setAttribute("xlink:href","path_north.png");py_min=0;}
 		if(lab[pos+lab_width]==0){wall_south.setAttribute("xlink:href","path_south.png");py_max=500;}
 		if(lab[pos+1]==0){wall_east.setAttribute("xlink:href","path_east.png");px_max=500;}
@@ -88,14 +92,24 @@
 			velX*=friction;
 			px+=Math.round(velX);
 
-			if(px>=850){px=850;}else if(px<=50){px=50;}
+			if(px>450){px=px_max;}else if(px<50){px=px_min;}
+			if(py>450){py=50;pos=pos+lab_width;draw_room(lab,7,pos,250,50);console.log(pos)}else if(py<50){py=py_min;}
 
-			if(py>= 850){py=850;}else if(py<=50){py=50;}
-
-			player.setAttribute("transform","translate("+x+","+y+")");
+			player.setAttribute("transform","translate("+px+","+py+")");
 
 		}
+		update();
+
+		document.body.addEventListener("keydown",function(e){
+			keys[e.keyCode]=true;
+		});
+
+		document.body.addEventListener("keyup",function(e){
+			keys[e.keyCode]=false;
+		});
 	}
+
+	move();
 
 </script>
 </body>
