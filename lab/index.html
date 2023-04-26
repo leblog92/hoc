@@ -92,8 +92,16 @@
 			velX*=friction;
 			px+=Math.round(velX);
 
-			if(px>450){px=px_max;}else if(px<50){px=px_min;}
-			if(py>450){py=50;pos=pos+lab_width;draw_room(lab,lab_width,pos,px,py);console.log(pos)}else if(py<50){py=py_min;}
+			if(px>px_max){
+				if(px_max==500){px=50;pos++;draw_room(lab,lab_width,pos,px,py);console.log(pos);}
+			}else if(px<px_min){
+				if(px_min==0){px=450;pos--;draw_room(lab,lab_width,pos,px,py);console.log(pos);}
+			}
+			if(py>py_max){
+				if(py_max==500){py=50;pos=pos+lab_width;draw_room(lab,lab_width,pos,px,py);console.log(pos);}
+			}else if(py<py_min){
+				if(py_min==0){py=450;pos=pos-lab_width;draw_room(lab,lab_width,pos,px,py);console.log(pos);}
+			}
 
 			player.setAttribute("transform","translate("+px+","+py+")");
 
