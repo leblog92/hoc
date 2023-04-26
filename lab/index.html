@@ -25,7 +25,8 @@
 		<image xlink:href="void.png"width="500" height="500" id="wall_east"/>
 		<image xlink:href="void.png"width="500" height="500" id="wall_west"/>
 		<g id="player" transform="translate(250,250)">
-			<circle cx="0" cy="0" r="25" fill="#fff"/>
+			<circle cx="0" cy="20" r="15" fill="#000" opacity="0.5"/>
+			<image xlink:href="skel.png" width="50" height="50" x="-25" y="-25"/>
 		</g>
 	</svg>
 <script>
@@ -52,6 +53,10 @@
 	var player=document.getElementById("player");
 
 	function draw_room(lab,lab_width,pos,px,py){
+		wall_north.setAttribute("xlink:href","void.png");
+		wall_south.setAttribute("xlink:href","void.png");
+		wall_east.setAttribute("xlink:href","void.png");
+		wall_west.setAttribute("xlink:href","void.png");
 		px_min=50;px_max=450;py_min=50;py_max=450;
 		if(lab[pos-lab_width]==0){wall_north.setAttribute("xlink:href","path_north.png");py_min=0;}
 		if(lab[pos+lab_width]==0){wall_south.setAttribute("xlink:href","path_south.png");py_max=500;}
