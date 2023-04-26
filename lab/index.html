@@ -28,8 +28,7 @@
 		<image xlink:href="void.png"width="500" height="500" id="wall_east"/>
 		<image xlink:href="void.png"width="500" height="500" id="wall_west"/>
 		<g id="player" transform="translate(250,250)" opacity="0.6">
-			<ellipse cx="7" cy="30" rx="15" ry="5" fill="#000" opacity="0.4"/>
-			<image id="player_img" xlink:href="ghost.png" width="50" height="50" x="-25" y="-25" transform="scale(1,1)"/>
+			<image id="player_img" xlink:href="ghost.png" width="50" height="50" x="-25" y="-40" transform="scale(1,1)"/>
 		</g>
 	</svg>
 <script>
@@ -87,10 +86,10 @@
 
 			requestAnimationFrame(update);
 
-			if (keys[90]){if(velY> -speed){velY--;}}
-			if (keys[83]){if(velY<speed){velY++;}}
-			if (keys[68]){player_img.setAttribute("transform","scale(-1,1)");if(velX<speed){velX++;}}
-			if (keys[81]){player_img.setAttribute("transform","scale(1,1)");if(velX> -speed){velX--;}}
+			if (keys[90]||keys[38]){if(velY> -speed){velY--;}}
+			if (keys[83]||keys[40]){if(velY<speed){velY++;}}
+			if (keys[68]||keys[39]){player_img.setAttribute("transform","scale(-1,1)");if(velX<speed){velX++;}}
+			if (keys[81]||keys[37]){player_img.setAttribute("transform","scale(1,1)");if(velX> -speed){velX--;}}
 
 			velY*=friction;
 			py+=Math.round(velY);
