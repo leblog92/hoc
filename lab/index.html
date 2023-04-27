@@ -38,10 +38,14 @@
 			<image xlink:href="void.png"width="500" height="500" id="wall_east"/>
 			<image xlink:href="void.png"width="500" height="500" id="wall_west"/>
 			<g id="player" transform="translate(250,250)" opacity="0.6">
-				<ellipse cx="0" cy="5" fill="rgba(0,0,0,0.5)" rx="20" ry="5"/>
-				<image id="player_img" xlink:href="ghost.png" width="50" height="50" x="-35" y="-45" transform="scale(-1,1)"/>
+				<ellipse cx="0" cy="5" fill="rgba(0,0,0,0.5)" rx="15" ry="5"/>
+				<image id="player_img" xlink:href="ghost.png" width="50" height="50" x="-30" y="-45" transform="scale(-1,1)"/>
 			</g>
 		</g>
+
+		<use href="#g_room" x="0" y="-500" id="enter">
+		<animateTransform attributeName="transform" attributeType="XML" type="translate" from="0 500" to="0 0" dur="1s" repeatCount="1" fill="freeze"></animateTransform>
+		</use>
 	</svg>
 	<div id="div1">status</div>
 <script>
