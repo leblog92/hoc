@@ -39,6 +39,7 @@
 			<image xlink:href="void.png"width="500" height="500" id="wall_west"/>
 			<g id="player" transform="translate(250,250)" opacity="0.6">
 				<image id="player_img" xlink:href="ghost.png" width="50" height="50" x="-25" y="-40" transform="scale(-1,1)"/>
+				<ellipse cx="0" cy="15" fill="rgba(0,0,0,0.5)" rx="20" ry="5"/>
 			</g>
 		</g>
 	</svg>
@@ -134,7 +135,7 @@
 	function status(){
 		document.getElementById("div1").innerHTML="px: "+px+"<br>py: "+py+"<br>pos: "+pos;
 	}
-	setInterval(status,1000);
+	setInterval(status,100);
 </script>
 </body>
 </html>
