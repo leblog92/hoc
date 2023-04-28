@@ -62,15 +62,15 @@
 	];
 	var lab2=[
 1,1,1,1,1,1,1,1,1,1,1,1,
-1,0,1,0,0,0,0,1,0,0,0,1,
-1,0,1,0,1,0,0,0,1,0,0,1,
+1,0,1,0,0,0,0,1,0,0,0,0,
+1,0,1,0,1,1,0,1,0,1,0,1,
 1,0,0,0,1,0,0,1,0,1,0,1,
-1,1,1,1,1,0,1,1,1,1,0,1,
-1,0,0,0,1,0,0,0,1,0,1,1,
-1,0,1,0,0,0,0,1,0,1,1,1,
-1,0,1,1,1,1,1,1,1,1,0,1,
+1,1,1,1,1,0,1,1,1,1,0,0,
+1,0,0,0,1,0,0,0,0,1,0,1,
 1,0,1,0,0,0,0,1,0,0,0,1,
-1,0,0,1,1,1,1,0,1,1,0,1,
+1,0,1,1,1,1,1,1,1,1,1,1,
+1,0,1,0,0,0,1,1,0,0,0,1,
+1,0,0,0,1,0,0,0,0,1,0,1,
 1,1,1,1,1,1,1,1,1,1,1,1
 	]
 	var lab=lab1;
@@ -81,6 +81,7 @@
 	var pos=13;
 	var px=250;
 	var py=250;
+	var win=118;
 	var px_min,px_max,py_min,py_max;
 	var fromx,fromy;
 
@@ -106,10 +107,11 @@
 		if(lab[pos+lab_width]==0){wall_south.setAttribute("xlink:href","path_south.png");py_max=442;}
 		if(lab[pos+1]==0){wall_east.setAttribute("xlink:href","path_east.png");px_max=442;}
 		if(lab[pos-1]==0){wall_west.setAttribute("xlink:href","path_west.png");px_min=58;}
+		if(pos==win){object.setAttribute("xlink:href","treasure.png"}
 		player.setAttribute("transform","translate("+px+","+py+")");
 	}
 
-	draw_room(lab,lab_width,pos,px,py);
+	draw_room(lab,lab_width,pos,px,py,win);
 	
 	function move_room(room_x,room_y){
 
@@ -137,9 +139,9 @@
 			px+=Math.round(velX);
 
 			if(px>px_max){
-				if(px_max==442&&py>200&&py<300){px=80;pos++;draw_room(lab,lab_width,pos,px,py);}else{px=px_max;}
+				if(px_max==442&&py>200&&py<300){px=80;pos++;draw_room(lab,lab_width,pos,px,py,win);}else{px=px_max;}
 			}else if(px<px_min){
-				if(px_min==58&&py>200&&py<300){px=440;pos--;draw_room(lab,lab_width,pos,px,py);}else{px=px_min;}
+				if(px_min==58&&py>200&&py<300){px=440;pos--;draw_room(lab,lab_width,pos,px,py,win);}else{px=px_min;}
 			}
 			if(py>py_max){
 				if(py_max==442&&px>200&&px<300){py=80;pos=pos+lab_width;draw_room(lab,lab_width,pos,px,py);move_room(0,500)}else{py=py_max;}
