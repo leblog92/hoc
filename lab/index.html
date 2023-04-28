@@ -37,9 +37,13 @@
 			<image xlink:href="void.png"width="500" height="500" id="wall_south"/>
 			<image xlink:href="void.png"width="500" height="500" id="wall_east"/>
 			<image xlink:href="void.png"width="500" height="500" id="wall_west"/>
-			<g id="player" transform="translate(250,250)" opacity="0.6">
+			<!-- <g id="player" transform="translate(250,250)" opacity="0.6">
 				<ellipse cx="0" cy="5" fill="rgba(0,0,0,0.5)" rx="15" ry="5"/>
 				<image id="player_img" xlink:href="ghost.png" width="50" height="50" x="-30" y="-45" transform="scale(-1,1)"/>
+			</g> -->
+			<g id="player" transform="translate(250,250)">
+				<ellipse cx="0" cy="35" fill="rgba(0,0,0,0.5)" rx="25" ry="5" opacity="0.6"/>
+				<image id="player_img" xlink:href="link.gif" width="75" height="75" x="-35" y="-35" transform="scale(-1,1)"/>
 			</g>
 		</g>
 
@@ -51,14 +55,30 @@
 	<div id="div1">status</div>
 <script>
 	var lab1=[
-		1,1,1,1,1,1,1,
-		1,0,0,0,1,0,1,
-		1,0,1,0,0,0,1,
-		1,1,1,1,1,1,1
+1,1,1,1,1,1,1,
+1,0,0,0,1,0,1,
+1,0,1,0,0,0,1,
+1,1,1,1,1,1,1
 	];
+	var lab2=[
+1,1,1,1,1,1,1,1,1,1,1,1,
+1,0,1,0,0,0,0,1,0,0,0,1,
+1,0,1,0,1,0,0,0,1,0,0,1,
+1,0,0,0,1,0,0,1,0,1,0,1,
+1,1,1,1,1,0,1,1,1,1,0,1,
+1,0,0,0,1,0,0,0,1,0,1,1,
+1,0,1,0,0,0,0,1,0,1,1,1,
+1,0,1,1,1,1,1,1,1,1,0,1,
+1,0,1,0,0,0,0,1,0,0,0,1,
+1,0,0,1,1,1,1,0,1,1,0,1,
+1,1,1,1,1,1,1,1,1,1,1,1
+	]
 	var lab=lab1;
+	var lab=lab2;
 	var lab_width=7;
+	var lab_width=12;
 	var pos=12;
+	var pos=13;
 	var px=250;
 	var py=250;
 	var px_min,px_max,py_min,py_max;
@@ -89,7 +109,7 @@
 		player.setAttribute("transform","translate("+px+","+py+")");
 	}
 
-	draw_room(lab1,7,12,250,250);
+	draw_room(lab,lab_width,pos,px,py);
 	
 	function move_room(room_x,room_y){
 
