@@ -37,6 +37,9 @@
 			<image xlink:href="void.png"width="500" height="500" id="wall_south"/>
 			<image xlink:href="void.png"width="500" height="500" id="wall_east"/>
 			<image xlink:href="void.png"width="500" height="500" id="wall_west"/>
+			<g id="treasure" transform="translate(250,250)" opacity="1">
+				<image xlink:href="void.png" width="100" height="100" x="-50" y="-50" id="treasure_img"/>
+			</g>
 			<!-- <g id="player" transform="translate(250,250)" opacity="0.6">
 				<ellipse cx="0" cy="5" fill="rgba(0,0,0,0.5)" rx="15" ry="5"/>
 				<image id="player_img" xlink:href="ghost.png" width="50" height="50" x="-30" y="-45" transform="scale(-1,1)"/>
@@ -63,7 +66,7 @@
 	var lab2=[
 1,1,1,1,1,1,1,1,1,1,1,1,
 1,0,1,0,0,0,0,1,0,0,0,0,
-1,0,1,0,1,1,0,1,0,1,0,1,
+1,0,1,0,1,0,0,1,0,1,0,1,
 1,0,0,0,1,0,0,1,0,1,0,1,
 1,1,1,1,1,0,1,1,1,1,0,0,
 1,0,0,0,1,0,0,0,0,1,0,1,
@@ -107,14 +110,14 @@
 		if(lab[pos+lab_width]==0){wall_south.setAttribute("xlink:href","path_south.png");py_max=442;}
 		if(lab[pos+1]==0){wall_east.setAttribute("xlink:href","path_east.png");px_max=442;}
 		if(lab[pos-1]==0){wall_west.setAttribute("xlink:href","path_west.png");px_min=58;}
-		if(pos==win){object.setAttribute("xlink:href","treasure.png"}
+		if(pos==win){object.setAttribute("xlink:href","treasure.png")};
 		player.setAttribute("transform","translate("+px+","+py+")");
 	}
 
 	draw_room(lab,lab_width,pos,px,py,win);
 	
 	function move_room(room_x,room_y){
-
+		
 	}
 
 	function move(){
