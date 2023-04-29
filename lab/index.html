@@ -27,9 +27,6 @@
 		#player_img{
 			transition:0.25s;
 		}
-		#enter{
-			transition:0.5s;
-		}
 	</style>
 </head>
 <body>
@@ -52,8 +49,7 @@
 				<image id="player_img" xlink:href="link.gif" width="75" height="75" x="-35" y="-65" transform="scale(-1,1)"/>
 			</g>
 		</g>
-
-		<use id="enter" href="#g_room" x="0" y="0" opacity="0"/>
+		<g id="slide"></g>
 
 	</svg>
 	<div id="div1">status</div>
@@ -77,7 +73,7 @@
 		1,0,0,0,1,0,0,0,0,1,0,1,
 		1,1,1,1,1,1,1,1,1,1,1,1
 	]
-	var lab=lab1;
+	//var lab=lab1;
 	var lab=lab2;
 	//var lab_width=7;
 	var lab_width=12;
@@ -97,8 +93,7 @@
 	var player=document.getElementById("player");
 	var player_img=document.getElementById("player_img");
 	var treasure_img=document.getElementById("treasure_img");
-	//var anim_enter=document.getElementById("anim_enter");
-
+	
 	function draw_room(lab,lab_width,pos,px,py){
 		//begin initialization
 		wall_north.setAttribute("xlink:href","void.png");
@@ -107,7 +102,6 @@
 		wall_west.setAttribute("xlink:href","void.png");
 		px_min=60;px_max=440;py_min=80;py_max=440;
 		//end initialization
-		
 		if(lab[pos-lab_width]==0){wall_north.setAttribute("xlink:href","path_north.png");py_min=78;}
 		if(lab[pos+lab_width]==0){wall_south.setAttribute("xlink:href","path_south.png");py_max=442;}
 		if(lab[pos+1]==0){wall_east.setAttribute("xlink:href","path_east.png");px_max=442;}
@@ -118,8 +112,15 @@
 
 	draw_room(lab,lab_width,pos,px,py,win);
 	
-	function move_room(room_x,room_y){
-		
+	function slide_room(room_x,room_y){
+		var slide=document.getElementById("slide");
+		var newElement=document.createElementNS("http://www.w3.org/2000/svg","use");
+		newElement.setAttribute("href","#g_room");
+		newElement.setAttribute("id","enter");
+		newElement.setAttribute("x",room_x);
+		newElement.setAttribute("y",room_y);
+		newElement.style.transition="1s";
+		slide.appendChild(newElement);
 	}
 
 	function move(){
@@ -149,7 +150,10 @@
 				if(px_min==58&&py>200&&py<300){px=440;pos--;draw_room(lab,lab_width,pos,px,py,win);}else{px=px_min;}
 			}
 			if(py>py_max){
-				if(py_max==442&&px>200&&px<300){py=80;pos=pos+lab_width;draw_room(lab,lab_width,pos,px,py);move_room(0,500)}else{py=py_max;}
+				if(py_max==442&&px>200&&px<300){py=80;pos=pos+lab_width;
+				slide_room(0,400);const myTimeout=setTimeout(myEnter,1000);myEnter("y");
+				draw_room(lab,lab_width,pos,px,py);
+				}else{py=py_max;}
 			}else if(py<py_min){
 				if(py_min==78&&px>200&&px<300){py=440;pos=pos-lab_width;draw_room(lab,lab_width,pos,px,py);}else{py=py_min;}
 			}
