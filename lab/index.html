@@ -114,13 +114,19 @@
 	
 	function slide_room(room_x,room_y){
 		var slide=document.getElementById("slide");
-		var newElement=document.createElementNS("http://www.w3.org/2000/svg","use");
-		newElement.setAttribute("href","#g_room");
-		newElement.setAttribute("id","enter");
-		newElement.setAttribute("x",room_x);
-		newElement.setAttribute("y",room_y);
-		newElement.style.transition="1s";
-		slide.appendChild(newElement);
+		var newEl1=document.createElementNS("http://www.w3.org/2000/svg","use");
+		newEl1.setAttribute("href","#g_room");
+		newEl1.setAttribute("id","enter");
+		newEl1.setAttribute("x",room_x);
+		newEl1.setAttribute("y",room_y);
+		slide.appendChild(newEl1);
+		var newEl2=document.createElementNS("http://www.w3.org/2000/svg","use");
+		newEl1.setAttribute("href","#g_room");
+		newEl1.setAttribute("id","enter");
+		newEl1.setAttribute("x",room_x);
+		newEl1.setAttribute("y",room_y);
+		newEl1.style.transition="1s";
+		slide.appendChild(newEl1);
 	}
 
 	function move(){
