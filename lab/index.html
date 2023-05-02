@@ -40,14 +40,14 @@
 			<g id="treasure" transform="translate(250,250)" opacity="1">
 				<image xlink:href="void.png" width="150" height="150" x="-75" y="-75" id="treasure_img"/>
 			</g>
-			<!-- <g id="player" transform="translate(250,250)" opacity="0.6">
+			<g id="player" transform="translate(250,250)" opacity="0.6">
 				<ellipse cx="0" cy="5" fill="rgba(0,0,0,0.5)" rx="15" ry="5"/>
 				<image id="player_img" xlink:href="ghost.png" width="50" height="50" x="-30" y="-45" transform="scale(-1,1)"/>
-			</g> -->
-			<g id="player" transform="translate(250,250)">
+			</g>
+			<!-- <g id="player" transform="translate(250,250)">
 				<ellipse cx="0" cy="05" fill="rgba(0,0,0,0.5)" rx="25" ry="5" opacity="0.8"/>
 				<image id="player_img" xlink:href="link.gif" width="75" height="75" x="-35" y="-65" transform="scale(-1,1)"/>
-			</g>
+			</g> -->
 		</g>
 		<g id="slide"></g>
 
@@ -157,7 +157,7 @@
 			}
 			if(py>py_max){
 				if(py_max==442&&px>200&&px<300){py=80;pos=pos+lab_width;
-				slide_room(0,400);const myTimeout=setTimeout(myEnter,1000);myEnter("y");
+				/*slide_room(0,400);const myTimeout=setTimeout(myEnter,1000);myEnter("y")*/;
 				draw_room(lab,lab_width,pos,px,py);
 				}else{py=py_max;}
 			}else if(py<py_min){
