@@ -37,6 +37,7 @@
 			<image xlink:href="void.png"width="500" height="500" id="wall_south"/>
 			<image xlink:href="void.png"width="500" height="500" id="wall_east"/>
 			<image xlink:href="void.png"width="500" height="500" id="wall_west"/>
+			<image xlink:href="void.png"width="500" height="500" id="title"/>
 			<g id="treasure" transform="translate(250,250)" opacity="1">
 				<image xlink:href="void.png" width="150" height="150" x="-75" y="-75" id="treasure_img"/>
 			</g>
@@ -86,6 +87,7 @@
 	var fromx,fromy;
 
 	var room=document.getElementById("room");
+	var title=document.getElementById("title");
 	var wall_north=document.getElementById("wall_north");
 	var wall_south=document.getElementById("wall_south");
 	var wall_east=document.getElementById("wall_east");
@@ -93,9 +95,11 @@
 	var player=document.getElementById("player");
 	var player_img=document.getElementById("player_img");
 	var treasure_img=document.getElementById("treasure_img");
+	var progress=0;
 	
 	function draw_room(lab,lab_width,pos,px,py){
 		//begin initialization
+		if(progress==0){title.setAttribute("xlink:href","title.png")}else{title.setAttribute("xlink:href","void.png")};
 		wall_north.setAttribute("xlink:href","void.png");
 		wall_south.setAttribute("xlink:href","void.png");
 		wall_east.setAttribute("xlink:href","void.png");
@@ -108,6 +112,7 @@
 		if(lab[pos-1]==0){wall_west.setAttribute("xlink:href","path_west.png");px_min=58;}
 		if(pos==win){treasure_img.setAttribute("xlink:href","treasure.png")}else{treasure_img.setAttribute("xlink:href","void.png")};
 		player.setAttribute("transform","translate("+px+","+py+")");
+		progress++;
 	}
 
 	draw_room(lab,lab_width,pos,px,py,win);
@@ -121,12 +126,12 @@
 		newEl1.setAttribute("y",room_y);
 		slide.appendChild(newEl1);
 		var newEl2=document.createElementNS("http://www.w3.org/2000/svg","use");
-		newEl1.setAttribute("href","#g_room");
-		newEl1.setAttribute("id","enter");
-		newEl1.setAttribute("x",room_x);
-		newEl1.setAttribute("y",room_y);
-		newEl1.style.transition="1s";
-		slide.appendChild(newEl1);
+		newEl2.setAttribute("href","#g_room");
+		newEl2.setAttribute("id","enter");
+		newEl2.setAttribute("x",room_x);
+		newEl2.setAttribute("y",room_y);
+		newEl2.style.transition="1s";
+		slide.appendChild(newEl2);
 	}
 
 	function move(){
@@ -181,7 +186,7 @@
 	move();
 	
 	function status(){
-		document.getElementById("div1").innerHTML="px: "+px+"<br>py: "+py+"<br>pos: "+pos;
+		document.getElementById("div1").innerHTML="px: "+px+"<br>py: "+py+"<br>pos: "+pos+"<br>progress: "+progress;
 	}
 	setInterval(status,100);
 </script>
