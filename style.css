@@ -1,7 +1,6 @@
-
 html,body{
-height:100%;
-margin:0;
+	height:100%;
+	margin:0;
 }
 
 body {
@@ -29,7 +28,7 @@ a{
 .container div {
 	display: inline-block;
 	background:#eee;
-	width:8%;
+	width:7%;
 	height:auto;
 	border:5px solid #eee;
 	margin:10px;

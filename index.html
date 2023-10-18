@@ -54,6 +54,7 @@
 				<a href="https://app.codingpark.io/goldenquest" target="_blank" title="Golden Quest"><div><img src="gq.jpg"/></div></a>
 				<a href="https://www.codingame.com/start/fr/" target="_blank" title="CodinGame"><div><img src="cg.jpg"/></div></a>
 				<a href="https://papergames.io/fr/" target="_blank" title="Échecs"><div><img src="chess.jpg"/></div></a>
+				<a href="https://hoc.codewards.org/#/practical_h1" target="_blank" title="Codewards"><div><img src="codew.jpg"/></div></a>
 
 				<span id="hid" style="visibility:hidden;">
 					<a href="https://www.engineering.com/GamesPuzzles/tabid/82/Default.aspx" target="_blank" title="Engineering"><div><img src="eng.jpg"/></div></a>
@@ -76,6 +77,7 @@
 <div id="div2"></div>
 
 <script>
+
 /*var ww=window.innerWidth;
 var wh=window.innerHeight;
 var svg1=document.getElementById("svg1");
@@ -87,7 +89,7 @@ var x1,y1;
 var i=1;
 var a=100;
 var radius=25;
-var col1="#"+Math.round(0xFFFFFF * Math.random()).toString(16);
+var col1="#"+Math.round(0xFFFFFF*Math.random()).toString(16);
 var angle=Math.round((Math.random()*Math.PI*2)*100)/100;
 
 x1 = Math.round(x0+Math.cos(angle)*radius);
@@ -95,34 +97,35 @@ y1 = Math.round(y0+Math.sin(angle)*radius);
 div1.innerHTML="paths : "+i+"/"+a+"<br>angle : "+angle+"<br>x0 : "+x0+"<br>y0 : "+y0+"<br>x1 : "+x1+"<br>y1 : "+y1;
 
 function Dopamine(){
-var path1=document.createElementNS(svg1.namespaceURI,"path");
-path1.setAttributeNS(null,"d","m"+x0+" "+y0+"L"+x1+" "+y1);
-path1.setAttributeNS(null,"stroke",col1)
-path1.setAttributeNS(null,"stroke-width","25px");
-path1.setAttributeNS(null,"fill","none");
-path1.setAttributeNS(null,"opacity","0.5");
-path1.setAttributeNS(null,"stroke-linecap","round");
-g1.appendChild(path1);
-i++;
-if(i==a+1){g1.removeChild(g1.firstChild);i=a;}
-x0=x1;
-y0=y1;
-angle=Math.round((Math.random()*Math.PI*2)*100)/100;
-x1=Math.round(x0+Math.cos(angle)*radius);
-y1=Math.round(y0+Math.sin(angle)*radius);
-if(x1<0){x1=x1+(radius*2);}
-if(x1>ww){x1=x1-(radius*2);}
-if(y1<0){y1=y1+(radius*2);}
-if(y1>wh){y1=y1-(radius*2);}
-div1.innerHTML="paths : "+i+"/"+a+"<br>angle : "+angle+"<br>x0 : "+x0+"<br>y0 : "+y0+"<br>x1 : "+x1+"<br>y1 : "+y1;
+	var path1=document.createElementNS(svg1.namespaceURI,"path");
+	path1.setAttributeNS(null,"d","m"+x0+" "+y0+"L"+x1+" "+y1);
+	path1.setAttributeNS(null,"stroke",col1)
+	path1.setAttributeNS(null,"stroke-width","25px");
+	path1.setAttributeNS(null,"fill","none");
+	path1.setAttributeNS(null,"opacity","0.5");
+	path1.setAttributeNS(null,"stroke-linecap","round");
+	g1.appendChild(path1);
+	i++;
+	if(i==a+1){g1.removeChild(g1.firstChild);i=a;}
+	x0=x1;
+	y0=y1;
+	angle=Math.round((Math.random()*Math.PI*2)*100)/100;
+	x1=Math.round(x0+Math.cos(angle)*radius);
+	y1=Math.round(y0+Math.sin(angle)*radius);
+	if(x1<0){x1=x1+(radius*2);}
+	if(x1>ww){x1=x1-(radius*2);}
+	if(y1<0){y1=y1+(radius*2);}
+	if(y1>wh){y1=y1-(radius*2);}
+	div1.innerHTML="paths : "+i+"/"+a+"<br>angle : "+angle+"<br>x0 : "+x0+"<br>y0 : "+y0+"<br>x1 : "+x1+"<br>y1 : "+y1;
 }
 setInterval(Dopamine,20);
 
 function ccol(){
-col1="#"+Math.round(0xFFFFFF * Math.random()).toString(16);
+	col1="#"+Math.round(0xFFFFFF * Math.random()).toString(16);
 }
 
 setInterval(ccol,1000);*/
+
 var hid=document.getElementById("hid");
 var div1=document.getElementById("div1");
 function checkTime(){
@@ -161,7 +164,5 @@ div2.innerHTML=d+" "+e;
 checkhour();*/
 </script>
 <!--<script src="snow.js"></script>-->
-
-
 	</body>
 </html>
