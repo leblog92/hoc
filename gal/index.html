@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galerie Photo 3D</title>
+    <title>Galerie Dessins Augmentés</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-			user-select:none;
         }
 
         body {
@@ -17,16 +16,12 @@
             background-color: #111;
             color: #fff;
             overflow-x: hidden;
-            min-height: 100vh;
         }
 
         header {
             padding: 20px;
             text-align: center;
             background-color: rgba(0, 0, 0, 0.7);
-            position: fixed;
-            width: 100%;
-            z-index: 100;
         }
 
         h1 {
@@ -34,81 +29,30 @@
             margin-bottom: 10px;
         }
 
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        button {
-            padding: 8px 15px;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        button:hover {
-            background-color: #555;
-        }
-
         .gallery-container {
-            padding-top: 150px;
-            padding-bottom: 50px;
-            min-height: 100vh;
-        }
-
-        .image-group {
-            margin-bottom: 40px;
-        }
-
-        .group-title {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            color: #ccc;
-        }
-
-        .images-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
-            perspective: 1000px;
         }
 
         .image-item {
-            width: 200px;
+            width: 100%;
             height: 200px;
-            position: relative;
-            cursor: grab;
-            transition: transform 0.3s, box-shadow 0.3s;
-            transform-style: preserve-3d;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s;
         }
 
         .image-item:hover {
-            transform: translateY(-5px) rotateY(5deg) rotateX(5deg);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-            z-index: 10;
+            transform: scale(1.03);
         }
 
         .image-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s;
-        }
-
-        .image-item.dragging {
-            cursor: grabbing;
-            opacity: 0.8;
-            z-index: 100;
         }
 
         /* Modal styles */
@@ -143,7 +87,6 @@
             max-height: 90vh;
             display: block;
             border-radius: 8px;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
         }
 
         .close-btn {
@@ -180,50 +123,34 @@
             right: 20px;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
+            .gallery-container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
             .image-item {
-                width: 150px;
                 height: 150px;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .group-title {
-                font-size: 1.2rem;
             }
         }
 
         @media (max-width: 480px) {
-            .image-item {
-                width: 120px;
-                height: 120px;
-            }
-
-            .controls {
-                flex-direction: column;
-                gap: 5px;
-            }
-
             .gallery-container {
-                padding-top: 180px;
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .image-item {
+                height: 120px;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Galerie Photo 3D</h1>
-        <div class="controls">
-            <button id="shuffle-btn">Mélanger les images</button>
-            <button id="reset-btn">Réinitialiser la position</button>
-        </div>
+        <h1>Galerie Dessins Augmentés par IA</h1>
     </header>
 
     <div class="gallery-container" id="gallery">
-        <!-- Les groupes d'images seront générés dynamiquement par JavaScript -->
+        <!-- Les images seront générées dynamiquement par JavaScript -->
     </div>
 
     <!-- Modal pour l'affichage des images en grand -->
@@ -252,169 +179,20 @@
                 '009.png', '009a.jpg', '009b.jpg'
             ];
 
-            // Grouper les images par numéro de base
-            const groupedImages = {};
-            imageFiles.forEach(filename => {
-                // Extraire le numéro de base (avant le . ou la lettre)
-                const baseNumber = filename.replace(/\..*$/, '').replace(/[a-z]$/i, '');
-                
-                if (!groupedImages[baseNumber]) {
-                    groupedImages[baseNumber] = [];
-                }
-                groupedImages[baseNumber].push(filename);
-            });
-
-            // Trier les groupes par ordre numérique
-            const sortedGroups = Object.keys(groupedImages).sort((a, b) => {
-                return parseInt(a) - parseInt(b);
-            });
-
-            // Générer le HTML pour chaque groupe
+            // Générer le HTML pour la galerie
             const galleryContainer = document.getElementById('gallery');
             
-            sortedGroups.forEach(group => {
-                const groupContainer = document.createElement('div');
-                groupContainer.className = 'image-group';
+            imageFiles.forEach(filename => {
+                const imgItem = document.createElement('div');
+                imgItem.className = 'image-item';
+                imgItem.dataset.filename = filename;
                 
-                const groupTitle = document.createElement('h2');
-                groupTitle.className = 'group-title';
-                groupTitle.textContent = `Groupe ${group}`;
+                const img = document.createElement('img');
+                img.src = filename;
+                img.alt = `Image ${filename}`;
                 
-                const imagesContainer = document.createElement('div');
-                imagesContainer.className = 'images-container';
-                
-                // Ajouter les images du groupe
-                groupedImages[group].forEach(filename => {
-                    const imgItem = document.createElement('div');
-                    imgItem.className = 'image-item';
-                    imgItem.dataset.filename = filename;
-                    
-                    const img = document.createElement('img');
-                    img.src = filename;
-                    img.alt = `Image ${filename}`;
-                    
-                    imgItem.appendChild(img);
-                    imagesContainer.appendChild(imgItem);
-                });
-                
-                groupContainer.appendChild(groupTitle);
-                groupContainer.appendChild(imagesContainer);
-                galleryContainer.appendChild(groupContainer);
-            });
-
-            // Fonctionnalité de glisser-déposer
-            let draggedItem = null;
-            let offsetX, offsetY;
-            let originalX, originalY;
-            let originalTransform;
-
-            document.querySelectorAll('.image-item').forEach(item => {
-                item.addEventListener('mousedown', startDrag);
-                item.addEventListener('touchstart', startDrag, { passive: false });
-            });
-
-            function startDrag(e) {
-                e.preventDefault();
-                
-                draggedItem = this;
-                draggedItem.classList.add('dragging');
-                
-                // Enregistrer la position originale pour le reset
-                const rect = draggedItem.getBoundingClientRect();
-                originalX = rect.left;
-                originalY = rect.top;
-                originalTransform = window.getComputedStyle(draggedItem).transform;
-                
-                // Calculer l'offset entre le curseur et le coin de l'image
-                if (e.type === 'mousedown') {
-                    offsetX = e.clientX - rect.left;
-                    offsetY = e.clientY - rect.top;
-                } else if (e.type === 'touchstart') {
-                    offsetX = e.touches[0].clientX - rect.left;
-                    offsetY = e.touches[0].clientY - rect.top;
-                }
-                
-                document.addEventListener('mousemove', dragItem);
-                document.addEventListener('touchmove', dragItem, { passive: false });
-                document.addEventListener('mouseup', stopDrag);
-                document.addEventListener('touchend', stopDrag);
-            }
-
-            function dragItem(e) {
-                if (!draggedItem) return;
-                e.preventDefault();
-                
-                let clientX, clientY;
-                
-                if (e.type === 'mousemove') {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                } else if (e.type === 'touchmove') {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                }
-                
-                // Calculer la nouvelle position
-                const x = clientX - offsetX;
-                const y = clientY - offsetY;
-                
-                // Appliquer la transformation
-                draggedItem.style.position = 'absolute';
-                draggedItem.style.left = `${x}px`;
-                draggedItem.style.top = `${y}px`;
-                draggedItem.style.transform = 'translate(0, 0) rotateY(10deg) rotateX(10deg)';
-                draggedItem.style.zIndex = '1000';
-            }
-
-            function stopDrag() {
-                if (!draggedItem) return;
-                
-                draggedItem.classList.remove('dragging');
-                
-                // Réappliquer le style 3D après le déplacement
-                setTimeout(() => {
-                    draggedItem.style.transform = '';
-                    draggedItem.style.zIndex = '';
-                }, 10);
-                
-                document.removeEventListener('mousemove', dragItem);
-                document.removeEventListener('touchmove', dragItem);
-                document.removeEventListener('mouseup', stopDrag);
-                document.removeEventListener('touchend', stopDrag);
-                
-                draggedItem = null;
-            }
-
-            // Réinitialiser la position des images
-            document.getElementById('reset-btn').addEventListener('click', function() {
-                document.querySelectorAll('.image-item').forEach(item => {
-                    item.style.position = '';
-                    item.style.left = '';
-                    item.style.top = '';
-                    item.style.transform = originalTransform || '';
-                });
-            });
-
-            // Mélanger les images
-            document.getElementById('shuffle-btn').addEventListener('click', function() {
-                const containers = document.querySelectorAll('.images-container');
-                
-                containers.forEach(container => {
-                    const items = Array.from(container.children);
-                    
-                    // Mélanger les éléments
-                    for (let i = items.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        container.appendChild(items[j]);
-                    }
-                });
-                
-                // Appliquer un effet de rotation aléatoire
-                document.querySelectorAll('.image-item').forEach(item => {
-                    const rotateY = (Math.random() * 30) - 15;
-                    const rotateX = (Math.random() * 30) - 15;
-                    item.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-                });
+                imgItem.appendChild(img);
+                galleryContainer.appendChild(imgItem);
             });
 
             // Modal pour afficher les images en grand
@@ -424,66 +202,34 @@
             const prevBtn = document.querySelector('.prev-btn');
             const nextBtn = document.querySelector('.next-btn');
             
-            let currentGroupIndex = 0;
             let currentImageIndex = 0;
-            let currentGroupImages = [];
             
-            document.querySelectorAll('.image-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    if (draggedItem) return; // Ne pas ouvrir le modal si on était en train de déplacer
-                    
-                    const filename = this.dataset.filename;
-                    const baseNumber = filename.replace(/\..*$/, '').replace(/[a-z]$/i, '');
-                    
-                    // Trouver le groupe actuel
-                    currentGroupIndex = sortedGroups.indexOf(baseNumber);
-                    currentGroupImages = groupedImages[baseNumber];
-                    currentImageIndex = currentGroupImages.indexOf(filename);
-                    
-                    // Afficher l'image
-                    modalImg.src = filename;
+            // Ouvrir le modal au clic sur une image
+            document.querySelectorAll('.image-item').forEach((item, index) => {
+                item.addEventListener('click', function() {
+                    currentImageIndex = index;
+                    modalImg.src = this.dataset.filename;
                     modal.classList.add('show');
                 });
             });
             
+            // Fermer le modal
             closeBtn.addEventListener('click', function() {
                 modal.classList.remove('show');
             });
             
-            prevBtn.addEventListener('click', function() {
-                navigate(-1);
-            });
+            // Navigation entre les images
+            prevBtn.addEventListener('click', showPrevImage);
+            nextBtn.addEventListener('click', showNextImage);
             
-            nextBtn.addEventListener('click', function() {
-                navigate(1);
-            });
+            function showPrevImage() {
+                currentImageIndex = (currentImageIndex - 1 + imageFiles.length) % imageFiles.length;
+                modalImg.src = imageFiles[currentImageIndex];
+            }
             
-            function navigate(direction) {
-                currentImageIndex += direction;
-                
-                // Gérer le débordement
-                if (currentImageIndex < 0) {
-                    // Passer au groupe précédent
-                    if (currentGroupIndex > 0) {
-                        currentGroupIndex--;
-                        currentGroupImages = groupedImages[sortedGroups[currentGroupIndex]];
-                        currentImageIndex = currentGroupImages.length - 1;
-                    } else {
-                        currentImageIndex = 0;
-                    }
-                } else if (currentImageIndex >= currentGroupImages.length) {
-                    // Passer au groupe suivant
-                    if (currentGroupIndex < sortedGroups.length - 1) {
-                        currentGroupIndex++;
-                        currentGroupImages = groupedImages[sortedGroups[currentGroupIndex]];
-                        currentImageIndex = 0;
-                    } else {
-                        currentImageIndex = currentGroupImages.length - 1;
-                    }
-                }
-                
-                // Mettre à jour l'image
-                modalImg.src = currentGroupImages[currentImageIndex];
+            function showNextImage() {
+                currentImageIndex = (currentImageIndex + 1) % imageFiles.length;
+                modalImg.src = imageFiles[currentImageIndex];
             }
             
             // Fermer le modal en cliquant à l'extérieur de l'image
@@ -497,23 +243,14 @@
             document.addEventListener('keydown', function(e) {
                 if (modal.classList.contains('show')) {
                     if (e.key === 'ArrowLeft') {
-                        navigate(-1);
+                        showPrevImage();
                     } else if (e.key === 'ArrowRight') {
-                        navigate(1);
+                        showNextImage();
                     } else if (e.key === 'Escape') {
                         modal.classList.remove('show');
                     }
                 }
             });
-            
-            // Appliquer un effet 3D aléatoire initial aux images
-            setTimeout(() => {
-                document.querySelectorAll('.image-item').forEach(item => {
-                    const rotateY = (Math.random() * 10) - 5;
-                    const rotateX = (Math.random() * 10) - 5;
-                    item.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-                });
-            }, 500);
         });
     </script>
 </body>
