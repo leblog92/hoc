@@ -3,181 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galerie d'images organisée</title>
+    <title>Galerie Photo 3D</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .group {
-            margin-bottom: 40px;
-            background-color: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .group-title {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: #444;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #eee;
-        }
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
-        }
-        .gallery-item {
-            background-color: #fafafa;
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-        .gallery-item:hover {
-            transform: scale(1.03);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            display: block;
-        }
-        .gallery-item p {
-            padding: 8px;
+        * {
             margin: 0;
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
+            padding: 0;
+            box-sizing: border-box;
+			user-select:none;
         }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #111;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 8px 15px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .gallery-container {
+            padding-top: 150px;
+            padding-bottom: 50px;
+            min-height: 100vh;
+        }
+
+        .image-group {
+            margin-bottom: 40px;
+        }
+
+        .group-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #ccc;
+        }
+
+        .images-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        .image-item {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            cursor: grab;
+            transition: transform 0.3s, box-shadow 0.3s;
+            transform-style: preserve-3d;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-item:hover {
+            transform: translateY(-5px) rotateY(5deg) rotateX(5deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .image-item.dragging {
+            cursor: grabbing;
+            opacity: 0.8;
+            z-index: 100;
+        }
+
+        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.9);
-            overflow: auto;
-        }
-        .modal-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
             justify-content: center;
-            height: 100%;
-            padding: 20px;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
             position: relative;
         }
-        .modal-img {
-            max-width: 90%;
-            max-height: 80vh;
-            object-fit: contain;
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
         }
-        .modal-info {
-            color: white;
-            text-align: center;
-            margin-top: 15px;
-        }
-        .close {
+
+        .close-btn {
             position: absolute;
-            top: 20px;
-            right: 30px;
+            top: -40px;
+            right: 0;
             color: white;
-            font-size: 35px;
-            font-weight: bold;
+            font-size: 30px;
             cursor: pointer;
         }
-        .no-images {
-            text-align: center;
-            color: #666;
-            padding: 40px;
-        }
-        .thumbnail-container {
-            position: relative;
-        }
-        .variants-count {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: rgba(0,0,0,0.7);
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8em;
-        }
-        /* Flèches de navigation */
-        .nav-arrow {
+
+        .nav-btn {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
             color: white;
-            font-size: 50px;
+            font-size: 40px;
             cursor: pointer;
+            background: rgba(0, 0, 0, 0.5);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
             user-select: none;
-            padding: 20px;
-            opacity: 0.7;
-            transition: opacity 0.3s;
         }
-        .nav-arrow:hover {
-            opacity: 1;
-        }
-        .prev {
+
+        .prev-btn {
             left: 20px;
         }
-        .next {
+
+        .next-btn {
             right: 20px;
         }
+
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .nav-arrow {
-                font-size: 30px;
-                padding: 10px;
+            .image-item {
+                width: 150px;
+                height: 150px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .group-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .image-item {
+                width: 120px;
+                height: 120px;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .gallery-container {
+                padding-top: 180px;
             }
         }
     </style>
 </head>
 <body>
-    <h1>Galerie d'images organisée</h1>
-    <div id="galleryContainer">
-        <!-- Les groupes d'images seront ajoutés ici par JavaScript -->
+    <header>
+        <h1>Galerie Photo 3D</h1>
+        <div class="controls">
+            <button id="shuffle-btn">Mélanger les images</button>
+            <button id="reset-btn">Réinitialiser la position</button>
+        </div>
+    </header>
+
+    <div class="gallery-container" id="gallery">
+        <!-- Les groupes d'images seront générés dynamiquement par JavaScript -->
     </div>
 
-    <div id="imageModal" class="modal">
-        <span class="close">&times;</span>
+    <!-- Modal pour l'affichage des images en grand -->
+    <div class="modal" id="imageModal">
+        <span class="close-btn">&times;</span>
+        <span class="nav-btn prev-btn">&lt;</span>
         <div class="modal-content">
-            <span class="nav-arrow prev">&#10094;</span>
-            <img id="modalImage" class="modal-img" src="" alt="">
-            <span class="nav-arrow next">&#10095;</span>
-            <div class="modal-info" id="modalInfo"></div>
+            <img id="modalImage" src="" alt="">
         </div>
+        <span class="nav-btn next-btn">&gt;</span>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const galleryContainer = document.getElementById('galleryContainer');
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            const modalInfo = document.getElementById('modalInfo');
-            const closeBtn = document.querySelector('.close');
-            const prevBtn = document.querySelector('.prev');
-            const nextBtn = document.querySelector('.next');
-            
-            // Liste d'images fictive pour le test (remplacée par la détection réelle)
+            // Liste des images
             const imageFiles = [
                 '000.JPG', '000a.jpg', '000b.jpg', '000c.jpg', '000d.jpg', '000e.jpg',
                 '001.JPG', '001a.jpg', '001b.jpg', '001c.jpg', '001d.jpg',
@@ -188,195 +249,271 @@
                 '006.JPG', '006a.jpg',
                 '007.JPG', '007a.jpg', '007b.jpg', '007c.jpg', '007d.jpg', '007e.jpg', '007f.jpg', '007g.jpg', '007h.jpg', '007i.jpg', '007j.jpg',
                 '008.JPG', '008a.jpg', '008b.jpg', '008c.jpg',
-				'009.png', '009a.jpg', '009b.jpg'
+                '009.png', '009a.jpg', '009b.jpg'
             ];
 
-            // Variables pour la navigation
-            let currentGroup = [];
-            let currentIndex = 0;
-
-            // Fonction pour grouper les images
-            function groupImages(images) {
-                const groups = {};
+            // Grouper les images par numéro de base
+            const groupedImages = {};
+            imageFiles.forEach(filename => {
+                // Extraire le numéro de base (avant le . ou la lettre)
+                const baseNumber = filename.replace(/\..*$/, '').replace(/[a-z]$/i, '');
                 
-                images.forEach(image => {
-                    // Extraire le numéro de base (000, 001, etc.)
-                    const baseMatch = image.match(/^(\d+)/i);
-                    if (baseMatch) {
-                        const baseNum = baseMatch[1].padStart(3, '0');
-                        if (!groups[baseNum]) {
-                            groups[baseNum] = [];
-                        }
-                        groups[baseNum].push(image);
+                if (!groupedImages[baseNumber]) {
+                    groupedImages[baseNumber] = [];
+                }
+                groupedImages[baseNumber].push(filename);
+            });
+
+            // Trier les groupes par ordre numérique
+            const sortedGroups = Object.keys(groupedImages).sort((a, b) => {
+                return parseInt(a) - parseInt(b);
+            });
+
+            // Générer le HTML pour chaque groupe
+            const galleryContainer = document.getElementById('gallery');
+            
+            sortedGroups.forEach(group => {
+                const groupContainer = document.createElement('div');
+                groupContainer.className = 'image-group';
+                
+                const groupTitle = document.createElement('h2');
+                groupTitle.className = 'group-title';
+                groupTitle.textContent = `Groupe ${group}`;
+                
+                const imagesContainer = document.createElement('div');
+                imagesContainer.className = 'images-container';
+                
+                // Ajouter les images du groupe
+                groupedImages[group].forEach(filename => {
+                    const imgItem = document.createElement('div');
+                    imgItem.className = 'image-item';
+                    imgItem.dataset.filename = filename;
+                    
+                    const img = document.createElement('img');
+                    img.src = filename;
+                    img.alt = `Image ${filename}`;
+                    
+                    imgItem.appendChild(img);
+                    imagesContainer.appendChild(imgItem);
+                });
+                
+                groupContainer.appendChild(groupTitle);
+                groupContainer.appendChild(imagesContainer);
+                galleryContainer.appendChild(groupContainer);
+            });
+
+            // Fonctionnalité de glisser-déposer
+            let draggedItem = null;
+            let offsetX, offsetY;
+            let originalX, originalY;
+            let originalTransform;
+
+            document.querySelectorAll('.image-item').forEach(item => {
+                item.addEventListener('mousedown', startDrag);
+                item.addEventListener('touchstart', startDrag, { passive: false });
+            });
+
+            function startDrag(e) {
+                e.preventDefault();
+                
+                draggedItem = this;
+                draggedItem.classList.add('dragging');
+                
+                // Enregistrer la position originale pour le reset
+                const rect = draggedItem.getBoundingClientRect();
+                originalX = rect.left;
+                originalY = rect.top;
+                originalTransform = window.getComputedStyle(draggedItem).transform;
+                
+                // Calculer l'offset entre le curseur et le coin de l'image
+                if (e.type === 'mousedown') {
+                    offsetX = e.clientX - rect.left;
+                    offsetY = e.clientY - rect.top;
+                } else if (e.type === 'touchstart') {
+                    offsetX = e.touches[0].clientX - rect.left;
+                    offsetY = e.touches[0].clientY - rect.top;
+                }
+                
+                document.addEventListener('mousemove', dragItem);
+                document.addEventListener('touchmove', dragItem, { passive: false });
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchend', stopDrag);
+            }
+
+            function dragItem(e) {
+                if (!draggedItem) return;
+                e.preventDefault();
+                
+                let clientX, clientY;
+                
+                if (e.type === 'mousemove') {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                } else if (e.type === 'touchmove') {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                }
+                
+                // Calculer la nouvelle position
+                const x = clientX - offsetX;
+                const y = clientY - offsetY;
+                
+                // Appliquer la transformation
+                draggedItem.style.position = 'absolute';
+                draggedItem.style.left = `${x}px`;
+                draggedItem.style.top = `${y}px`;
+                draggedItem.style.transform = 'translate(0, 0) rotateY(10deg) rotateX(10deg)';
+                draggedItem.style.zIndex = '1000';
+            }
+
+            function stopDrag() {
+                if (!draggedItem) return;
+                
+                draggedItem.classList.remove('dragging');
+                
+                // Réappliquer le style 3D après le déplacement
+                setTimeout(() => {
+                    draggedItem.style.transform = '';
+                    draggedItem.style.zIndex = '';
+                }, 10);
+                
+                document.removeEventListener('mousemove', dragItem);
+                document.removeEventListener('touchmove', dragItem);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchend', stopDrag);
+                
+                draggedItem = null;
+            }
+
+            // Réinitialiser la position des images
+            document.getElementById('reset-btn').addEventListener('click', function() {
+                document.querySelectorAll('.image-item').forEach(item => {
+                    item.style.position = '';
+                    item.style.left = '';
+                    item.style.top = '';
+                    item.style.transform = originalTransform || '';
+                });
+            });
+
+            // Mélanger les images
+            document.getElementById('shuffle-btn').addEventListener('click', function() {
+                const containers = document.querySelectorAll('.images-container');
+                
+                containers.forEach(container => {
+                    const items = Array.from(container.children);
+                    
+                    // Mélanger les éléments
+                    for (let i = items.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        container.appendChild(items[j]);
                     }
                 });
                 
-                return groups;
-            }
-
-            // Fonction pour trier les images dans un groupe
-            function sortGroupImages(images) {
-                return images.sort((a, b) => {
-                    // L'image principale (sans lettre) vient en premier
-                    if (a.match(/^\d+\.jpg$/i)) return -1;
-                    if (b.match(/^\d+\.jpg$/i)) return 1;
-                    
-                    // Sinon tri alphabétique
-                    return a.localeCompare(b);
+                // Appliquer un effet de rotation aléatoire
+                document.querySelectorAll('.image-item').forEach(item => {
+                    const rotateY = (Math.random() * 30) - 15;
+                    const rotateX = (Math.random() * 30) - 15;
+                    item.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
                 });
-            }
+            });
 
-            // Afficher les groupes d'images
-            function displayImageGroups(groups) {
-                galleryContainer.innerHTML = '';
-                
-                if (Object.keys(groups).length === 0) {
-                    galleryContainer.innerHTML = '<div class="no-images">Aucune image JPG trouvée dans ce dossier.</div>';
-                    return;
-                }
-                
-                // Trier les groupes par numéro
-                const sortedGroupKeys = Object.keys(groups).sort();
-                
-                sortedGroupKeys.forEach(groupKey => {
-                    const group = groups[groupKey];
-                    const sortedImages = sortGroupImages(group);
+            // Modal pour afficher les images en grand
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const closeBtn = document.querySelector('.close-btn');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            
+            let currentGroupIndex = 0;
+            let currentImageIndex = 0;
+            let currentGroupImages = [];
+            
+            document.querySelectorAll('.image-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (draggedItem) return; // Ne pas ouvrir le modal si on était en train de déplacer
                     
-                    const groupElement = document.createElement('div');
-                    groupElement.className = 'group';
+                    const filename = this.dataset.filename;
+                    const baseNumber = filename.replace(/\..*$/, '').replace(/[a-z]$/i, '');
                     
-                    const titleElement = document.createElement('div');
-                    titleElement.className = 'group-title';
-                    titleElement.textContent = `Groupe ${groupKey}`;
+                    // Trouver le groupe actuel
+                    currentGroupIndex = sortedGroups.indexOf(baseNumber);
+                    currentGroupImages = groupedImages[baseNumber];
+                    currentImageIndex = currentGroupImages.indexOf(filename);
                     
-                    const galleryElement = document.createElement('div');
-                    galleryElement.className = 'gallery';
-                    
-                    // Afficher la première image comme vignette principale
-                    const mainImage = sortedImages[0];
-                    const variantCount = sortedImages.length - 1;
-                    
-                    const mainItem = createGalleryItem(mainImage, variantCount);
-                    galleryElement.appendChild(mainItem);
-                    
-                    // Gestion du clic pour afficher toutes les images du groupe
-                    mainItem.addEventListener('click', () => {
-                        showImageGroup(groupKey, sortedImages);
-                    });
-                    
-                    groupElement.appendChild(titleElement);
-                    groupElement.appendChild(galleryElement);
-                    galleryContainer.appendChild(groupElement);
+                    // Afficher l'image
+                    modalImg.src = filename;
+                    modal.classList.add('show');
                 });
-            }
-
-            // Créer un élément de galerie
-            function createGalleryItem(imageSrc, variantCount = 0) {
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
+            });
+            
+            closeBtn.addEventListener('click', function() {
+                modal.classList.remove('show');
+            });
+            
+            prevBtn.addEventListener('click', function() {
+                navigate(-1);
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                navigate(1);
+            });
+            
+            function navigate(direction) {
+                currentImageIndex += direction;
                 
-                const container = document.createElement('div');
-                container.className = 'thumbnail-container';
-                
-                const imgElement = document.createElement('img');
-                imgElement.src = imageSrc;
-                imgElement.alt = 'Image ' + imageSrc;
-                
-                const pElement = document.createElement('p');
-                pElement.textContent = imageSrc;
-                
-                container.appendChild(imgElement);
-                if (variantCount > 0) {
-                    const countBadge = document.createElement('div');
-                    countBadge.className = 'variants-count';
-                    countBadge.textContent = variantCount;
-                    container.appendChild(countBadge);
-                }
-                
-                item.appendChild(container);
-                item.appendChild(pElement);
-                
-                return item;
-            }
-
-            // Afficher une image spécifique dans la modal
-            function showImage(index) {
-                if (index >= 0 && index < currentGroup.length) {
-                    currentIndex = index;
-                    modalImg.src = currentGroup[currentIndex];
-                    modalInfo.textContent = `${currentGroup[currentIndex]} (${currentIndex + 1}/${currentGroup.length})`;
-                    
-                    // Masquer les flèches si nécessaire
-                    prevBtn.style.display = currentIndex === 0 ? 'none' : 'block';
-                    nextBtn.style.display = currentIndex === currentGroup.length - 1 ? 'none' : 'block';
-                }
-            }
-
-            // Afficher un groupe d'images dans la modal
-            function showImageGroup(groupKey, images) {
-                currentGroup = images;
-                currentIndex = 0;
-                
-                // Afficher la première image
-                showImage(0);
-                modal.style.display = 'block';
-                
-                // Navigation avec les touches fléchées
-                document.addEventListener('keydown', handleKeyNavigation);
-            }
-
-            // Gestion de la navigation au clavier
-            function handleKeyNavigation(e) {
-                if (modal.style.display === 'block') {
-                    if (e.key === 'ArrowRight') {
-                        showImage(currentIndex + 1);
-                    } else if (e.key === 'ArrowLeft') {
-                        showImage(currentIndex - 1);
-                    } else if (e.key === 'Escape') {
-                        closeModal();
+                // Gérer le débordement
+                if (currentImageIndex < 0) {
+                    // Passer au groupe précédent
+                    if (currentGroupIndex > 0) {
+                        currentGroupIndex--;
+                        currentGroupImages = groupedImages[sortedGroups[currentGroupIndex]];
+                        currentImageIndex = currentGroupImages.length - 1;
+                    } else {
+                        currentImageIndex = 0;
+                    }
+                } else if (currentImageIndex >= currentGroupImages.length) {
+                    // Passer au groupe suivant
+                    if (currentGroupIndex < sortedGroups.length - 1) {
+                        currentGroupIndex++;
+                        currentGroupImages = groupedImages[sortedGroups[currentGroupIndex]];
+                        currentImageIndex = 0;
+                    } else {
+                        currentImageIndex = currentGroupImages.length - 1;
                     }
                 }
+                
+                // Mettre à jour l'image
+                modalImg.src = currentGroupImages[currentImageIndex];
             }
-
-            // Fermer la modal
-            function closeModal() {
-                modal.style.display = 'none';
-                document.removeEventListener('keydown', handleKeyNavigation);
-            }
-
-            // Événements
-            closeBtn.addEventListener('click', closeModal);
+            
+            // Fermer le modal en cliquant à l'extérieur de l'image
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
-                    closeModal();
+                    modal.classList.remove('show');
                 }
             });
             
-            // Navigation avec les flèches
-            prevBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                showImage(currentIndex - 1);
+            // Navigation au clavier
+            document.addEventListener('keydown', function(e) {
+                if (modal.classList.contains('show')) {
+                    if (e.key === 'ArrowLeft') {
+                        navigate(-1);
+                    } else if (e.key === 'ArrowRight') {
+                        navigate(1);
+                    } else if (e.key === 'Escape') {
+                        modal.classList.remove('show');
+                    }
+                }
             });
             
-            nextBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                showImage(currentIndex + 1);
-            });
-            
-            // Navigation au clic sur l'image (avance à l'image suivante)
-            modalImg.addEventListener('click', function(e) {
-                e.stopPropagation();
-                showImage(currentIndex + 1);
-            });
-
-            // Détection des images (version simulée pour l'exemple)
-            function detectImages() {
-                const groups = groupImages(imageFiles);
-                displayImageGroups(groups);
-            }
-
-            // Démarrer la détection des images
-            detectImages();
+            // Appliquer un effet 3D aléatoire initial aux images
+            setTimeout(() => {
+                document.querySelectorAll('.image-item').forEach(item => {
+                    const rotateY = (Math.random() * 10) - 5;
+                    const rotateX = (Math.random() * 10) - 5;
+                    item.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+                });
+            }, 500);
         });
     </script>
 </body>
