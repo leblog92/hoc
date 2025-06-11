@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galerie d'images organisée</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .group {
+            margin-bottom: 40px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .group-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #444;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .gallery-item {
+            background-color: #fafafa;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+        .gallery-item p {
+            padding: 8px;
+            margin: 0;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            overflow: auto;
+        }
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+        }
+        .modal-img {
+            max-width: 90%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+        .modal-info {
+            color: white;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .no-images {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+        .thumbnail-container {
+            position: relative;
+        }
+        .variants-count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Galerie d'images organisée</h1>
+    <div id="galleryContainer">
+        <!-- Les groupes d'images seront ajoutés ici par JavaScript -->
+    </div>
+
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <div class="modal-content">
+            <img id="modalImage" class="modal-img" src="" alt="">
+            <div class="modal-info" id="modalInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryContainer = document.getElementById('galleryContainer');
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalInfo = document.getElementById('modalInfo');
+            const closeBtn = document.querySelector('.close');
+            
+            // Liste d'images fictive pour le test (remplacée par la détection réelle)
+            const imageFiles = [
+                '000.JPG', '000a.jpg', '000b.jpg', '000c.jpg', '000d.jpg', '000e.jpg',
+                '001.JPG', '001a.jpg', '001b.jpg', '001c.jpg', '001d.jpg',
+                '002.JPG', '002a.jpg', '002b.jpg', '002c.jpg',
+                '003.JPG', '003a.jpg', '003b.jpg', '003c.jpg', '003d.jpg', '003e.jpg', '003f.jpg', '003g.jpg', '003h.jpg',
+                '004.JPG', '004a.jpg',
+                '005.JPG', '005a.jpg', '005b.jpg',
+                '006.JPG', '006a.jpg',
+                '007.JPG', '007a.jpg', '007b.jpg', '007c.jpg', '007d.jpg', '007e.jpg', '007f.jpg', '007g.jpg', '007h.jpg', '007i.jpg', '007j.jpg',
+                '008.JPG', '008a.jpg', '008b.jpg', '008c.jpg'
+            ];
+
+            // Fonction pour grouper les images
+            function groupImages(images) {
+                const groups = {};
+                
+                images.forEach(image => {
+                    // Extraire le numéro de base (000, 001, etc.)
+                    const baseMatch = image.match(/^(\d+)/i);
+                    if (baseMatch) {
+                        const baseNum = baseMatch[1].padStart(3, '0');
+                        if (!groups[baseNum]) {
+                            groups[baseNum] = [];
+                        }
+                        groups[baseNum].push(image);
+                    }
+                });
+                
+                return groups;
+            }
+
+            // Fonction pour trier les images dans un groupe
+            function sortGroupImages(images) {
+                return images.sort((a, b) => {
+                    // L'image principale (sans lettre) vient en premier
+                    if (a.match(/^\d+\.jpg$/i)) return -1;
+                    if (b.match(/^\d+\.jpg$/i)) return 1;
+                    
+                    // Sinon tri alphabétique
+                    return a.localeCompare(b);
+                });
+            }
+
+            // Afficher les groupes d'images
+            function displayImageGroups(groups) {
+                galleryContainer.innerHTML = '';
+                
+                if (Object.keys(groups).length === 0) {
+                    galleryContainer.innerHTML = '<div class="no-images">Aucune image JPG trouvée dans ce dossier.</div>';
+                    return;
+                }
+                
+                // Trier les groupes par numéro
+                const sortedGroupKeys = Object.keys(groups).sort();
+                
+                sortedGroupKeys.forEach(groupKey => {
+                    const group = groups[groupKey];
+                    const sortedImages = sortGroupImages(group);
+                    
+                    const groupElement = document.createElement('div');
+                    groupElement.className = 'group';
+                    
+                    const titleElement = document.createElement('div');
+                    titleElement.className = 'group-title';
+                    titleElement.textContent = `Groupe ${groupKey}`;
+                    
+                    const galleryElement = document.createElement('div');
+                    galleryElement.className = 'gallery';
+                    
+                    // Afficher la première image comme vignette principale
+                    const mainImage = sortedImages[0];
+                    const variantCount = sortedImages.length - 1;
+                    
+                    const mainItem = createGalleryItem(mainImage, variantCount);
+                    galleryElement.appendChild(mainItem);
+                    
+                    // Gestion du clic pour afficher toutes les images du groupe
+                    mainItem.addEventListener('click', () => {
+                        showImageGroup(groupKey, sortedImages);
+                    });
+                    
+                    groupElement.appendChild(titleElement);
+                    groupElement.appendChild(galleryElement);
+                    galleryContainer.appendChild(groupElement);
+                });
+            }
+
+            // Créer un élément de galerie
+            function createGalleryItem(imageSrc, variantCount = 0) {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                
+                const container = document.createElement('div');
+                container.className = 'thumbnail-container';
+                
+                const imgElement = document.createElement('img');
+                imgElement.src = imageSrc;
+                imgElement.alt = 'Image ' + imageSrc;
+                
+                const pElement = document.createElement('p');
+                pElement.textContent = imageSrc;
+                
+                container.appendChild(imgElement);
+                if (variantCount > 0) {
+                    const countBadge = document.createElement('div');
+                    countBadge.className = 'variants-count';
+                    countBadge.textContent = variantCount;
+                    container.appendChild(countBadge);
+                }
+                
+                item.appendChild(container);
+                item.appendChild(pElement);
+                
+                return item;
+            }
+
+            // Afficher un groupe d'images dans la modal
+            function showImageGroup(groupKey, images) {
+                let currentIndex = 0;
+                
+                function showImage(index) {
+                    if (index >= 0 && index < images.length) {
+                        currentIndex = index;
+                        modalImg.src = images[currentIndex];
+                        modalInfo.textContent = `${images[currentIndex]} (${currentIndex + 1}/${images.length})`;
+                    }
+                }
+                
+                // Afficher la première image
+                showImage(0);
+                modal.style.display = 'block';
+                
+                // Navigation avec les touches fléchées
+                document.addEventListener('keydown', function navKeys(e) {
+                    if (modal.style.display === 'block') {
+                        if (e.key === 'ArrowRight') {
+                            showImage(currentIndex + 1);
+                        } else if (e.key === 'ArrowLeft') {
+                            showImage(currentIndex - 1);
+                        } else if (e.key === 'Escape') {
+                            closeModal();
+                            document.removeEventListener('keydown', navKeys);
+                        }
+                    }
+                });
+                
+                // Navigation au clic sur l'image
+                modalImg.addEventListener('click', function() {
+                    showImage(currentIndex + 1);
+                });
+            }
+
+            // Fermer la modal
+            function closeModal() {
+                modal.style.display = 'none';
+            }
+
+            // Événements
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Détection des images (version simulée pour l'exemple)
+            // En pratique, vous devriez utiliser un script serveur ou une autre méthode
+            function detectImages() {
+                // Ici on utilise la liste simulée imageFiles
+                // Dans une vraie implémentation, vous devriez:
+                // 1. Utiliser un script serveur (PHP, Node.js, etc.) pour lister les fichiers
+                // 2. Ou implémenter une méthode côté client qui teste l'existence des fichiers
+                
+                const groups = groupImages(imageFiles);
+                displayImageGroups(groups);
+            }
+
+            // Démarrer la détection des images
+            detectImages();
+        });
+    </script>
+</body>
+</html>
