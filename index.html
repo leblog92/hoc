@@ -69,8 +69,7 @@
 				<a href="https://www.logicieleducatif.fr/jeu/le-chevalier-de-la-programmation" target="_blank" title="Le chevalier de la Programmation"><div><img src="chev.png"/></div></a>
 				<a href="https://app.citizencode.net/demo/backend-driven" target="_blank" title="Future Engineer"><div><img src="fe.png"/></div></a>
 				<a href="ai.html" title="Intelligence Artificielle"><div><img src="ai.gif"/></div></a>
-				
-				
+			
 
 				<span id="hid" style="visibility:hidden;">
 					<!-- <a href="lawson.html" target="_blank" title="Jerry Lawson's Special Levels"><div><img src="lawson2.jpg"/></div></a> -->
@@ -103,26 +102,42 @@ var g1=document.getElementById("g1");
 var div1=document.getElementById("div1");
 var x0=ww/2;
 var y0=wh/2;
+var x0b=ww/2;
+var y0b=wh/2;
 var x1,y1;
 var i=1;
-var a=100;
-var radius=25;
+var a=200;
+var radius=50;
 var col1="#"+Math.round(0xFFFFFF*Math.random()).toString(16);
 var angle=Math.round((Math.random()*Math.PI*2)*100)/100;
 
 x1 = Math.round(x0+Math.cos(angle)*radius);
 y1 = Math.round(y0+Math.sin(angle)*radius);
+
+x1b = Math.round(x0+Math.cos(angle)*radius);
+y1b = Math.round(y0+Math.sin(angle)*radius);
 div1.innerHTML="paths : "+i+"/"+a+"<br>angle : "+angle+"<br>x0 : "+x0+"<br>y0 : "+y0+"<br>x1 : "+x1+"<br>y1 : "+y1;
 
 function Dopamine(){
 	var path1=document.createElementNS(svg1.namespaceURI,"path");
+	var path2=document.createElementNS(svg1.namespaceURI,"path");
 	path1.setAttributeNS(null,"d","m"+x0+" "+y0+"L"+x1+" "+y1);
 	path1.setAttributeNS(null,"stroke",col1)
-	path1.setAttributeNS(null,"stroke-width","25px");
+	path1.setAttributeNS(null,"stroke-width","15px");
 	path1.setAttributeNS(null,"fill","none");
-	path1.setAttributeNS(null,"opacity","0.5");
+	path1.setAttributeNS(null,"opacity","0.8");
 	path1.setAttributeNS(null,"stroke-linecap","round");
+	
+	path2.setAttributeNS(null,"d","m"+x0b+" "+y0b+"L"+x1b+" "+y1b);
+	path2.setAttributeNS(null,"stroke",col1)
+	path2.setAttributeNS(null,"stroke-width","15px");
+	path2.setAttributeNS(null,"fill","none");
+	path2.setAttributeNS(null,"opacity","0.8");
+	path2.setAttributeNS(null,"stroke-linecap","round");
+		
 	g1.appendChild(path1);
+	g1.appendChild(path2);
+	
 	i++;
 	if(i==a+1){g1.removeChild(g1.firstChild);i=a;}
 	x0=x1;
