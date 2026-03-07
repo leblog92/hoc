@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atelier IA · Médiathèque</title>
+  <!-- Google Fonts & simple CSS reset -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(145deg, #f1f5f9 0%, #e6edf5 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      max-width: 1100px;
+      width: 100%;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 3rem;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(156,163,175,0.2);
+      overflow: hidden;
+      padding: 2.5rem 2.8rem;
+      transition: all 0.2s ease;
+    }
+
+    /* en-tête atelier */
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.2rem;
+      border-bottom: 2px dashed #a5b4cb;
+      padding-bottom: 1.5rem;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1e2b4f, #3b4e7a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .badge-date {
+      background: #1e2b4f;
+      color: white;
+      padding: 0.6rem 1.5rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 8px 14px -6px rgba(20,40,70,0.3);
+      border: 1px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(4px);
+      white-space: nowrap;
+    }
+
+    /* blocs explicatifs */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 2rem 0 1.2rem 0;
+    }
+
+    .section-title span.emoji-bg {
+      font-size: 1.9rem;
+      background: #d9e2ef;
+      width: 48px;
+      height: 48px;
+      border-radius: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .section-title h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #0f1a2e;
+      letter-spacing: -0.01em;
+    }
+
+    .desc {
+      font-size: 1.2rem;
+      line-height: 1.5;
+      color: #2d3b52;
+      background: #ecf2fa;
+      padding: 1.2rem 1.8rem;
+      border-radius: 28px;
+      margin-bottom: 2rem;
+      border: 1px solid white;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.02);
+    }
+
+    /* tableau outils */
+    .tools-grid {
+      background: white;
+      border-radius: 30px;
+      padding: 1.8rem 1.5rem;
+      box-shadow: 0 10px 20px -8px rgba(0,20,40,0.15);
+      margin: 1.8rem 0 2rem 0;
+      border: 1px solid #ffffffaa;
+    }
+
+    .tools-header {
+      display: grid;
+      grid-template-columns: 100px 1fr 1.5fr;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 0.85rem;
+      color: #4f658d;
+      padding: 0.7rem 0.5rem;
+      border-bottom: 2px solid #dbe4f0;
+    }
+
+    .tool-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 1.5fr;
+      align-items: center;
+      padding: 1rem 0.5rem;
+      border-bottom: 1px solid #eef3f9;
+    }
+
+    .tool-row:last-child {
+      border-bottom: none;
+    }
+
+    .tool-icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .tool-links {
+      font-weight: 600;
+      color: #1e3c5a;
+    }
+
+    .tool-links a {
+      color: #1f4a7a;
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px dotted #7f9bc2;
+    }
+
+    .tool-links a:hover {
+      color: #0a2647;
+      border-bottom: 2px solid #0f2b4b;
+    }
+
+    .tool-desc {
+      color: #365073;
+      font-size: 0.98rem;
+    }
+
+    /* pièges + astuces en colonnes */
+    .row-cols {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.8rem;
+      margin: 2.5rem 0 1.5rem;
+    }
+
+    .info-block {
+      flex: 1 1 260px;
+      background: #ffffffdb;
+      backdrop-filter: blur(4px);
+      border-radius: 2rem;
+      padding: 1.8rem 1.5rem;
+      box-shadow: 0 8px 18px -10px #1e293b50;
+      border: 1px solid white;
+    }
+
+    .info-block h3 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #1f2b44;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .info-block h3 span {
+      font-size: 2rem;
+    }
+
+    .info-block ul {
+      margin-top: 1rem;
+      list-style: none;
+    }
+
+    .info-block li {
+      margin-bottom: 0.9rem;
+      padding-left: 1.8rem;
+      position: relative;
+      font-size: 1.05rem;
+      color: #1f334d;
+      line-height: 1.4;
+    }
+
+    .info-block li::before {
+      content: "⚠️";
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 1.1rem;
+    }
+
+    .astuce li::before {
+      content: "💡" !important;
+    }
+
+    .info-block.astuce {
+      background: #e4eefa;
+    }
+
+    /* aller plus loin */
+    .ressources {
+      background: #0f1b2f;
+      color: white;
+      border-radius: 2.5rem;
+      padding: 2.2rem 2rem;
+      margin: 2.5rem 0 1.2rem;
+      box-shadow: inset 0 2px 8px #ffffff20, 0 16px 24px -12px #08101b;
+    }
+
+    .ressources h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ress-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: space-between;
+    }
+
+    .ress-cat {
+      flex: 1 1 180px;
+    }
+
+    .ress-cat h4 {
+      color: #b3ceff;
+      font-weight: 600;
+      font-size: 1.25rem;
+      border-left: 4px solid #5688d7;
+      padding-left: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .ress-cat p {
+      color: #d4e2ff;
+      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+    }
+
+    .ress-cat p i {
+      color: #ffd966;
+      font-style: normal;
+      font-weight: 500;
+    }
+
+    .footer-contact {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2.2rem;
+      padding-top: 1.2rem;
+      border-top: 2px dashed #b7c9e0;
+      color: #2b3f5e;
+      font-weight: 500;
+    }
+
+    .footer-contact a {
+      background: #1f3a63;
+      color: white;
+      padding: 0.6rem 1.8rem;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s;
+      border: 1px solid #a1c0f0;
+    }
+
+    .footer-contact a:hover {
+      background: #143157;
+      transform: scale(1.02);
+    }
+
+    @media (max-width: 700px) {
+      .card { padding: 1.8rem; }
+      .header { flex-direction: column; align-items: start; gap: 1rem; }
+      .tools-header, .tool-row { grid-template-columns: 60px 1fr; gap: 0.5rem; }
+      .tools-header span:last-child, .tool-row .tool-desc { grid-column: 2 / 3; }
+      .tool-icon { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <!-- Entête atelier -->
+    <div class="header">
+      <h1>🤖 L'IA en 1 heure · atelier découverte</h1>
+      <div class="badge-date">📅 14/02/2026 · Médiathèque</div>
+    </div>
+
+    <!-- Introduction / définition image -->
+    <div class="section-title">
+      <span class="emoji-bg">🧠</span>
+      <h2>une IA, c'est quoi ?</h2>
+    </div>
+    <div class="desc">
+      Une machine à calculer des statistiques géante. Elle a « lu » des milliards de textes et d’images : elle ne <strong>pense pas</strong>, elle <strong>prédit</strong> le mot ou le pixel suivant. Comme un chef cuisinier qui invente une nouvelle recette après avoir goûté des millions de plats.
+    </div>
+
+    <!-- Tableau outils gratuits -->
+    <div class="section-title">
+      <span class="emoji-bg">🛠️</span>
+      <h2>outils gratuits à explorer</h2>
+    </div>
+
+    <div class="tools-grid">
+      <div class="tools-header">
+        <span>catégorie</span>
+        <span>outils (liens cliquables)</span>
+        <span>à quoi ça sert</span>
+      </div>
+
+      <!-- Ligne 1 : Texte -->
+      <div class="tool-row">
+        <div class="tool-icon">✍️</div>
+        <div class="tool-links">
+          <a href="https://chat.openai.com" target="_blank">ChatGPT</a> · 
+          <a href="https://chat.mistral.ai" target="_blank">Mistral AI</a> <span style="background:#d6e4ff; border-radius:20px; padding:2px 8px; font-size:0.8rem; margin-left:4px;">🇫🇷</span>
+        </div>
+        <div class="tool-desc">Rédiger, trouver des idées, résumer, expliquer simplement</div>
+      </div>
+
+      <!-- Ligne 2 : Image -->
+      <div class="tool-row">
+        <div class="tool-icon">🎨</div>
+        <div class="tool-links">
+          <a href="https://www.bing.com/create" target="_blank">Bing Image Creator</a> · 
+          <a href="https://leonardo.ai" target="_blank">Leonardo AI</a>
+        </div>
+        <div class="tool-desc">Illustrations, visuels d’exposé, cartes de vœux, explorations créatives</div>
+      </div>
+
+      <!-- Ligne 3 : Son / voix -->
+      <div class="tool-row">
+        <div class="tool-icon">🎵</div>
+        <div class="tool-links">
+          <a href="https://suno.ai" target="_blank">Suno</a> · 
+          <a href="https://elevenlabs.io" target="_blank">ElevenLabs</a>
+        </div>
+        <div class="tool-desc">Générer une chanson inédite, écouter un texte avec une voix réaliste</div>
+      </div>
+
+	
+	  <!-- Ligne 4 : Comparaison -->
+      <div class="tool-row">
+        <div class="tool-icon">💊</div>
+        <div class="tool-links">
+          <a href="https://comparia.beta.gouv.fr/" target="_blank">Compar:IA</a>
+        </div>
+        <div class="tool-desc">Ne vous fiez pas aux réponses d’une seule IA. Discutez avec deux IA à l’aveugle et évaluez leurs réponses</div>
+      </div>
+    </div>
+
+    <!-- Deux colonnes : pièges et astuces prompts -->
+    <div class="row-cols">
+      <!-- Pièges -->
+      <div class="info-block">
+        <h3><span>⚠️</span> 3 pièges à éviter</h3>
+        <ul>
+          <li><strong>Hallucinations :</strong> l’IA invente des faits avec aplomb ! <em>Toujours vérifier.</em></li>
+          <li><strong>Biais :</strong> elle reproduit les stéréotypes présents dans ses données d’entraînement.</li>
+          <li><strong>Vie privée :</strong> Ne donnez jamais d’infos personnelles (adresse, téléphone, etc.) à un chatbot.</li>
+        </ul>
+      </div>
+
+      <!-- Astuces prompt -->
+      <div class="info-block astuce">
+        <h3><span>💡</span> 3 astuces pour un bon prompt</h3>
+        <ul style="list-style: none;">
+          <li style="padding-left:1.8rem; position:relative;"><span style="position:absolute; left:0; top:0;">1️⃣</span> <strong>Donnez un rôle</strong> : « Agis comme un expert jardinier… »</li>
+          <li style="padding-left:1.8rem; position:relative;"><span style="position:absolute; left:0; top:0;">2️⃣</span> <strong>Précisez le format</strong> : « …écris une liste de 5 conseils. »</li>
+          <li style="padding-left:1.8rem; position:relative;"><span style="position:absolute; left:0; top:0;">3️⃣</span> <strong>Ajoutez un style</strong> : « …sur un ton drôle », « image aquarelle ».</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bloc ressources médiathèque -->
+    <div class="ressources">
+      <h3>📚 À la médiathèque · pour aller plus loin</h3>
+      <div class="ress-grid">
+        <div class="ress-cat">
+          <h4>📖 Livres</h4>
+          <p><a style="color:white" href="https://www.mediatheque-rueilmalmaison.fr/permalink/P-95ec5221-c68b-43d5-a44c-05e82caee481" target="_blank">Sur le catalogue</a></p>
+        </div>
+        <div class="ress-cat">
+          <h4>🎬 Films / docs</h4>
+          <p><i><a style="color:white" href="https://www.mediatheque-rueilmalmaison.fr/notice?id=h%3A%3AmediathequeNumDocument_54070939&locale=fr">Prompt</a></i> (documentaire)</p>
+          <p><i><a style="color:white" href="https://www.mediatheque-rueilmalmaison.fr/notice?id=h%3A%3AmediathequeNumDocument_7584&locale=fr">Her</a></i> – film de science-fiction</p>
+        </div>
+        <div class="ress-cat">
+          <h4>💻 Ressources numériques</h4>
+          <p><a style="color:white" href="https://www.mediatheque-rueilmalmaison.fr/permalink/P-54b6b96e-8b4e-4bdd-9ea5-a08b1695e611" target="_blank">Sur Tout Apprendre</a> : <strong>pour aller plus loin</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pied de page / contact -->
+    <div class="footer-contact">
+      <div>🤝 Une question ? Demandez à l’équipe de la médiathèque</div>
+      <a href="https://www.mediatheque-rueilmalmaison.fr/contact">📧 nous écrire</a>
+    </div>
+
+    <!-- petite légende technique (pour l'animateur mais lisible par tous) -->
+    <div style="font-size:0.8rem; color:#59759b; margin-top:1.5rem; border-top:1px solid #b7cce4; padding-top:1rem; text-align:center;">
+      ⚡ atelier animé par [animateur] · mise à jour février 2026 · tous les liens sont publics et gratuits
+    </div>
+  </div>
+</body>
+</html>
