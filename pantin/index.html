@@ -1,116 +1,581 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <link rel="icon" type="image/png" href="https://em-content.zobj.net/thumbs/160/twitter/322/japanese-dolls_1f38e.png" />
-    <title>Yoga Pose Generator</title>
-    <style>
-	*{transition:0.5s;}
-	html,body{
-		height:100%;
-		margin:0;
-	}
-	body{
-		font-family:Consolas;
-		overflow:hidden;
-		background:#bbb;
-	}
-    svg {
-        border: 1px solid #333;
-		background-color:#ff00d4;
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="https://em-content.zobj.net/thumbs/160/twitter/322/japanese-dolls_1f38e.png" />
+  <title>Yoga · Générateur de poses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@100;200;300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #f2ede6;
+      --ink:       #1e1c19;
+      --ink-muted: #7a7369;
+      --accent:    #8c6e52;
+      --accent2:   #b8956a;
+      --line:      rgba(30,28,25,0.1);
     }
-	.shad{
-		filter:drop-shadow(2px 2px 2px rgb(0 0 0 / 0.5));
-	}
-	#div1{
-		position:fixed;
-		top:10px;
-		right:10px;
-		text-align:right;
-		border-radius:5px;
-		padding:10px;
-		border:1px solid black;
-		background-color:rgba(255,255,255,0.5)
-	}
-    </style>
-  </head>
-  <body onclick="change()">
-  <div id="div1"><a href="custom.html">Custom</a></div>
-    <svg width="50%" height="auto" viewBox="0 0 500 500">
-	<defs>
-    <radialGradient id="grad1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-      <stop offset="0%" style="stop-color:#00ddff;
-      stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#ff00d4;stop-opacity:1" />
-    </radialGradient>
-  </defs>
-	<rect width="500" height="500" fill="url(#grad1)"/>
-	
-<g transform="translate(0 -75)">
-      <g transform="translate(250 250)">
-        <image xlink:href="t1.png" width="80" height="160" x="-40" y="-80" opacity="1" class="shad"/>
-      </g>
-      <g transform="translate(230 316)">
-        <g>
-          <image xlink:href="cG1.png" width="28" height="88" x="-21" y="-7" opacity="1" class="shad"/>
-          <animateTransform id="anim5" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="2s" repeatCount="indefinite" />
-          <g transform="translate(-14 75)">
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Jost', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    #app {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      grid-template-columns: 1fr 220px;
+      grid-template-areas:
+        "header header"
+        "stage  panel"
+        "footer panel";
+    }
+
+    /* ── HEADER ─────────────────────────────── */
+    #header {
+      grid-area: header;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 36px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    #header-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    #header-sub {
+      font-size: 9px;
+      font-weight: 200;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+    #pose-counter-small {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: var(--ink-muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── STAGE ──────────────────────────────── */
+    #stage {
+      grid-area: stage;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 65% 75% at 50% 55%,
+          rgba(201,168,124,0.13) 0%, transparent 68%),
+        var(--bg);
+    }
+
+    /* cercle enso */
+    #enso {
+      position: absolute;
+      width: min(70vh, 70vw);
+      height: min(70vh, 70vw);
+      border-radius: 50%;
+      border: 1px solid rgba(140,110,82,0.11);
+      pointer-events: none;
+      transition: transform 2.5s cubic-bezier(.23,1,.32,1), border-color 1.5s;
+    }
+    #enso.glow { border-color: rgba(140,110,82,0.26); }
+    #enso2 {
+      position: absolute;
+      width: min(46vh, 46vw);
+      height: min(46vh, 46vw);
+      border-radius: 50%;
+      border: 1px solid rgba(140,110,82,0.06);
+      pointer-events: none;
+      transition: transform 3.2s cubic-bezier(.23,1,.32,1);
+    }
+
+    /* SVG — très grand */
+    #svg-wrap {
+      position: relative;
+      z-index: 2;
+      transition: opacity 0.45s ease, transform 0.45s cubic-bezier(.23,1,.32,1);
+    }
+    #svg-wrap.out { opacity: 0; transform: scale(0.93) translateY(12px); }
+    #svg-wrap.in  { opacity: 1; transform: scale(1)    translateY(0); }
+
+    #yoga-svg {
+      height: min(76vh, 700px);
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 14px 44px rgba(80,55,25,0.15));
+    }
+
+    /* ombre tapis */
+    #mat {
+      position: absolute;
+      bottom: 7%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(30vw, 260px);
+      height: 16px;
+      background: rgba(184,149,106,0.2);
+      border-radius: 50%;
+      filter: blur(10px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* hint */
+    #hint {
+      position: absolute;
+      bottom: 50%; left: 50%;
+      transform: translate(-50%, 50%);
+      pointer-events: none;
+      z-index: 10;
+      transition: opacity 1s;
+      text-align: center;
+    }
+    #hint.gone { opacity: 0; }
+    #hint-text {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      animation: flt 3s ease-in-out infinite;
+    }
+    @keyframes flt {
+      0%,100% { opacity: 0.35; transform: translateY(0); }
+      50%     { opacity: 0.75; transform: translateY(-5px); }
+    }
+
+    /* ── FOOTER ──────────────────────────────── */
+    #footer {
+      grid-area: footer;
+      padding: 18px 36px 22px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: flex-end;
+      gap: 36px;
+      min-height: 108px;
+    }
+
+    #pose-name-wrap { flex: 1; }
+
+    #pose-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.55rem, 3.2vw, 2.6rem);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    #pose-name.hidden { opacity: 0; transform: translateY(8px); }
+
+    #pose-sanskrit {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 5px;
+      font-weight: 200;
+      transition: opacity 0.4s 0.08s;
+    }
+    #pose-sanskrit.hidden { opacity: 0; }
+
+    #pose-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(0.88rem, 1.3vw, 1.05rem);
+      color: var(--ink-muted);
+      max-width: 500px;
+      line-height: 1.6;
+      margin-top: 7px;
+      transition: opacity 0.4s 0.16s;
+    }
+    #pose-desc.hidden { opacity: 0; }
+
+    #pose-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    #pose-level {
+      font-size: 9px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      padding: 4px 13px;
+      border-radius: 20px;
+      font-weight: 300;
+      transition: background 0.5s, color 0.5s;
+    }
+    .lv-debutant      { background: rgba(107,124,94,0.11);  color: #4a5e40; }
+    .lv-intermediaire { background: rgba(140,110,82,0.11);  color: var(--accent); }
+    .lv-avance        { background: rgba(122,158,159,0.11); color: #3d7475; }
+
+    #btn-next {
+      background: none;
+      border: 1px solid rgba(30,28,25,0.18);
+      border-radius: 50%;
+      width: 42px; height: 42px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      color: var(--ink-muted);
+      transition: all 0.25s;
+      flex-shrink: 0;
+    }
+    #btn-next:hover { border-color: var(--accent); color: var(--accent); transform: rotate(90deg); }
+
+    /* ── PANEL ───────────────────────────────── */
+    #panel {
+      grid-area: panel;
+      border-left: 1px solid var(--line);
+      padding: 28px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+      overflow-y: auto;
+    }
+
+    .plabel {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      font-weight: 200;
+      margin-bottom: 10px;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%; height: 1px;
+      background: var(--line);
+      border: none; outline: none;
+      cursor: pointer; margin: 4px 0;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.45); }
+    .srow {
+      display: flex; justify-content: space-between;
+      font-size: 9px; letter-spacing: 0.08em;
+      color: rgba(30,28,25,0.28);
+      margin-top: 5px;
+    }
+
+    .chips { display: flex; flex-direction: column; gap: 6px; }
+    .chip {
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      background: transparent;
+      color: var(--ink-muted);
+      transition: all 0.2s;
+      font-family: 'Jost', sans-serif;
+      font-weight: 200;
+      text-align: left;
+    }
+    .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    #hist-wrap { display: flex; flex-wrap: wrap; gap: 5px; }
+    .hdot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--line);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      border: 1px solid transparent;
+    }
+    .hdot.done { background: rgba(140,110,82,0.32); }
+    .hdot.now  { background: var(--accent); border-color: var(--accent2); transform: scale(1.3); }
+    .hdot:hover { transform: scale(1.5); }
+
+    #panel-footer { margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line); }
+    #big-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-weight: 300;
+      color: rgba(30,28,25,0.07);
+      line-height: 1; letter-spacing: -0.02em;
+    }
+    #big-label {
+      font-size: 9px; letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: rgba(30,28,25,0.22);
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <header id="header">
+    <div>
+      <div id="header-title">Yoga</div>
+      <div id="header-sub">Générateur de poses</div>
+    </div>
+    <div id="pose-counter-small">—</div>
+  </header>
+
+  <main id="stage" onclick="generatePose()">
+    <div id="enso"></div>
+    <div id="enso2"></div>
+    <div id="mat"></div>
+
+    <div id="svg-wrap" class="in">
+      <svg id="yoga-svg" viewBox="0 0 500 500"
+           xmlns="http://www.w3.org/2000/svg"
+           xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+          <radialGradient id="g1" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   style="stop-color:#edd9ab;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#d4c585;stop-opacity:1"/>
+          </radialGradient>
+          <filter id="fs">
+            <feDropShadow dx="1" dy="3" stdDeviation="5" flood-color="rgba(70,45,15,0.22)"/>
+          </filter>
+        </defs>
+        <rect width="500" height="500" fill="url(#g1)"/>
+        <g id="figure" transform="translate(0 -75)" filter="url(#fs)">
+          <g transform="translate(250 250)">
+            <image xlink:href="t2.png" width="80" height="160" x="-40" y="-80"/>
+          </g>
+          <g transform="translate(215 237)">
             <g>
-              <image xlink:href="pG1.png" width="31" height="90" x="-21" y="-5" opacity="1" class="shad"/>
-              <animateTransform id="anim6" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="2s" repeatCount="indefinite" />
+              <image xlink:href="abG2.png" width="23" height="72" x="-15" y="-7"/>
+              <animateTransform id="anim1" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="4s" repeatCount="indefinite"/>
+              <g transform="translate(-8 60)"><g>
+                <image xlink:href="bG2.png" width="27" height="76" x="-7" y="-5"/>
+                <animateTransform id="anim2" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="4s" repeatCount="indefinite"/>
+              </g></g>
+            </g>
+          </g>
+          <g transform="translate(283 235)">
+            <g>
+              <image xlink:href="abD2.png" width="23" height="72" x="-8" y="-7"/>
+              <animateTransform id="anim3" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="4s" repeatCount="indefinite"/>
+              <g transform="translate(7 60)"><g>
+                <image xlink:href="bD2.png" width="27" height="76" x="-19" y="-5"/>
+                <animateTransform id="anim4" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="4s" repeatCount="indefinite"/>
+              </g></g>
+            </g>
+          </g>
+          <g transform="translate(230 316)">
+            <g>
+              <image xlink:href="cG2.png" width="28" height="88" x="-21" y="-7"/>
+              <animateTransform id="anim5" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="4s" repeatCount="indefinite"/>
+              <g transform="translate(-14 75)"><g>
+                <image xlink:href="pG2.png" width="31" height="90" x="-21" y="-5"/>
+                <animateTransform id="anim6" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="4s" repeatCount="indefinite"/>
+              </g></g>
+            </g>
+          </g>
+          <g transform="translate(269 317)">
+            <g>
+              <image xlink:href="cD2.png" width="28" height="88" x="-6" y="-6"/>
+              <animateTransform id="anim7" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="4s" repeatCount="indefinite"/>
+              <g transform="translate(13 77)"><g>
+                <image xlink:href="pD2.png" width="31" height="90" x="-9" y="-5"/>
+                <animateTransform id="anim8" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="4s" repeatCount="indefinite"/>
+              </g></g>
             </g>
           </g>
         </g>
-      </g>
-      <g transform="translate(269 317)">
-        <g>
-          <image xlink:href="cD1.png" width="28" height="88" x="-6" y="-6" opacity="1" class="shad"/>
-          <animateTransform id="anim7" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="2s" repeatCount="indefinite" />
-          <g transform="translate(13 77)">
-            <g>
-              <image xlink:href="pD1.png" width="31" height="90" x="-9" y="-5" opacity="1" class="shad"/>
-              <animateTransform id="anim8" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="2s" repeatCount="indefinite" />
-            </g>
-          </g>
-        </g>
-      </g>
-	        <g transform="translate(215 237)">
-        <g>
-          <image xlink:href="abG1.png" width="23" height="72" x="-15" y="-7" opacity="1" class="shad"/>
-          <animateTransform id="anim1" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="2s" repeatCount="indefinite" />
-          <g transform="translate(-8 60)">
-            <g>
-              <image xlink:href="bG1.png" width="27" height="76" x="-7" y="-5" opacity="1" class="shad"/>
-              <animateTransform id="anim2" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="2s" repeatCount="indefinite" />
-            </g>
-          </g>
-        </g>
-      </g>
-      <g transform="translate(283 235)">
-        <g>
-          <image xlink:href="abD1.png" width="23" height="72" x="-8" y="-7" opacity="1" class="shad"/>
-          <animateTransform id="anim3" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="2s" repeatCount="indefinite" />
-          <g transform="translate(7 60)">
-            <g>
-              <image xlink:href="bD1.png" width="27" height="76" x="-19" y="-5" opacity="1" class="shad"/>
-              <animateTransform id="anim4" attributeName="transform" attributeType="xml" type="rotate" values="0 0 0;0 0 0;0 0 0" begin="0s" dur="2s" repeatCount="indefinite" />
-            </g>
-          </g>
-        </g>
-      </g>
-</g>
-    </svg>
-  </body>
+      </svg>
+    </div>
+
+    <div id="hint"><div id="hint-text">Cliquer pour commencer</div></div>
+  </main>
+
+  <footer id="footer">
+    <div id="pose-name-wrap">
+      <div id="pose-name"    class="hidden">—</div>
+      <div id="pose-sanskrit" class="hidden"></div>
+      <div id="pose-desc"    class="hidden"></div>
+    </div>
+    <div id="pose-right">
+      <span id="pose-level" class="lv-debutant">Débutant</span>
+      <button id="btn-next" onclick="event.stopPropagation();generatePose()" title="Pose suivante">↻</button>
+    </div>
+  </footer>
+
+  <aside id="panel">
+
+    <div>
+      <span class="plabel">Vitesse</span>
+      <input type="range" id="speed" min="1" max="20" value="7" oninput="refreshAnim()">
+      <div class="srow"><span>Lente</span><span>Vive</span></div>
+    </div>
+
+    <div>
+      <span class="plabel">Amplitude</span>
+      <input type="range" id="amplitude" min="10" max="180" value="90" oninput="refreshAnim()">
+      <div class="srow"><span>Douce</span><span>Profonde</span></div>
+    </div>
+
+    <div>
+      <span class="plabel">Niveau</span>
+      <div class="chips">
+        <button class="chip on" data-lv="debutant"      onclick="toggleChip(this)">Débutant</button>
+        <button class="chip on" data-lv="intermediaire" onclick="toggleChip(this)">Intermédiaire</button>
+        <button class="chip on" data-lv="avance"        onclick="toggleChip(this)">Avancé</button>
+      </div>
+    </div>
+
+    <div>
+      <span class="plabel">Historique</span>
+      <div id="hist-wrap"></div>
+    </div>
+
+    <div id="panel-footer">
+      <div id="big-count">0</div>
+      <div id="big-label">poses</div>
+    </div>
+
+  </aside>
+</div>
 
 <script>
-function change(){
-  for(var i=1;i<9;i++){
-  var pom=Math.round(Math.random());
-  if(pom>0){pom="";}else{pom="-";}
-  document.getElementById("anim"+i).setAttribute("values","0 0 0;"+pom+Math.round(Math.random()*360)+" 0 0;0 0 0");
-  document.getElementById("anim"+i).setAttribute("dur",Math.round(Math.random()*12)+"s");
-  }
+const POSES = [
+  { nom:"La Montagne",        sanskrit:"Tadasana",              niveau:"debutant",
+    desc:"Ancrage et présence totale. Le corps s'allonge entre terre et ciel, immobile comme un sommet.",
+    a:[{i:1,v:"0 0 0;-18 0 0;0 0 0",d:5},{i:2,v:"0 0 0;12 0 0;0 0 0",d:5},{i:3,v:"0 0 0;18 0 0;0 0 0",d:5},{i:4,v:"0 0 0;-12 0 0;0 0 0",d:5},{i:5,v:"0 0 0;4 0 0;0 0 0",d:6},{i:6,v:"0 0 0;-3 0 0;0 0 0",d:6},{i:7,v:"0 0 0;-4 0 0;0 0 0",d:6},{i:8,v:"0 0 0;3 0 0;0 0 0",d:6}]},
+  { nom:"L'Arbre",            sanskrit:"Vrikshasana",           niveau:"debutant",
+    desc:"Équilibre et sérénité. Une jambe enracinée, l'autre en fleur, les bras couronnent l'espace.",
+    a:[{i:1,v:"0 0 0;-85 0 0;-85 0 0",d:3},{i:2,v:"0 0 0;55 0 0;55 0 0",d:3},{i:3,v:"0 0 0;85 0 0;85 0 0",d:3},{i:4,v:"0 0 0;-55 0 0;-55 0 0",d:3},{i:5,v:"0 0 0;8 0 0;8 0 0",d:4},{i:6,v:"0 0 0;-5 0 0;-5 0 0",d:4},{i:7,v:"0 0 0;-115 0 0;-115 0 0",d:3},{i:8,v:"0 0 0;75 0 0;75 0 0",d:3}]},
+  { nom:"Le Guerrier I",      sanskrit:"Virabhadrasana I",      niveau:"debutant",
+    desc:"Force et ouverture. Les jambes fendent la terre, les bras s'élancent vers le ciel sans résistance.",
+    a:[{i:1,v:"0 0 0;-105 0 0;-105 0 0",d:3},{i:2,v:"0 0 0;28 0 0;28 0 0",d:3},{i:3,v:"0 0 0;105 0 0;105 0 0",d:3},{i:4,v:"0 0 0;-28 0 0;-28 0 0",d:3},{i:5,v:"0 0 0;-28 0 0;-28 0 0",d:4},{i:6,v:"0 0 0;48 0 0;48 0 0",d:4},{i:7,v:"0 0 0;58 0 0;58 0 0",d:4},{i:8,v:"0 0 0;-38 0 0;-38 0 0",d:4}]},
+  { nom:"Le Guerrier II",     sanskrit:"Virabhadrasana II",     niveau:"intermediaire",
+    desc:"Ouverture et stabilité. Les bras s'étendent en croix, le regard porte loin, au-delà de l'horizon.",
+    a:[{i:1,v:"0 0 0;88 0 0;88 0 0",d:3},{i:2,v:"0 0 0;-28 0 0;-28 0 0",d:3},{i:3,v:"0 0 0;-88 0 0;-88 0 0",d:3},{i:4,v:"0 0 0;28 0 0;28 0 0",d:3},{i:5,v:"0 0 0;-38 0 0;-38 0 0",d:4},{i:6,v:"0 0 0;58 0 0;58 0 0",d:4},{i:7,v:"0 0 0;52 0 0;52 0 0",d:4},{i:8,v:"0 0 0;-48 0 0;-48 0 0",d:4}]},
+  { nom:"Le Chien tête en bas",sanskrit:"Adho Mukha Svanasana", niveau:"debutant",
+    desc:"Étirement total. Le corps forme un V inversé. Le calme s'installe en laissant aller le poids de la tête.",
+    a:[{i:1,v:"0 0 0;-158 0 0;-158 0 0",d:4},{i:2,v:"0 0 0;-38 0 0;-38 0 0",d:4},{i:3,v:"0 0 0;158 0 0;158 0 0",d:4},{i:4,v:"0 0 0;38 0 0;38 0 0",d:4},{i:5,v:"0 0 0;-48 0 0;-48 0 0",d:4},{i:6,v:"0 0 0;38 0 0;38 0 0",d:4},{i:7,v:"0 0 0;48 0 0;48 0 0",d:4},{i:8,v:"0 0 0;-38 0 0;-38 0 0",d:4}]},
+  { nom:"La Tête de Vache",   sanskrit:"Gomukhasana",           niveau:"intermediaire",
+    desc:"Libération profonde des épaules et des hanches. La posture dénoue les tensions accumulées silencieusement.",
+    a:[{i:1,v:"0 0 0;148 0 0;148 0 0",d:4},{i:2,v:"0 0 0;-78 0 0;-78 0 0",d:4},{i:3,v:"0 0 0;-148 0 0;-148 0 0",d:4},{i:4,v:"0 0 0;78 0 0;78 0 0",d:4},{i:5,v:"0 0 0;-58 0 0;-58 0 0",d:5},{i:6,v:"0 0 0;98 0 0;98 0 0",d:5},{i:7,v:"0 0 0;68 0 0;68 0 0",d:5},{i:8,v:"0 0 0;-88 0 0;-88 0 0",d:5}]},
+  { nom:"L'Aigle",            sanskrit:"Garudasana",            niveau:"avance",
+    desc:"Spirale et concentration. Les membres s'enroulent. L'équilibre naît du silence intérieur.",
+    a:[{i:1,v:"0 0 0;58 0 0;58 0 0",d:3},{i:2,v:"0 0 0;-118 0 0;-118 0 0",d:3},{i:3,v:"0 0 0;-58 0 0;-58 0 0",d:3},{i:4,v:"0 0 0;118 0 0;118 0 0",d:3},{i:5,v:"0 0 0;-78 0 0;-78 0 0",d:3},{i:6,v:"0 0 0;128 0 0;128 0 0",d:3},{i:7,v:"0 0 0;88 0 0;88 0 0",d:3},{i:8,v:"0 0 0;-108 0 0;-108 0 0",d:3}]},
+  { nom:"La Demi-Lune",       sanskrit:"Ardha Chandrasana",     niveau:"avance",
+    desc:"Légèreté et rayonnement. Un seul point d'ancrage. Le corps s'ouvre, lumineux comme la lune.",
+    a:[{i:1,v:"0 0 0;-168 0 0;-168 0 0",d:4},{i:2,v:"0 0 0;28 0 0;28 0 0",d:4},{i:3,v:"0 0 0;168 0 0;168 0 0",d:4},{i:4,v:"0 0 0;-28 0 0;-28 0 0",d:4},{i:5,v:"0 0 0;18 0 0;18 0 0",d:4},{i:6,v:"0 0 0;-8 0 0;-8 0 0",d:4},{i:7,v:"0 0 0;-168 0 0;-168 0 0",d:4},{i:8,v:"0 0 0;48 0 0;48 0 0",d:4}]},
+  { nom:"La Sauterelle",      sanskrit:"Salabhasana",           niveau:"intermediaire",
+    desc:"Le dos se renforce en douceur. Le corps s'allonge depuis le sol, prêt à s'envoler vers la lumière.",
+    a:[{i:1,v:"0 0 0;-58 0 0;-58 0 0",d:5},{i:2,v:"0 0 0;-28 0 0;-28 0 0",d:5},{i:3,v:"0 0 0;58 0 0;58 0 0",d:5},{i:4,v:"0 0 0;28 0 0;28 0 0",d:5},{i:5,v:"0 0 0;-38 0 0;-38 0 0",d:5},{i:6,v:"0 0 0;-58 0 0;-58 0 0",d:5},{i:7,v:"0 0 0;38 0 0;38 0 0",d:5},{i:8,v:"0 0 0;58 0 0;58 0 0",d:5}]},
+  { nom:"Le Triangle",        sanskrit:"Trikonasana",           niveau:"debutant",
+    desc:"Géométrie pure. Le corps dessine un triangle parfait. L'étirement latéral libère l'espace intérieur.",
+    a:[{i:1,v:"0 0 0;-128 0 0;-128 0 0",d:4},{i:2,v:"0 0 0;18 0 0;18 0 0",d:4},{i:3,v:"0 0 0;128 0 0;128 0 0",d:4},{i:4,v:"0 0 0;-18 0 0;-18 0 0",d:4},{i:5,v:"0 0 0;-13 0 0;-13 0 0",d:5},{i:6,v:"0 0 0;18 0 0;18 0 0",d:5},{i:7,v:"0 0 0;18 0 0;18 0 0",d:5},{i:8,v:"0 0 0;-13 0 0;-13 0 0",d:5}]},
+];
+
+let count=0, hist=[], current=null;
+let activeLv=new Set(["debutant","intermediaire","avance"]);
+
+function applyPose(pose){
+  const spd=parseFloat(document.getElementById("speed").value)/7;
+  const amp=parseFloat(document.getElementById("amplitude").value)/90;
+  pose.a.forEach(a=>{
+    const el=document.getElementById("anim"+a.i); if(!el)return;
+    const scaled=a.v.split(";").map(p=>{
+      const m=p.match(/^(-?[\d.]+)/);
+      return m ? p.replace(/^(-?[\d.]+)/,Math.round(parseFloat(m[1])*amp)) : p;
+    }).join(";");
+    el.setAttribute("values",scaled);
+    el.setAttribute("dur",(a.d/spd).toFixed(1)+"s");
+    try{el.beginElement();}catch(e){}
+  });
+}
+
+function refreshAnim(){ if(current) applyPose(current); }
+
+function generatePose(){
+  const pool=POSES.filter(p=>activeLv.has(p.niveau));
+  if(!pool.length)return;
+  let pose;
+  do{ pose=pool[Math.floor(Math.random()*pool.length)]; }
+  while(pool.length>1 && pose===current);
+  current=pose;
+
+  const wrap=document.getElementById("svg-wrap");
+  wrap.classList.remove("in"); wrap.classList.add("out");
+  setTimeout(()=>{ applyPose(pose); wrap.classList.remove("out"); wrap.classList.add("in"); },420);
+
+  const enso=document.getElementById("enso");
+  enso.classList.add("glow");
+  enso.style.transform=`rotate(${Math.random()*36-18}deg)`;
+  document.getElementById("enso2").style.transform=`rotate(${Math.random()*-26+13}deg)`;
+  setTimeout(()=>enso.classList.remove("glow"),2000);
+
+  ["pose-name","pose-sanskrit","pose-desc"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+  setTimeout(()=>{
+    document.getElementById("pose-name").textContent=pose.nom;
+    document.getElementById("pose-sanskrit").textContent=pose.sanskrit;
+    document.getElementById("pose-desc").textContent=pose.desc;
+    ["pose-name","pose-sanskrit","pose-desc"].forEach(id=>document.getElementById(id).classList.remove("hidden"));
+  },350);
+
+  const lvEl=document.getElementById("pose-level");
+  lvEl.textContent={debutant:"Débutant",intermediaire:"Intermédiaire",avance:"Avancé"}[pose.niveau];
+  lvEl.className="lv-"+pose.niveau;
+
+  count++;
+  document.getElementById("big-count").textContent=count;
+  document.getElementById("pose-counter-small").textContent=count+" pose"+(count>1?"s":"");
+
+  hist.push(pose); if(hist.length>16)hist.shift(); renderHist();
+  document.getElementById("hint").classList.add("gone");
+}
+
+function renderHist(){
+  const w=document.getElementById("hist-wrap"); w.innerHTML="";
+  hist.forEach((p,i)=>{
+    const d=document.createElement("div"); d.classList.add("hdot");
+    d.classList.add(i===hist.length-1?"now":"done");
+    d.title=p.nom;
+    d.onclick=()=>{ current=p;
+      const wrap=document.getElementById("svg-wrap");
+      wrap.classList.remove("in"); wrap.classList.add("out");
+      setTimeout(()=>{ applyPose(p); wrap.classList.remove("out"); wrap.classList.add("in"); },420);
+      document.getElementById("pose-name").textContent=p.nom;
+      document.getElementById("pose-sanskrit").textContent=p.sanskrit;
+      document.getElementById("pose-desc").textContent=p.desc;
+      const lv=document.getElementById("pose-level");
+      lv.textContent={debutant:"Débutant",intermediaire:"Intermédiaire",avance:"Avancé"}[p.niveau];
+      lv.className="lv-"+p.niveau;
+      ["pose-name","pose-sanskrit","pose-desc"].forEach(id=>document.getElementById(id).classList.remove("hidden"));
+    };
+    w.appendChild(d);
+  });
+}
+
+function toggleChip(el){
+  const lv=el.dataset.lv;
+  if(activeLv.has(lv)){ if(activeLv.size===1)return; activeLv.delete(lv); el.classList.remove("on"); }
+  else{ activeLv.add(lv); el.classList.add("on"); }
 }
 </script>
+</body>
 </html>
-
