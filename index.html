@@ -6,9 +6,134 @@
 		<title>Hour of Code</title>
 		<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="style.css" />
+
+		<style>
+			/* ========== CORRECTIF overflow pour les poissons ========== */
+			/* Le body a overflow:hidden dans style.css — on crée une couche dédiée */
+			#poisson-layer {
+				position: fixed;
+				inset: 0;
+				pointer-events: none;
+				z-index: 9999;
+				overflow: visible;
+			}
+
+			/* ========== POISSON D'AVRIL ========== */
+			.poisson {
+				position: absolute;
+				pointer-events: none;
+				font-size: 2rem;
+				animation: volerPoisson 3.5s ease-out forwards;
+				user-select: none;
+				will-change: transform, opacity;
+			}
+			@keyframes volerPoisson {
+				0%   { opacity: 1; transform: translateY(0)    rotate(0deg)   scale(1);   }
+				40%  {             transform: translateY(-140px) rotate(25deg)  scale(1.4); }
+				100% { opacity: 0; transform: translateY(-320px) rotate(-20deg) scale(0.4); }
+			}
+
+			/* ========== VIGNETTES : on neutralise la transition du CSS d'origine ========== */
+			/* style.css met transition:0.1s sur .container div — on laisse nos animations prendre le dessus */
+			.container a,
+			.container > div {
+				position: relative;   /* nécessaire pour transform */
+				transition: transform 0.35s cubic-bezier(.36,.07,.19,.97) !important;
+			}
+
+			/* ========== MESSAGE D'ERREUR WINDOWS 98 ========== */
+			#fakeError {
+				display: none;
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background: #c0c0c0;
+				border: 3px solid #fff;
+				border-right-color: #808080;
+				border-bottom-color: #808080;
+				padding: 0;
+				z-index: 99999;
+				width: 340px;
+				font-family: 'MS Sans Serif', Arial, sans-serif;
+				font-size: 13px;
+				box-shadow: 4px 4px 10px rgba(0,0,0,0.6);
+				animation: popIn 0.2s ease-out;
+			}
+			@keyframes popIn {
+				from { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+				to   { transform: translate(-50%, -50%) scale(1);   opacity: 1; }
+			}
+			#fakeError .titlebar {
+				background: linear-gradient(to right, #000080, #1084d0);
+				color: white;
+				padding: 4px 6px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				font-weight: bold;
+				font-size: 12px;
+			}
+			#fakeError .titlebar .close-btn {
+				cursor: pointer;
+				background: #c0c0c0;
+				color: #000;
+				border: 2px solid #fff;
+				border-right-color: #808080;
+				border-bottom-color: #808080;
+				padding: 0 6px;
+				font-size: 12px;
+				line-height: 18px;
+				font-weight: bold;
+			}
+			#fakeError .body {
+				padding: 16px 20px;
+				display: flex;
+				align-items: flex-start;
+				gap: 14px;
+				background: #c0c0c0;
+			}
+			#fakeError .icon {
+				font-size: 2.5rem;
+				line-height: 1;
+				flex-shrink: 0;
+			}
+			#fakeError .msg {
+				flex: 1;
+				line-height: 1.6;
+				color: #000;
+			}
+			#fakeError .btns {
+				text-align: center;
+				padding: 8px 8px 12px;
+				background: #c0c0c0;
+			}
+			#fakeError .btns button {
+				background: #c0c0c0;
+				border: 2px solid #fff;
+				border-right-color: #808080;
+				border-bottom-color: #808080;
+				padding: 5px 22px;
+				cursor: pointer;
+				font-size: 13px;
+				font-family: inherit;
+				font-weight: bold;
+			}
+			#fakeError .btns button:active {
+				border-color: #808080;
+				border-right-color: #fff;
+				border-bottom-color: #fff;
+			}
+
+			/* ========== RETOURNEMENT DES IMAGES ========== */
+			.container.flip-mode img {
+				transform: rotate(180deg) !important;
+				transition: transform 0.7s ease !important;
+			}
+		</style>
 	</head>
 	<body>
-		<div class="container">
+		<div class="container" id="mainContainer">
 				<div onclick="openNav()" style="border-radius:50%;"><img src="menu.png"/></div>
 
 				<a href="https://scratch.mit.edu/" target="_blank" title="Scratch"><div><img src="scratch.jpg"/></div></a>
@@ -18,13 +143,10 @@
 				<a href="https://studio.code.org/s/frozen/stage/1/puzzle/1/" target="_blank" title="Heure de Code Frozen"><div><img src="frz.jpg"/></div></a>
 				<a href="https://codecombat.com/play" target="_blank" title="Code Combat"><div><img src="cc.jpg"/></div></a>
 				<a href="https://www.tynker.com/dashboard/student/?obd=1" target="_blank" title="Tynker"><div><img src="tynker.png"/></div></a>
-				<!-- <a href="" title="Sonic Pi"><div><img src="sonic.jpg"/></div></a> -->
 				<a href="https://code.org/dance" target="_blank" title="Dance"><div><img src="dance.jpg"/></div></a>
-				<!-- <a href="https://www.madewithcode.com/home/" target="_blank" title="Made w/code"><div><img src="mwc.png"/></div></a> -->
 				<a href="https://lightbot.com/flash.html" target="_blank" title="Light Bot"><div><img src="light.jpg"/></div></a>
 				<a href="https://chromewebstore.google.com/detail/ruffle-flash-emulator/donbcfbmhbcapadipfkeojnmajbakjdc?hl=fr" target="_blank" title="Ruffle"><div><img src="ruffle.jpg"/></div></a>
 				<a href="http://lightbot.lu/" target="_blank" title="Light Bot Bootleg"><div><img src="light2.png"/></div></a>
-				<!-- <a href="https://hoc.nclab.com/karel/" target="_blank" title="NC LAB"><div><img src="nclab.jpg"/></div></a> -->
 				<a href="http://compute-it.toxicode.fr/" target="_blank" title="Compute it"><div><img src="compute.jpg"/></div></a>
 				<a href="test.html" target="_blank" title="Test mémoire"><div><img src="test.png"/></div></a>
 				<a href="https://fr.khanacademy.org/computing/computer-programming" target="_blank" title="Khan Academy"><div><img src="khan.png"/></div></a>
@@ -32,212 +154,302 @@
 				<a href="https://studio.code.org/projects/public" target="_blank" title="Studio Code"><div><img src="hoc2.jpg"/></div></a>
 				<a href="http://little-dot.toxicode.fr/" target="_blank" title="Little Dot"><div><img src="dot.png"/></div></a>
 				<a href="https://www.w3schools.com/codegame/index.html" target="_blank" title="Code Game"><div><img src="lynx.png"/></div></a>
-				<!-- <a href="quatre_elements.html" target="_blank" title="Les 4 éléments"><div><img src="4elements.jpg"/></div></a> -->
 				<a href="http://gamejam.toxicode.fr/" target="_blank" title="Code n Slash"><div><img src="hero.png"/></div></a>
 				<a href="https://codeweek.eu/challenges" target="_blank" title="Codeweek Challenges"><div><img src="codeweek_visual.jpg"/></div></a>
-				<!--<a href="https://zty.pe/" target="_blank" title="Z Type"><div><img src="zty.png"/></div></a>-->
 				<a href="https://blockly.games/" target="_blank" title="Jeux Blockly"><div><img src="bl.jpg"/></div></a>
-				<!--<a href="https://cjezegou.fr/defis-scratch/" target="_blank" title="Jeux Blockly"><div><img src="defis.png"/></div></a> -->
-				<!-- <a href="http://agent001.fr/" target="_blank" title="Agent 001"><div><img src="001.png"/></div></a> -->
 				<a href="https://arcade.makecode.com/" target="_blank" title="Make Code Arcade"><div><img src="mc.jpg"/></div></a>
 				<a href="https://learningmusic.ableton.com/fr/the-playground.html" target="_blank" title="Learning Music"><div><img src="able1.jpg"/></div></a> 
 				<a href="https://learningsynths.ableton.com/fr/playground" target="_blank" title="Learning Synth"><div><img src="able2.jpg"/></div></a>
 				<a href="https://www.internetsanscrainte.fr/" target="_blank" title="Internet Sans Crainte"><div><img src="int.jpg"/></div></a>
 				<a href="https://doodles.google/doodle/gerald-jerry-lawsons-82nd-birthday/" target="_blank" title="Jerry Lawson"><div><img src="lawson.png"/></div></a>
 				<a href="https://projects.raspberrypi.org/fr-FR/projects" target="_blank" title="Boat Race"><div><img src="boat.jpg"/></div></a>
-				<!-- <a href="https://scratch.mit.edu/projects/823789378" target="_blank" title="Space Shooter"><div><img src="spaceshoot.jpg"/></div></a> -->
-				<!-- <a href="https://scratch.mit.edu/projects/815572655/" target="_blank" title="Spider Dodge"><div><img src="sd.jpg"/></div></a> -->
-				<!-- <a href="https://scribblediffusion.com/" target="_blank" title="Scribble Diffusion"><div><img src="sd2.jpg"/></div></a> -->
 				<a href="https://experiments.withgoogle.com/giga-manga" target="_blank" title="Giga Manga"><div><img src="manga.jpg"/></div></a>
 				<a href="https://www.mecabricks.com/fr/workshop" target="_blank" title="LEGO Mecabricks"><div><img src="leo.jpg"/></div></a>
-				<!-- <a href="https://leblog92.github.io/hoc/pantin/" target="_blank" title="Pantin"><div><img src="sql.jpg"/></div></a> -->
 				<a href="https://earsketch.gatech.edu/landing/#/" target="_blank" title="Ear Sketch"><div><img src="es.jpg"/></div></a>
-				<!-- <a href="p4.html" target="_blank" title="Puissance 4"><div><img src="p4.jpg"/></div></a> -->
 				<a href="https://recursivearts.com/virtual-piano/" target="_blank" title="Virtual Piano"><div><img src="piano.jpg"/></div></a>
-				<!-- <a href="https://app.codingpark.io/goldenquest" target="_blank" title="Golden Quest"><div><img src="gq.jpg"/></div></a> -->
 				<a href="https://www.codingame.com/start/fr/" target="_blank" title="CodinGame"><div><img src="cg.jpg"/></div></a>
 				<a href="https://www.tinkercad.com/" target="_blank" title="Tinkercad"><div><img src="tink.jpg"/></div></a>
-				<!-- <a href="https://papergames.io/fr/" target="_blank" title="Échecs"><div><img src="chess.jpg"/></div></a> -->
-				<!-- <a href="https://codewards.org/" target="_blank" title="Codewards"><div><img src="codew.jpg"/></div></a> -->
 				<a href="https://www.kwyk.fr/algorithme/" target="_blank" title="Kwyk"><div><img src="kwyk.png"/></div></a>
 				<a href="https://www.algoblocs.fr/index.php" target="_blank" title="Algo Blocs"><div><img src="ab.png"/></div></a>
 				<a href="https://artsandculture.google.com/play" target="_blank" title="Google Arts Play"><div><img src="ga.png"/></div></a>
 				<a href="https://i4ds.github.io/CargoBot/?state=1" target="_blank" title="Cargo-Bot"><div><img src="01.png"/></div></a>
 				<a href="https://www.lego.com/assets/FranchiseSites/Portal/BitsAndBricks2/v10/deploydsd/index.html" target="_blank" title="Bits'n'Bricks"><div><img src="02.png"/></div></a>
-				<!-- <a href="https://app.codemonkey.com/challenges/0" target="_blank" title="CodeMonkey"><div><img src="03.png"/></div></a> -->
 				<a href="https://openprocessing.org/" target="_blank" title="OpenProcessing"><div><img src="op.png"/></div></a>
 				<a href="https://www.logicieleducatif.fr/jeu/le-chevalier-de-la-programmation" target="_blank" title="Le chevalier de la Programmation"><div><img src="chev.png"/></div></a>
 				<a href="https://app.citizencode.net/demo/backend-driven" target="_blank" title="Future Engineer"><div><img src="fe.png"/></div></a>
 				<a href="ai.html" title="Intelligence Artificielle"><div><img src="ai.gif"/></div></a>
 				<a href="https://leblog92.github.io/hoc/ai/" title="Intelligence Artificielle Atelier"><div><img src="https://www.bing.com/th/id/OIP.5me0ms3oU0Vm1R7KX_sz4QHaHa?w=210&h=211&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"/></div></a>
-				<!-- <a href="https://santatracker.google.com/" target="_blank" title="Santa Tracker"><div><img src="santa.gif"/></div></a> -->
-			
 
 				<span id="hid" style="visibility:hidden;">
-					<!-- <a href="lawson.html" target="_blank" title="Jerry Lawson's Special Levels"><div><img src="lawson2.jpg"/></div></a> -->
-							<a href="https://www.engineering.com/GamesPuzzles/tabid/82/Default.aspx" target="_blank" title="Engineering"><div><img src="eng.jpg"/></div></a>
-							<a href="https://www.mathsisfun.com/puzzles/" target="_blank" title="Engineering"><div><img src="eng.jpg"/></div></a>
-							<a href="https://www.puzzleprime.com/puzzle-games/" target="_blank" title="Engineering"><div><img src="eng.jpg"/></div></a>
-							<a href="https://www.puzzleprime.com" target="_blank" title="Engineering"><div><img src="eng.jpg"/></div></a>
-					<!-- <a href="https://www.incredibox.com/fr/demo/" target="_blank" title="Incredibox"><div><img src="incr.png"/></div></a> -->
-					<!-- <a href="https://graebor.itch.io/sort-the-court" target="_blank" title="Sort the court"><div><img src="sort.jpg"/></div></a> -->
-					
+						<a href="https://www.engineering.com/GamesPuzzles/tabid/82/Default.aspx" target="_blank" title="Engineering"><div><img src="eng.jpg"/></div></a>
+						<a href="https://www.mathsisfun.com/puzzles/" target="_blank" title="Engineering"><div><img src="eng.jpg"/></div></a>
+						<a href="https://www.puzzleprime.com/puzzle-games/" target="_blank" title="Engineering"><div><img src="eng.jpg"/></div></a>
+						<a href="https://www.puzzleprime.com" target="_blank" title="Engineering"><div><img src="eng.jpg"/></div></a>
 				</span>
 		</div>
 
-<div id="myNav" class="overlay">
-	<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-	<div class="overlay-content">
-		<a href="https://www.mediatheque-rueilmalmaison.fr/nos-services/latelier-multimedia" target="_blank">A propos</a>
-		<a href="https://www.mediatheque-rueilmalmaison.fr/" target="_blank">Médiathèque</a>
-		<a href="https://catalogue.mediatheque-rueilmalmaison.fr/" target="_blank">Catalogue</a>
-		<a href="https://fr-fr.facebook.com/mediathequerueil/" target="_blank">Facebook</a>
-		<a href="https://www.instagram.com/mediathequerueil/?hl=fr" target="_blank">Instagram</a>
-	</div>
-</div>
+		<!-- Couche dédiée aux poissons volants (hors overflow:hidden du body) -->
+		<div id="poisson-layer"></div>
 
-<!-- <svg id="svg1"><g id="g1"></g><g id="g2"></g></svg> -->
-<div id="div1"></div>
-<div id="div2"></div>
- 
+		<!-- FAUX MESSAGE D'ERREUR WINDOWS 98 -->
+		<div id="fakeError">
+			<div class="titlebar">
+				<span>⚠️ Erreur Système</span>
+				<span class="close-btn" onclick="closeFakeError()">✕</span>
+			</div>
+			<div class="body">
+				<div class="icon">🐟</div>
+				<div class="msg">
+					<strong>POISSON_D_AVRIL.exe</strong> a été détecté !<br><br>
+					Une erreur critique s'est produite :<br>
+					<em>"Trop de poissons en mémoire vive."</em><br><br>
+					Veuillez redémarrer votre cerveau. 🧠
+				</div>
+			</div>
+			<div class="btns">
+				<button onclick="closeFakeError()">OK (si vous osez)</button>
+			</div>
+		</div>
+
+		<div id="myNav" class="overlay">
+			<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+			<div class="overlay-content">
+				<a href="https://www.mediatheque-rueilmalmaison.fr/nos-services/latelier-multimedia" target="_blank">A propos</a>
+				<a href="https://www.mediatheque-rueilmalmaison.fr/" target="_blank">Médiathèque</a>
+				<a href="https://catalogue.mediatheque-rueilmalmaison.fr/" target="_blank">Catalogue</a>
+				<a href="https://fr-fr.facebook.com/mediathequerueil/" target="_blank">Facebook</a>
+				<a href="https://www.instagram.com/mediathequerueil/?hl=fr" target="_blank">Instagram</a>
+			</div>
+		</div>
+
+		<div id="div1"></div>
+		<div id="div2"></div>
+
 <script>
+// ============================================================
+//  HEURE DE CODE – SURPRISES 1er AVRIL
+//  Déclenchées au mouvement de la souris
+// ============================================================
 
-/*var ww=window.innerWidth;
-var wh=window.innerHeight;
+var container     = document.getElementById("mainContainer");
+var fakeErrorDiv  = document.getElementById("fakeError");
+var poissonLayer  = document.getElementById("poisson-layer");
 
-var svg1=document.getElementById("svg1");
-var g1=document.getElementById("g1");
-var g2=document.getElementById("g2");
+// ---- état ----
+var surpriseActive   = false;
+var errorShown       = false;
+var mouseMoveCnt     = 0;
+var mouseMoveThresh  = 30;    // nb de mouvements avant 1ère surprise
+var lastSurprise     = 0;
+var surpriseCooldown = 7000;  // ms entre deux surprises
 
-var div1=document.getElementById("div1");
-var div2=document.getElementById("div2");
+// ---- catalogue de messages d'erreur rigolos ----
+var erreurs = [
+	{
+		titre : "⚠️ Erreur Système",
+		icone : "🐟",
+		texte : "<strong>POISSON_D_AVRIL.exe</strong> a été détecté !<br><br>Erreur critique :<br><em>\"Trop de poissons en mémoire vive.\"</em><br><br>Veuillez redémarrer votre cerveau. 🧠"
+	},
+	{
+		titre : "🐠 Alerte Poisson",
+		icone : "🎣",
+		texte : "<strong>Attention !</strong><br><br>Quelqu'un a collé un poisson dans votre dos.<br><em>L'ordinateur aussi.</em><br><br>Système infecté à 100% de bonne humeur."
+	},
+	{
+		titre : "💥 Erreur Fatale",
+		icone : "🤪",
+		texte : "<strong>CERVEAU_ENFANT.dll</strong> introuvable.<br><br>Solution recommandée :<br><em>Coder quelque chose de rigolo.</em><br><br>Bonne Heure de Code ! 🚀"
+	},
+	{
+		titre : "🖥️ Windows 1er Avril",
+		icone : "😂",
+		texte : "Le clavier a disparu.<br><br><em>Pour récupérer votre clavier,<br>retournez l'écran à l'envers.</em><br><br>(C'est une blague. Ou pas ?)"
+	}
+];
+var erreurIndex = 0;
 
-var x0=ww/2;
-var y0=wh/2;
+// ============================================================
+//  POISSONS QUI VOLENT — injectés dans #poisson-layer
+//  (évite le overflow:hidden du body dans style.css)
+// ============================================================
+var poissons = ["🐟","🐠","🐡","🎣","🦈","🐙"];
 
-var x0b=ww/2;
-var y0b=wh/2;
-
-var x1,y1;
-var x1b,y1b;
-
-var i=1;
-var a=25;
-var ab=25;
-
-var radius=50;
-
-var col1="#"+Math.round(0xFFFFFF*Math.random()).toString(16);
-var col2="#"+Math.round(0xFFFFFF*Math.random()).toString(16);
-
-var angle=Math.round((Math.random()*Math.PI*2)*100)/100;
-var angleb=Math.round((Math.random()*Math.PI*2)*100)/100;
-
-x1 = Math.round(x0+Math.cos(angle)*radius);
-y1 = Math.round(y0+Math.sin(angle)*radius);
-
-x1b = Math.round(x0+Math.cos(angle)*radius);
-y1b = Math.round(y0+Math.sin(angle)*radius);
-
-div1.innerHTML="paths : "+i+"/"+a+"<br>angle : "+angle+"<br>x0 : "+x0+"<br>y0 : "+y0+"<br>x1 : "+x1+"<br>y1 : "+y1;
-div2.innerHTML="paths : "+i+"/"+ab+"<br>angle : "+angleb+"<br>x0 : "+x0b+"<br>y0 : "+y0b+"<br>x1 : "+x1b+"<br>y1 : "+y1b;
-
-function Dopamine(){
-	var path1=document.createElementNS(svg1.namespaceURI,"path");
-	var path2=document.createElementNS(svg1.namespaceURI,"path");
-
-	path1.setAttributeNS(null,"d","m"+x0+" "+y0+"L"+x1+" "+y1);
-	path1.setAttributeNS(null,"stroke",col1)
-	path1.setAttributeNS(null,"stroke-width","15px");
-	path1.setAttributeNS(null,"fill","none");
-	path1.setAttributeNS(null,"opacity","0.8");
-	path1.setAttributeNS(null,"stroke-linecap","round");
-	
-	path2.setAttributeNS(null,"d","m"+x0b+" "+y0b+"L"+x1b+" "+y1b);
-	path2.setAttributeNS(null,"stroke",col2)
-	path2.setAttributeNS(null,"stroke-width","15px");
-	path2.setAttributeNS(null,"fill","none");
-	path2.setAttributeNS(null,"opacity","0.8");
-	path2.setAttributeNS(null,"stroke-linecap","round");
-		
-	g1.appendChild(path1);
-	g1.appendChild(path2);
-	
-	i++;
-	
-	if(i==a+1){g1.removeChild(g1.firstChild);i=a;}
-	if(i==ab+1){g1.removeChild(g2.firstChild);i=a;}
-	x0=x1;
-	y0=y1;
-	x0b=x1b;
-	y0b=y1b;
-	angle=Math.round((Math.random()*Math.PI*2)*100)/100;
-	angleb=Math.round((Math.random()*Math.PI*2)*100)/100;
-	x1=Math.round(x0+Math.cos(angle)*radius);
-	y1=Math.round(y0+Math.sin(angle)*radius);
-	x1b=Math.round(x0+Math.cos(angle)*radius);
-	y1b=Math.round(y0+Math.sin(angle)*radius);	
-	if(x1<0){x1=x1+(radius*2);}
-	if(x1>ww){x1=x1-(radius*2);}
-	if(y1<0){y1=y1+(radius*2);}
-	if(y1>wh){y1=y1-(radius*2);}
-	
-	if(x1<0){x1b=x1b+(radius*2);}
-	if(x1>ww){x1b=x1b-(radius*2);}
-	if(y1b<0){y1b=y1b+(radius*2);}
-	if(y1b>wh){y1b=y1b-(radius*2);}
-	
-	div1.innerHTML="paths : "+i+"/"+a+"<br>angle : "+angle+"<br>x0 : "+x0+"<br>y0 : "+y0+"<br>x1 : "+x1+"<br>y1 : "+y1;
-	div2.innerHTML="paths : "+i+"/"+ab+"<br>angle : "+angleb+"<br>x0 : "+x0b+"<br>y0 : "+y0b+"<br>x1 : "+x1b+"<br>y1 : "+y1b;
-	
-}
-setInterval(Dopamine,20);
-
-function ccol(){
-	col1="#"+Math.round(0xFFFFFF * Math.random()).toString(16);
-	col2="#"+Math.round(0xFFFFFF * Math.random()).toString(16);
+function lancerPoisson(x, y) {
+	var el = document.createElement("div");
+	el.classList.add("poisson");
+	el.textContent = poissons[Math.floor(Math.random() * poissons.length)];
+	// position relative à la couche fixed
+	el.style.left      = (x + Math.random()*80 - 40) + "px";
+	el.style.top       = (y + Math.random()*60 - 30) + "px";
+	el.style.fontSize  = (1.5 + Math.random()*2) + "rem";
+	poissonLayer.appendChild(el);
+	setTimeout(function(){ el.remove(); }, 3600);
 }
 
-setInterval(ccol,1000);*/
+// ============================================================
+//  VIGNETTES QUI SE DÉPLACENT (sautent quand la souris passe)
+// ============================================================
+var links = container.querySelectorAll("a");
 
-var hid=document.getElementById("hid");
-var div1=document.getElementById("div1");
+links.forEach(function(link) {
+	link.addEventListener("mouseenter", function(){
+		if (!surpriseActive) return;
+		var dx = (Math.random() - 0.5) * 220;
+		var dy = (Math.random() - 0.5) * 220;
+		link.style.transform = "translate("+dx+"px, "+dy+"px) rotate("+(Math.random()*30-15)+"deg) scale("+(0.8+Math.random()*0.6)+")";
+	});
+	link.addEventListener("mouseleave", function(){
+		if (!surpriseActive) return;
+		// revient en place après un délai
+		setTimeout(function(){
+			link.style.transform = "";
+		}, 600 + Math.random()*400);
+	});
+});
+
+// ============================================================
+//  RETOURNER LES IMAGES
+// ============================================================
+function activerFlip() {
+	container.classList.add("flip-mode");
+	flipActive = true;
+	setTimeout(function(){
+		container.classList.remove("flip-mode");
+		flipActive = false;
+	}, 5000);
+}
+
+// ============================================================
+//  FAUX MESSAGE D'ERREUR
+// ============================================================
+function montrerFakeError() {
+	if (errorShown) return;
+	errorShown = true;
+	var e = erreurs[erreurIndex % erreurs.length];
+	erreurIndex++;
+	fakeErrorDiv.querySelector(".titlebar span:first-child").textContent = e.titre;
+	fakeErrorDiv.querySelector(".icon").textContent = e.icone;
+	fakeErrorDiv.querySelector(".msg").innerHTML = e.texte;
+	fakeErrorDiv.style.display = "block";
+}
+
+function closeFakeError() {
+	fakeErrorDiv.style.display = "none";
+	errorShown = false;
+}
+
+// ============================================================
+//  ORCHESTRATEUR DE SURPRISES
+// ============================================================
+var surpriseQueue = ["poissons", "flip", "erreur", "poissons", "chaos"];
+var surpriseIdx   = 0;
+
+function declencherSurprise(x, y) {
+	var now = Date.now();
+	if (now - lastSurprise < surpriseCooldown) return;
+	lastSurprise = now;
+
+	var type = surpriseQueue[surpriseIdx % surpriseQueue.length];
+	surpriseIdx++;
+
+	switch(type) {
+
+		case "poissons":
+			surpriseActive = true;
+			// Faire pleuvoir 8 poissons autour du curseur
+			for (var i = 0; i < 8; i++) {
+				(function(delay){
+					setTimeout(function(){
+						lancerPoisson(x, y);
+					}, delay);
+				})(i * 150);
+			}
+			setTimeout(function(){ surpriseActive = false; }, 4000);
+			break;
+
+		case "flip":
+			activerFlip();
+			// quelques poissons aussi
+			for (var j = 0; j < 4; j++) {
+				(function(d){ setTimeout(function(){ lancerPoisson(x, y); }, d); })(j*200);
+			}
+			break;
+
+		case "erreur":
+			montrerFakeError();
+			break;
+
+		case "chaos":
+			// Toutes les vignettes partent en vrille !
+			surpriseActive = true;
+			links.forEach(function(link){
+				var dx = (Math.random()-0.5)*300;
+				var dy = (Math.random()-0.5)*300;
+				link.style.transition = "transform 0.4s cubic-bezier(.36,.07,.19,.97)";
+				link.style.transform  = "translate("+dx+"px,"+dy+"px) rotate("+(Math.random()*45-22)+"deg)";
+			});
+			// quelques poissons
+			for (var k = 0; k < 6; k++) {
+				(function(d){ setTimeout(function(){ lancerPoisson(x, y); }, d); })(k*120);
+			}
+			// tout revient en place
+			setTimeout(function(){
+				links.forEach(function(link){
+					link.style.transition = "transform 0.7s ease";
+					link.style.transform  = "";
+				});
+				surpriseActive = false;
+			}, 3000);
+			break;
+	}
+}
+
+// ============================================================
+//  ÉCOUTEUR SOURIS
+// ============================================================
+document.addEventListener("mousemove", function(e) {
+	mouseMoveCnt++;
+
+	// Poisson léger qui suit le curseur (1 chance sur 40)
+	if (surpriseActive && Math.random() < 0.025) {
+		lancerPoisson(e.clientX, e.clientY);
+	}
+
+	// Déclencher une surprise après le seuil initial, puis selon cooldown
+	if (mouseMoveCnt >= mouseMoveThresh) {
+		declencherSurprise(e.clientX, e.clientY);
+	}
+});
+
+// ============================================================
+//  HEURE (logique originale conservée)
+// ============================================================
+var hid  = document.getElementById("hid");
+var div1 = document.getElementById("div1");
+
 function checkTime(){
-	var d=new Date();
-	var hour=d.getHours();
-	var minute=d.getMinutes();
-	div1.innerHTML=hour+" "+minute;
-	if(hour==11&&minute>49||hour==14&&minute>49||hour==15&&minute<10){hid.style.visibility="visible";}
-	if(hour==12&&minute>10||hour==15&&minute>10){hid.style.visibility="hidden";}
-	if(hour==16&&minute>49||hour==17&&minute<10){hid.style.visibility="visible";}
+	var d      = new Date();
+	var hour   = d.getHours();
+	var minute = d.getMinutes();
+	div1.innerHTML = hour + " " + minute;
+	if (hour==11&&minute>49 || hour==14&&minute>49 || hour==15&&minute<10) { hid.style.visibility="visible"; }
+	if (hour==12&&minute>10 || hour==15&&minute>10)                        { hid.style.visibility="hidden";  }
+	if (hour==16&&minute>49 || hour==17&&minute<10)                        { hid.style.visibility="visible"; }
 }
 checkTime();
-setInterval(checkTime,60000);
-//hid.style.visibility="visible";
+setInterval(checkTime, 60000);
 </script>
 
 <script>
 function openNav(){
-  document.getElementById("myNav").style.width = "100%";
+	document.getElementById("myNav").style.width = "100%";
 }
-
 function closeNav(){
-  document.getElementById("myNav").style.width = "0%";
+	document.getElementById("myNav").style.width = "0%";
 }
 
-//document.body.style.backgroundColor="#"+Math.round(0xFFFFFF * Math.random()).toString(16);
-function chgcol(){document.body.style.backgroundColor="#"+Math.round(0xFFFFFF * Math.random()).toString(16);}
-setInterval(chgcol,3000);
-
-/*function checkhour(){
-var div2=document.getElementById("div2");
-var d=new Date();
-var e=Math.ceil(d.getHours());
-div2.innerHTML=d+" "+e;
-}
-checkhour();*/
+function chgcol(){ document.body.style.backgroundColor = "#" + Math.round(0xFFFFFF * Math.random()).toString(16); }
+setInterval(chgcol, 3000);
 </script>
-<!--<script src="snow.js"></script>-->
 	</body>
 </html>
-
