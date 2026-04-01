@@ -127,11 +127,7 @@
 
 			/* ========== EXPLOSION PLEIN ÉCRAN ========== */
 			#explosion-layer {
-				position: fixed;
-				inset: 0;
-				pointer-events: none;
-				z-index: 999999;
-				overflow: hidden;
+				display: none; /* unused — particles injected into body directly */
 			}
 			.particle {
 				position: fixed;
@@ -416,7 +412,7 @@ var COLORS    = ["#ff4757","#ffa502","#2ed573","#1e90ff","#ff6b81","#eccc68","#a
 var EASES     = ["cubic-bezier(.2,.8,.4,1)","cubic-bezier(.1,.9,.3,1)","cubic-bezier(.25,1,.5,1)"];
 
 function bigExplosion(cx, cy) {
-	var layer = document.getElementById("explosion-layer");
+	var layer = document.body; // fixed children are always relative to viewport when parent has no transform
 
 	// Flash blanc
 	var flash = document.createElement("div");
