@@ -412,12 +412,12 @@ var COLORS    = ["#ff4757","#ffa502","#2ed573","#1e90ff","#ff6b81","#eccc68","#a
 var EASES     = ["cubic-bezier(.2,.8,.4,1)","cubic-bezier(.1,.9,.3,1)","cubic-bezier(.25,1,.5,1)"];
 
 function bigExplosion(cx, cy) {
-	var layer = document.body; // fixed children are always relative to viewport when parent has no transform
+	var layer = document.documentElement; // <html> — jamais affecté par overflow:hidden ou transform du body
 
 	// Flash blanc
 	var flash = document.createElement("div");
 	flash.classList.add("flash-overlay");
-	document.body.appendChild(flash);
+	document.documentElement.appendChild(flash);
 	setTimeout(function(){ flash.remove(); }, 600);
 
 	// Onde de choc
@@ -427,7 +427,7 @@ function bigExplosion(cx, cy) {
 	wave.style.setProperty("--cy", cy + "px");
 	wave.style.left = cx + "px";
 	wave.style.top  = cy + "px";
-	document.body.appendChild(wave);
+	document.documentElement.appendChild(wave);
 	setTimeout(function(){ wave.remove(); }, 1000);
 
 	// Particules colorées (confettis)
