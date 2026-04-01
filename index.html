@@ -391,17 +391,7 @@ function montrerFakeError() {
 function closeFakeError(e) {
 	fakeErrorDiv.style.display = "none";
 	errorShown = false;
-
-	// Point d'origine = bouton OK (ou centre écran)
-	var cx = window.innerWidth  / 2;
-	var cy = window.innerHeight / 2;
-	if (e && e.target) {
-		var r = e.target.getBoundingClientRect();
-		cx = r.left + r.width  / 2;
-		cy = r.top  + r.height / 2;
-	}
-
-	bigExplosion(cx, cy);
+	bigExplosion(window.innerWidth / 2, window.innerHeight / 2);
 }
 
 // ============================================================
