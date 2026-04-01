@@ -134,7 +134,7 @@
 				overflow: hidden;
 			}
 			.particle {
-				position: absolute;
+				position: fixed;
 				border-radius: 3px;
 				pointer-events: none;
 				animation: explode var(--dur) var(--ease) forwards;
@@ -145,7 +145,7 @@
 				100% { transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(var(--rot)); opacity: 0; }
 			}
 			.star-burst {
-				position: absolute;
+				position: fixed;
 				pointer-events: none;
 				font-size: var(--fs);
 				animation: starfly var(--dur) var(--ease) forwards;
