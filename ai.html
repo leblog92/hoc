@@ -1,59 +1,333 @@
 <!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1"/>
-		<title>Hour of Code</title>
-		<link rel="shortcut icon" href="favicon.ico" />
-		<link rel="stylesheet" type="text/css" href="style.css" />
-	</head>
-	<body>
-		<div class="container">
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>IA — Heure de Code</title>
+<link rel="shortcut icon" href="img/favicon.ico"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:      #f0f4ff;
+    --surface: #ffffff;
+    --text:    #1a1a2e;
+    --muted:   #6b7280;
+    --radius:  16px;
+    --radius-sm: 10px;
+    --cat-ai-bg:   #ffedd5; --cat-ai-tx:   #9a3412;
+    --cat-art-bg:  #fef3c7; --cat-art-tx:  #92400e;
+    --cat-code-bg: #dbeafe; --cat-code-tx: #1e40af;
+    --cat-jeu-bg:  #fce7f3; --cat-jeu-tx:  #9d174d;
+    --cat-video-bg:#ede9fe; --cat-video-tx:#5b21b6;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-				<div onclick="openNav()" style="border-radius:50%;"><img src="img/menu.png"/></div>
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
 
-				<a href="https://quickdraw.withgoogle.com/" target="_blank" title="Quick Draw"><div><img src="img/ai1.png"/></div></a>
-				<a href="https://machinelearningforkids.co.uk/" target="_blank" title="Machine Learning"><div><img src="img/ai2.png"/></div></a>
-				<a href="https://teachablemachine.withgoogle.com/" target="_blank" title="Machine Learning"><div><img src="img/ai3.png"/></div></a>
-				<a href="https://labs.google/" target="_blank" title="Google AI Labs"><div><img src="img/ai4.png"/></div></a>
-				<a href="https://studio.code.org/courses/oceans/units/1/lessons/1/levels/1?lang=fr-FR" target="_blank" title="IA pour les Océans"><div><img src="img/ai5.png"/></div></a>
-				<a href="https://pixees.fr/" target="_blank" title="Pixee"><div><img src="img/ai6.png"/></div></a>
-				<a href="https://scratch.mit.edu/search/projects?q=AI" target="_blank" title="Scratch"><div><img src="img/ai7.png"/></div></a>
-				<a href="https://www.craiyon.com/" target="_blank" title="AI comic factory"><div><img src="img/ai8.jpg"/></div></a>
-				<a href="https://www.youtube.com/watch?v=TfL-H8goDF0" target="_blank" title="C'est quoi l'IA ?"><div><img src="img/ai9.png"/></div></a>
-				<a href="https://leblog92.github.io/hoc/gal/index.html" target="_blank" title="Galerie"><div><img src="img/ai10.png"/></div></a>
-				<a href="https://www.pistile.com/MissionIA/index.html" target="_blank" title="MissionIA"><div><img src="img/ai11.png"/></div></a>
-				
-				<a href="index.html" target="_blank" title="AI comic factory"><div><img src="img/left.png"/></div></a>
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid #e5e7eb;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .menu-btn {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 2px solid #e5e7eb;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    transition: background .15s;
+  }
+  .menu-btn:hover { background: #e0e7ff; }
+  .menu-btn svg { width: 20px; height: 20px; }
 
-		</div>
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg);
+    border: 2px solid #e5e7eb;
+    color: var(--text);
+    text-decoration: none;
+    font-family: 'Baloo 2', cursive;
+    font-size: 13px; font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 30px;
+    transition: background .15s;
+    flex-shrink: 0;
+  }
+  .back-btn:hover { background: #e0e7ff; }
 
-<div id="myNav" class="overlay">
-	<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-	<div class="overlay-content">
-		<a href="https://www.mediatheque-rueilmalmaison.fr/nos-services/latelier-multimedia" target="_blank">A propos</a>
-		<a href="https://www.mediatheque-rueilmalmaison.fr/" target="_blank">Médiathèque</a>
-		<a href="https://catalogue.mediatheque-rueilmalmaison.fr/" target="_blank">Catalogue</a>
-		<a href="https://fr-fr.facebook.com/mediathequerueil/" target="_blank">Facebook</a>
-		<a href="https://www.instagram.com/mediathequerueil/?hl=fr" target="_blank">Instagram</a>
-	</div>
-</div>
-<svg id="svg1"><g id="g1"></g></svg>
-<div id="div1"></div>
-<div id="div2"></div>
+  .header-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 22px; font-weight: 800;
+    color: var(--text); line-height: 1;
+  }
+  .header-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  #div1 {
+    margin-left: auto;
+    font-size: 14px; color: var(--muted); font-weight: 700;
+    font-family: 'Baloo 2', cursive;
+    min-width: 52px; text-align: right;
+  }
+
+  /* ── MAIN ── */
+  main { padding: 28px 16px 60px; max-width: 1100px; margin: 0 auto; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 36px; }
+  .section-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+  }
+  .section-icon { font-size: 22px; line-height: 1; }
+  .section-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 19px; font-weight: 700;
+    color: var(--text); white-space: nowrap;
+  }
+  .section-line { flex: 1; height: 2px; background: #e5e7eb; border-radius: 2px; }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 2px solid #e5e7eb;
+    overflow: hidden;
+    text-decoration: none; color: inherit;
+    display: flex; flex-direction: column;
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: #a5b4fc;
+    box-shadow: 0 8px 24px rgba(99,102,241,.15);
+  }
+  .card-thumb {
+    width: 100%; aspect-ratio: 1; object-fit: cover;
+    display: block; background: var(--bg);
+  }
+  .card-body {
+    padding: 8px 10px 10px;
+    display: flex; flex-direction: column; gap: 5px; flex: 1;
+  }
+  .card-name { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.25; }
+
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px; letter-spacing: .02em; width: fit-content;
+  }
+  .b-ai    { background: var(--cat-ai-bg);    color: var(--cat-ai-tx);    }
+  .b-art   { background: var(--cat-art-bg);   color: var(--cat-art-tx);   }
+  .b-code  { background: var(--cat-code-bg);  color: var(--cat-code-tx);  }
+  .b-jeu   { background: var(--cat-jeu-bg);   color: var(--cat-jeu-tx);   }
+  .b-video { background: var(--cat-video-bg); color: var(--cat-video-tx); }
+
+  /* ── MENU OVERLAY ── */
+  .overlay {
+    height: 100%; width: 0;
+    position: fixed; z-index: 200; top: 0; left: 0;
+    background: rgba(26,26,46,.96);
+    overflow-x: hidden; transition: width .3s ease;
+  }
+  .overlay-content {
+    position: relative; top: 80px; width: 100%;
+    padding: 0 20px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .overlay-content a {
+    font-family: 'Baloo 2', cursive;
+    font-size: 22px; font-weight: 600; color: #fff;
+    text-decoration: none; padding: 12px 16px;
+    border-radius: var(--radius-sm); transition: background .15s;
+  }
+  .overlay-content a:hover { background: rgba(255,255,255,.1); }
+  .closebtn {
+    position: absolute; top: 20px; right: 24px;
+    font-size: 34px; color: #fff; text-decoration: none; line-height: 1;
+  }
+
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+    .header-title { font-size: 18px; }
+    main { padding: 16px 10px 50px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="menu-btn" onclick="openNav()" aria-label="Menu">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="2" y1="5"  x2="18" y2="5"/>
+      <line x1="2" y1="10" x2="18" y2="10"/>
+      <line x1="2" y1="15" x2="18" y2="15"/>
+    </svg>
+  </button>
+  <a class="back-btn" href="index.html">&#8592; Accueil</a>
+  <div>
+    <div class="header-title">🤖 Intelligence Artificielle</div>
+    <div class="header-sub">Médiathèque de Rueil-Malmaison</div>
+  </div>
+  <div id="div1">--h--</div>
+</header>
+
+<main>
+
+  <!-- Découvrir l'IA -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🧠</span>
+      <span class="section-title">Découvrir l'IA</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://www.youtube.com/watch?v=TfL-H8goDF0" target="_blank">
+        <img class="card-thumb" src="img/ai9.png" alt="C'est quoi l'IA ?" loading="lazy"/>
+        <div class="card-body"><div class="card-name">C'est quoi l'IA ?</div><span class="badge b-video">Vidéo</span></div>
+      </a>
+
+      <a class="card" href="https://pixees.fr/" target="_blank">
+        <img class="card-thumb" src="img/ai6.png" alt="Pixees" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Pixees</div><span class="badge b-ai">IA</span></div>
+      </a>
+
+      <a class="card" href="https://studio.code.org/courses/oceans/units/1/lessons/1/levels/1?lang=fr-FR" target="_blank">
+        <img class="card-thumb" src="img/ai5.png" alt="IA pour les Océans" loading="lazy"/>
+        <div class="card-body"><div class="card-name">IA pour les Océans</div><span class="badge b-ai">IA</span></div>
+      </a>
+
+      <a class="card" href="https://www.pistile.com/MissionIA/index.html" target="_blank">
+        <img class="card-thumb" src="img/ai11.png" alt="Mission IA" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Mission IA</div><span class="badge b-ai">IA</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Jouer avec l'IA -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🎮</span>
+      <span class="section-title">Jouer avec l'IA</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://quickdraw.withgoogle.com/" target="_blank">
+        <img class="card-thumb" src="img/ai1.png" alt="Quick Draw" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Quick Draw</div><span class="badge b-jeu">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://www.craiyon.com/" target="_blank">
+        <img class="card-thumb" src="img/ai8.jpg" alt="Craiyon" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Craiyon</div><span class="badge b-art">Art</span></div>
+      </a>
+
+      <a class="card" href="https://labs.google/" target="_blank">
+        <img class="card-thumb" src="img/ai4.png" alt="Google AI Labs" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Google AI Labs</div><span class="badge b-jeu">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://leblog92.github.io/hoc/gal/index.html" target="_blank">
+        <img class="card-thumb" src="img/ai10.png" alt="Galerie IA" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Galerie IA</div><span class="badge b-art">Art</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Entraîner l'IA -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">⚙️</span>
+      <span class="section-title">Entraîner l'IA</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://machinelearningforkids.co.uk/" target="_blank">
+        <img class="card-thumb" src="img/ai2.png" alt="Machine Learning for Kids" loading="lazy"/>
+        <div class="card-body"><div class="card-name">ML for Kids</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="https://teachablemachine.withgoogle.com/" target="_blank">
+        <img class="card-thumb" src="img/ai3.png" alt="Teachable Machine" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Teachable Machine</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="https://scratch.mit.edu/search/projects?q=intelligence%20artificielle" target="_blank">
+        <img class="card-thumb" src="img/ai7.png" alt="Scratch IA" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Scratch IA</div><span class="badge b-code">Code</span></div>
+      </a>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ══ MENU OVERLAY ══ -->
+<nav id="myNav" class="overlay">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <div class="overlay-content">
+    <a href="https://www.mediatheque-rueilmalmaison.fr/nos-services/latelier-multimedia" target="_blank">À propos</a>
+    <a href="https://www.mediatheque-rueilmalmaison.fr/" target="_blank">Médiathèque</a>
+    <a href="https://leblog92.github.io/JVO/" target="_blank">Catalogue JVO</a>
+    <a href="https://fr-fr.facebook.com/mediathequerueil/" target="_blank">Facebook</a>
+    <a href="https://www.instagram.com/mediathequerueil/" target="_blank">Instagram</a>
+  </div>
+</nav>
 
 <script>
-function openNav(){
-  document.getElementById("myNav").style.width = "100%";
-}
+  function openNav()  { document.getElementById("myNav").style.width = "280px"; }
+  function closeNav() { document.getElementById("myNav").style.width = "0"; }
 
-function closeNav(){
-  document.getElementById("myNav").style.width = "0%";
-}
+  var div1 = document.getElementById("div1");
 
-function chgcol(){document.body.style.backgroundColor="#"+Math.round(0xFFFFFF * Math.random()).toString(16);}
-setInterval(chgcol,3000);
+  function afficherHeure(iso) {
+    var d = iso ? new Date(iso) : new Date();
+    div1.textContent = d.toLocaleTimeString("fr-FR", {
+      timeZone: "Europe/Paris", hour: "2-digit", minute: "2-digit", hour12: false
+    });
+  }
 
+  function fetchHeure() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "https://worldtimeapi.org/api/timezone/Europe/Paris", true);
+    xhr.timeout = 4000;
+    xhr.onload = function() {
+      try { afficherHeure(JSON.parse(xhr.responseText).datetime); }
+      catch(e) { afficherHeure(null); }
+    };
+    xhr.onerror = xhr.ontimeout = function() { afficherHeure(null); };
+    xhr.send();
+  }
+
+  fetchHeure();
+  setInterval(function() {
+    new Date().getMinutes() % 2 === 0 ? fetchHeure() : afficherHeure(null);
+  }, 30000);
 </script>
-	</body>
+
+</body>
 </html>

@@ -26,6 +26,7 @@
     --cat-maths-bg:   #e0f2fe; --cat-maths-tx:   #0c4a6e;
     --cat-3d-bg:      #f3e8ff; --cat-3d-tx:      #6b21a8;
     --cat-fiches-bg:  #fef9c3; --cat-fiches-tx:  #713f12;
+    --cat-concours-bg:#fde68a; --cat-concours-tx:#78350f;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -79,9 +80,12 @@
 
   #div1 {
     margin-left: auto;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--muted);
-    font-weight: 600;
+    font-weight: 700;
+    font-family: 'Baloo 2', cursive;
+    min-width: 52px;
+    text-align: right;
   }
 
   /* ── MAIN ── */
@@ -177,6 +181,7 @@
   .b-maths    { background: var(--cat-maths-bg);    color: var(--cat-maths-tx);    }
   .b-3d       { background: var(--cat-3d-bg);       color: var(--cat-3d-tx);       }
   .b-fiches   { background: var(--cat-fiches-bg);   color: var(--cat-fiches-tx);   }
+  .b-concours { background: var(--cat-concours-bg); color: var(--cat-concours-tx); }
 
   /* ── MENU OVERLAY ── */
   .overlay {
@@ -239,7 +244,7 @@
     <div class="header-title">🖥️ Heure de Code</div>
     <div class="header-sub">Médiathèque de Rueil-Malmaison</div>
   </div>
-  <div id="div1"></div>
+  <div id="div1">--h--</div>
 </header>
 
 <!-- ══ MAIN CONTENT ══ -->
@@ -264,9 +269,9 @@
         <div class="card-body"><div class="card-name">Fiches Scratch</div><span class="badge b-fiches">Fiches</span></div>
       </a>
 
-      <a class="card" href="https://hourofcode.com/us/fr/learn" target="_blank">
-        <img class="card-thumb" src="img/hoc.png" alt="Hour of Code" loading="lazy"/>
-        <div class="card-body"><div class="card-name">Hour of Code</div><span class="badge b-code">Code</span></div>
+      <a class="card" href="https://csforall.org/fr" target="_blank">
+        <img class="card-thumb" src="img/hoc.png" alt="CS For All" loading="lazy"/>
+        <div class="card-body"><div class="card-name">CS For All</div><span class="badge b-code">Code</span></div>
       </a>
 
       <a class="card" href="https://studio.code.org/projects/public" target="_blank">
@@ -316,14 +321,9 @@
         <div class="card-body"><div class="card-name">Tynker</div><span class="badge b-game">Jeu</span></div>
       </a>
 
-      <a class="card" href="https://lightbot.com/flash.html" target="_blank">
-        <img class="card-thumb" src="img/light.jpg" alt="Light Bot" loading="lazy"/>
-        <div class="card-body"><div class="card-name">Light Bot</div><span class="badge b-game">Jeu</span></div>
-      </a>
-
       <a class="card" href="http://lightbot.lu/" target="_blank">
-        <img class="card-thumb" src="img/light2.png" alt="Light Bot 2" loading="lazy"/>
-        <div class="card-body"><div class="card-name">Light Bot 2</div><span class="badge b-game">Jeu</span></div>
+        <img class="card-thumb" src="img/light2.png" alt="Light Bot" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Light Bot</div><span class="badge b-game">Jeu</span></div>
       </a>
 
       <a class="card" href="http://compute-it.toxicode.fr/" target="_blank">
@@ -356,9 +356,14 @@
         <div class="card-body"><div class="card-name">Chevalier de la prog.</div><span class="badge b-game">Jeu</span></div>
       </a>
 
-      <a class="card" href="https://www.codingame.com/start/fr/" target="_blank">
-        <img class="card-thumb" src="img/cg.jpg" alt="CodinGame" loading="lazy"/>
-        <div class="card-body"><div class="card-name">CodinGame</div><span class="badge b-game">Jeu</span></div>
+      <a class="card" href="test.html" target="_blank">
+        <img class="card-thumb" src="img/test.png" alt="Test mémoire" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Test mémoire</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="p4.html" target="_blank">
+        <img class="card-thumb" src="img/p4.jpg" alt="Puissance 4" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Puissance 4</div><span class="badge b-game">Jeu</span></div>
       </a>
 
       <a class="card" href="https://app.citizencode.net/demo/backend-driven" target="_blank">
@@ -405,23 +410,35 @@
 
       <a class="card" href="https://www.kwyk.fr/algorithme/" target="_blank">
         <img class="card-thumb" src="img/kwyk.png" alt="Kwyk" loading="lazy"/>
-        <div class="card-body"><div class="card-name">Kwyk</div><span class="badge b-code">Code</span></div>
+        <div class="card-body"><div class="card-name">Kwyk Algo</div><span class="badge b-code">Code</span></div>
       </a>
 
-      <a class="card" href="https://openprocessing.org/" target="_blank">
-        <img class="card-thumb" src="img/op.png" alt="OpenProcessing" loading="lazy"/>
-        <div class="card-body"><div class="card-name">OpenProcessing</div><span class="badge b-code">Code</span></div>
-      </a>
-
-      <a class="card" href="test.html" target="_blank">
-        <img class="card-thumb" src="img/test.png" alt="Test mémoire" loading="lazy"/>
-        <div class="card-body"><div class="card-name">Test mémoire</div><span class="badge b-code">Code</span></div>
+      <a class="card" href="https://www.france-ioi.org/" target="_blank">
+        <img class="card-thumb" src="img/incr.png" alt="France IOI" loading="lazy"/>
+        <div class="card-body"><div class="card-name">France-IOI</div><span class="badge b-code">Code</span></div>
       </a>
 
     </div>
   </section>
 
-  <!-- 4. Musique & son -->
+  <!-- 4. Concours -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🏆</span>
+      <span class="section-title">Concours</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://castor-informatique.fr/" target="_blank">
+        <img class="card-thumb" src="img/defis.png" alt="Castor Informatique" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Castor Informatique</div><span class="badge b-concours">Concours</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 5. Musique & son -->
   <section class="section">
     <div class="section-header">
       <span class="section-icon">🎵</span>
@@ -453,7 +470,7 @@
     </div>
   </section>
 
-  <!-- 5. Art & création -->
+  <!-- 6. Art & création -->
   <section class="section">
     <div class="section-header">
       <span class="section-icon">🎨</span>
@@ -480,7 +497,7 @@
     </div>
   </section>
 
-  <!-- 6. 3D & construction -->
+  <!-- 7. 3D & construction -->
   <section class="section">
     <div class="section-header">
       <span class="section-icon">🧱</span>
@@ -501,18 +518,18 @@
 
       <a class="card" href="https://www.lego.com/assets/FranchiseSites/Portal/BitsAndBricks2/v10/deploydsd/index.html" target="_blank">
         <img class="card-thumb" src="img/02.png" alt="Bits'n'Bricks" loading="lazy"/>
-        <div class="card-body"><div class="card-name">Bits'n'Bricks</div><span class="badge b-3d">3D</span></div>
+        <div class="card-body"><div class="card-name">Bits'n'Bricks</div><span class="badge b-game">Jeu</span></div>
       </a>
 
-      <a class="card" href="https://projects.raspberrypi.org/fr-FR/projects" target="_blank">
+      <a class="card" href="https://projects.raspberrypi.org/fr-FR/" target="_blank">
         <img class="card-thumb" src="img/boat.jpg" alt="Raspberry Pi" loading="lazy"/>
-        <div class="card-body"><div class="card-name">Raspberry Pi Projects</div><span class="badge b-3d">3D</span></div>
+        <div class="card-body"><div class="card-name">Raspberry Pi Projects</div><span class="badge b-code">Code</span></div>
       </a>
 
     </div>
   </section>
 
-  <!-- 7. Internet & sécurité -->
+  <!-- 8. Internet & sécurité -->
   <section class="section">
     <div class="section-header">
       <span class="section-icon">🌐</span>
@@ -526,15 +543,10 @@
         <div class="card-body"><div class="card-name">Internet sans crainte</div><span class="badge b-internet">Internet</span></div>
       </a>
 
-      <a class="card" href="https://chromewebstore.google.com/detail/ruffle-flash-emulator/donbcfbmhbcapadipfkeojnmajbakjdc?hl=fr" target="_blank">
-        <img class="card-thumb" src="img/ruffle.jpg" alt="Ruffle" loading="lazy"/>
-        <div class="card-body"><div class="card-name">Ruffle (Flash)</div><span class="badge b-internet">Internet</span></div>
-      </a>
-
     </div>
   </section>
 
-  <!-- 8. Intelligence Artificielle -->
+  <!-- 9. Intelligence Artificielle -->
   <section class="section">
     <div class="section-header">
       <span class="section-icon">🤖</span>
@@ -556,7 +568,7 @@
     </div>
   </section>
 
-  <!-- 9. Liens cachés (horaires) -->
+  <!-- 10. Liens cachés (horaires) -->
   <span id="hid" style="visibility:hidden; display:contents;">
     <section class="section">
       <div class="section-header">
@@ -593,7 +605,7 @@
   <div class="overlay-content">
     <a href="https://www.mediatheque-rueilmalmaison.fr/nos-services/latelier-multimedia" target="_blank">À propos</a>
     <a href="https://www.mediatheque-rueilmalmaison.fr/" target="_blank">Médiathèque</a>
-    <a href="https://catalogue.mediatheque-rueilmalmaison.fr/" target="_blank">Catalogue</a>
+    <a href="https://leblog92.github.io/JVO/" target="_blank">Catalogue JVO</a>
     <a href="https://fr-fr.facebook.com/mediathequerueil/" target="_blank">Facebook</a>
     <a href="https://www.instagram.com/mediathequerueil/" target="_blank">Instagram</a>
   </div>
@@ -606,9 +618,41 @@
   var div1 = document.getElementById("div1");
   var hid  = document.getElementById("hid");
 
-  function checkTime() {
-    var d = new Date(), h = d.getHours(), m = d.getMinutes();
-    div1.textContent = h + "h" + (m < 10 ? "0" : "") + m;
+  /* ─────────────────────────────────────────────────────────────
+     HEURE LOCALE DE RUEIL-MALMAISON (Europe/Paris)
+     Stratégie : on essaie worldtimeapi.org (gratuit, sans clé).
+     Si la requête échoue (réseau coupé, timeout…) on replie
+     sur new Date() interprété en Europe/Paris via Intl.
+  ───────────────────────────────────────────────────────────── */
+  function afficherHeure(iso) {
+    /* iso = "2024-10-14T09:05:27.123456+02:00" ou null */
+    var d;
+    if (iso) {
+      d = new Date(iso);
+    } else {
+      d = new Date();
+    }
+    /* Formater en heure Paris quelle que soit la TZ du PC */
+    var str = d.toLocaleTimeString("fr-FR", {
+      timeZone:  "Europe/Paris",
+      hour:      "2-digit",
+      minute:    "2-digit",
+      hour12:    false
+    });
+    div1.textContent = str;
+    checkVisibility(d);
+  }
+
+  function checkVisibility(d) {
+    /* Extraire h et m en heure Paris */
+    var parts = d.toLocaleTimeString("fr-FR", {
+      timeZone: "Europe/Paris",
+      hour:     "2-digit",
+      minute:   "2-digit",
+      hour12:   false
+    }).split(":");
+    var h = parseInt(parts[0], 10);
+    var m = parseInt(parts[1], 10);
 
     var show = (h == 11 && m > 49)
             || (h == 14 && m > 49)
@@ -617,8 +661,44 @@
             || (h == 17 && m <  10);
     hid.style.visibility = show ? "visible" : "hidden";
   }
-  checkTime();
-  setInterval(checkTime, 30000);
+
+  function fetchHeure() {
+    /* worldtimeapi.org : API gratuite, sans clé, CORS OK */
+    var url = "https://worldtimeapi.org/api/timezone/Europe/Paris";
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.timeout = 4000; /* 4 s max */
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        try {
+          var data = JSON.parse(xhr.responseText);
+          afficherHeure(data.datetime);
+        } catch(e) {
+          afficherHeure(null);
+        }
+      } else {
+        afficherHeure(null);
+      }
+    };
+    xhr.onerror   = function() { afficherHeure(null); };
+    xhr.ontimeout = function() { afficherHeure(null); };
+    xhr.send();
+  }
+
+  /* Premier appel immédiat */
+  fetchHeure();
+
+  /* Mise à jour toutes les 30 secondes :
+     - chaque minute paire → API (pour rester précis)
+     - les autres → Intl fallback rapide */
+  setInterval(function() {
+    var m = new Date().getMinutes();
+    if (m % 2 === 0) {
+      fetchHeure();
+    } else {
+      afficherHeure(null);
+    }
+  }, 30000);
 </script>
 
 </body>
