@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Test Mémoire</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: sans-serif;
+    background: #ff9955;
+    user-select: none;
+    -webkit-user-select: none;
+    }
+
+  /* ── Image de fond uniquement sur l'écran d'intro ── */
+  #screen-intro::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('img/test_background.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── SVG plein écran ── */
+  #mysvg {
+    display: block;
+    position: absolute;
+    top: 0; left: 0;
+    cursor: crosshair;
+    z-index: 1;
+  }
+
+  /* ── Chrono ── */
+  #chrono {
+    position: fixed;
+    top: 12px; right: 16px;
+    font-size: 28px;
+    font-weight: bold;
+    color: rgba(255,255,255,0.85);
+    z-index: 10;
+    pointer-events: none;
+    letter-spacing: 1px;
+  }
+
+  /* ── Score courant ── */
+  #score-display {
+    position: fixed;
+    top: 12px; left: 16px;
+    font-size: 22px;
+    font-weight: bold;
+    color: rgba(255,255,255,0.75);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  /* ── Écrans plein écran (intro / fin) ── */
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    text-align: center;
+    padding: 24px;
+  }
+
+  /* ── Écran intro ── */
+  #screen-intro {
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  #screen-intro > * { position: relative; z-index: 1; }
+  #screen-intro h1 {
+    font-size: clamp(28px, 6vw, 64px);
+    margin-bottom: 16px;
+  }
+  #screen-intro p {
+    font-size: clamp(14px, 2.5vw, 22px);
+    max-width: 520px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* ── Écran résultat ── */
+  #screen-result {
+    display: none;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+  }
+  #screen-result h1 {
+    font-size: clamp(32px, 7vw, 80px);
+    margin-bottom: 12px;
+  }
+  #screen-result .sub {
+    font-size: clamp(16px, 3vw, 28px);
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 36px;
+  }
+
+  /* ── Boutons ── */
+  .btn {
+    background: #ff9955;
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    padding: 14px 40px;
+    font-size: clamp(16px, 2.5vw, 22px);
+    font-weight: bold;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+  }
+  .btn:hover { background: #e8843a; }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-defi { background: #7c3aed; }
+  .btn-defi:hover { background: #6d28d9; }
+
+  .result-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+  }
+
+  /* ── Flash de feedback ── */
+  #flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 40;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG de jeu -->
+<svg id="mysvg" width="0" height="0"></svg>
+
+<!-- Chrono -->
+<div id="chrono"></div>
+
+<!-- Score -->
+<div id="score-display"></div>
+
+<!-- Flash feedback -->
+<div id="flash"></div>
+
+<!-- Écran d'introduction -->
+<div id="screen-intro" class="screen">
+  <h1>🧠 Test Mémoire</h1>
+  <p>
+    9 chiffres s'affichent brièvement sur la grille.<br>
+    Mémorise leur position, puis clique sur les cases<br>
+    <strong>dans l'ordre 1 → 9</strong> le plus vite possible !<br><br>
+    Tu commences avec <strong>3 secondes</strong> d'affichage.<br>
+    Si tu réussis, le temps diminue !
+  </p>
+  <button class="btn" onclick="demarrer()">C'est parti !</button>
+</div>
+
+<!-- Écran résultat -->
+<div id="screen-result" class="screen">
+  <h1 id="result-title"></h1>
+  <div class="sub" id="result-sub"></div>
+  <div class="result-btns"></div>
+</div>
+
+<script>
+  /* ─── Variables ─── */
+  var ww, wh, a, a2, b;
+  var arr = [];
+  var clickn = 0, score = 0;
+  var time = 0, timerID = null, chronoID = null;
+  var jeuEnCours = false;
+  var tempsAffichage = 3000;
+
+  var mysvg        = document.getElementById("mysvg");
+  var chronoEl     = document.getElementById("chrono");
+  var scoreEl      = document.getElementById("score-display");
+  var flashEl      = document.getElementById("flash");
+  var screenResult = document.getElementById("screen-result");
+
+  /* ─── Dimensions ─── */
+  function initDim() {
+    ww = window.innerWidth;
+    wh = window.innerHeight;
+    a  = Math.round(ww / 8);
+    a2 = Math.round(a / 2);
+    b  = Math.round(wh / 5);
+  }
+
+  function colX(n) { return ((n - 1) % 8) * a; }
+  function rowY(n) { return Math.floor((n - 1) / 8) * b; }
+
+  /* ─── Construire la grille SVG ─── */
+  function construireGrille() {
+    mysvg.innerHTML = "";
+    mysvg.setAttribute("width", ww);
+    mysvg.setAttribute("height", wh);
+
+    for (var i = 0; i <= 8; i++) {
+      var lv = document.createElementNS(mysvg.namespaceURI, "line");
+      lv.setAttribute("x1", i * a); lv.setAttribute("y1", 0);
+      lv.setAttribute("x2", i * a); lv.setAttribute("y2", wh);
+      lv.setAttribute("stroke", "rgba(0,0,0,0.15)"); lv.setAttribute("stroke-width", "1");
+      mysvg.appendChild(lv);
+    }
+    for (var j = 0; j <= 5; j++) {
+      var lh = document.createElementNS(mysvg.namespaceURI, "line");
+      lh.setAttribute("x1", 0);  lh.setAttribute("y1", j * b);
+      lh.setAttribute("x2", ww); lh.setAttribute("y2", j * b);
+      lh.setAttribute("stroke", "rgba(0,0,0,0.15)"); lh.setAttribute("stroke-width", "1");
+      mysvg.appendChild(lh);
+    }
+
+    for (var k = 1; k <= 9; k++) {
+      var cx = colX(arr[k]) + a2;
+      var cy = rowY(arr[k]) + b * 0.5 + fs * 0.36;
+      var fs = Math.round(a * 0.55);
+
+      /* Masque — opacity 0 au départ (chiffres visibles), passe à 1 après tempsAffichage */
+      var rect = document.createElementNS(mysvg.namespaceURI, "rect");
+      rect.setAttribute("id",      "r" + k);
+      rect.setAttribute("x",       colX(arr[k]));
+      rect.setAttribute("y",       rowY(arr[k]));
+      rect.setAttribute("width",   a);
+      rect.setAttribute("height",  b);
+      rect.setAttribute("fill",    "rgba(200,80,0,0.75)");
+      rect.setAttribute("opacity", "0");
+      mysvg.appendChild(rect);
+
+      /* Chiffre */
+      var txt = document.createElementNS(mysvg.namespaceURI, "text");
+      txt.setAttribute("id",          "n" + k);
+      txt.setAttribute("x",           cx);
+      txt.setAttribute("y",           cy);
+      txt.setAttribute("font-size",   fs);
+      txt.setAttribute("text-anchor", "middle");
+      txt.setAttribute("fill",        "rgba(255,255,255,0.92)");
+      txt.setAttribute("font-family", "sans-serif");
+      txt.setAttribute("font-weight", "bold");
+      txt.textContent = k;
+      mysvg.appendChild(txt);
+    }
+  }
+
+  /* ─── Démarrer ─── */
+  function demarrer() {
+    document.getElementById("screen-intro").style.display = "none";
+    scoreEl.textContent = "0 / 9";
+    lancer();
+  }
+
+  function lancer() {
+    arr = [0];
+    while (arr.length < 10) {
+      var r = Math.floor(Math.random() * 40) + 1;
+      if (arr.indexOf(r) === -1) arr.push(r);
+    }
+
+    clickn = 0; score = 0; time = 0; jeuEnCours = false;
+
+    initDim();
+    construireGrille();
+    clearInterval(chronoID);
+    clearTimeout(timerID);
+
+    /* Phase 1 : compte à rebours 3…2…1 */
+    var countdown = 3;
+    chronoEl.textContent = "Prêt ? " + countdown + "…";
+    scoreEl.textContent  = "⏱ " + (tempsAffichage / 1000).toFixed(1) + " s d'affichage";
+
+    var cdID = setInterval(function() {
+      countdown--;
+      if (countdown > 0) {
+        chronoEl.textContent = "Prêt ? " + countdown + "…";
+      } else {
+        clearInterval(cdID);
+        /* Phase 2 : chiffres visibles */
+        chronoEl.textContent = "MÉMORISE !";
+
+        timerID = setTimeout(function() {
+          /* Phase 3 : masquer et lancer le chrono */
+          masquerTout();
+          jeuEnCours = true;
+          time = 0;
+          chronoEl.textContent = "0.0 s";
+          scoreEl.textContent  = "0 / 9";
+          chronoID = setInterval(function() {
+            if (jeuEnCours) {
+              time += 100;
+              chronoEl.textContent = (time / 1000).toFixed(1) + " s";
+            }
+          }, 100);
+        }, tempsAffichage);
+      }
+    }, 1000);
+  }
+
+  /* ─── Masquer tous les chiffres ─── */
+  function masquerTout() {
+    for (var i = 1; i <= 9; i++) {
+      var r = document.getElementById("r" + i);
+      if (r) r.setAttribute("opacity", "1");
+    }
+  }
+
+  /* ─── Clic ─── */
+  mysvg.addEventListener("click", function(e) {
+    if (!jeuEnCours) return;
+
+    var coln  = Math.floor(e.clientX / a) + 1;
+    var rown  = Math.floor(e.clientY / b) + 1;
+    var rectn = (rown - 1) * 8 + coln;
+
+    clickn++;
+    if (clickn > 9) return;
+
+    if (rectn === arr[clickn]) {
+      score++;
+      scoreEl.textContent = score + " / 9";
+      var nEl = document.getElementById("n" + clickn);
+      var rEl = document.getElementById("r" + clickn);
+      if (nEl) nEl.setAttribute("opacity", "0");
+      if (rEl) rEl.setAttribute("opacity", "0");
+
+      if (score === 9) {
+        jeuEnCours = false;
+        clearInterval(chronoID);
+        var sec = (time / 1000).toFixed(2);
+        var nouveauTemps = Math.max(500, tempsAffichage - 500);
+        showResult(
+          "🎉 Bravo !",
+          "9 / 9 en " + sec + " s — affichage : " + (tempsAffichage / 1000).toFixed(1) + " s",
+          true, nouveauTemps
+        );
+      }
+    } else {
+      jeuEnCours = false;
+      clearInterval(chronoID);
+      flashEcran("rgba(220,30,30,0.35)");
+      masquerTout();
+      var bonEl = document.getElementById("n" + clickn);
+      if (bonEl) {
+        bonEl.setAttribute("fill",    "#ffe066");
+        bonEl.setAttribute("opacity", "1");
+        var bonR = document.getElementById("r" + clickn);
+        if (bonR) bonR.setAttribute("opacity", "0");
+      }
+      setTimeout(function() {
+        showResult(
+          "😅 Perdu !",
+          "Raté au chiffre " + clickn + " — la case en jaune était la bonne.<br>Affichage : " + (tempsAffichage / 1000).toFixed(1) + " s",
+          false, tempsAffichage
+        );
+      }, 700);
+    }
+  });
+
+  /* ─── Flash ─── */
+  function flashEcran(couleur) {
+    flashEl.style.background = couleur;
+    flashEl.style.opacity = "1";
+    setTimeout(function() { flashEl.style.opacity = "0"; }, 300);
+  }
+
+  /* ─── Résultat ─── */
+  function showResult(titre, sub, victoire, prochainTemps) {
+    document.getElementById("result-title").textContent = titre;
+    document.getElementById("result-sub").innerHTML = sub;
+
+    var btns = screenResult.querySelector(".result-btns");
+    btns.innerHTML = "";
+
+    if (victoire && prochainTemps < tempsAffichage) {
+      var b1 = document.createElement("button");
+      b1.className   = "btn btn-defi";
+      b1.textContent = "⚡ Plus difficile (" + (prochainTemps / 1000).toFixed(1) + " s)";
+      b1.onclick = function() { tempsAffichage = prochainTemps; recommencer(); };
+      btns.appendChild(b1);
+    }
+
+    var b2 = document.createElement("button");
+    b2.className   = "btn";
+    b2.textContent = victoire
+      ? "↺ Rejouer (" + (tempsAffichage / 1000).toFixed(1) + " s)"
+      : "↺ Réessayer";
+    b2.onclick = recommencer;
+    btns.appendChild(b2);
+
+    screenResult.style.display = "flex";
+  }
+
+  /* ─── Rejouer ─── */
+  function recommencer() {
+    screenResult.style.display = "none";
+    scoreEl.textContent  = "0 / 9";
+    chronoEl.textContent = "";
+    lancer();
+  }
+
+  /* ─── Redimensionnement ─── */
+  window.addEventListener("resize", function() {
+    if (jeuEnCours) { initDim(); construireGrille(); }
+  });
+</script>
+</body>
+</html>
