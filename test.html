@@ -1,179 +1,424 @@
-<!doctype html><html><head><style>
-			html,body{
-			margin:0;
-			}
-			body{
-			text-align:left;
-			font-size:40px;
-			background-color:#ff9955;
-			color:rgba(255,255,0,0.4);
-			font-family:sans-serif;
-			overflow:hidden;
-			}
-			#txt{
-			width:100%;
-			height:100%;
-			position:absolute;
-			top:0;
-			left:0;
-			z-index:1;
-			-webkit-touch-callout:none;
-			-webkit-user-select:none;
-			-khtml-user-select:none;
-			-moz-user-select:none;
-			-ms-user-select:none;
-			user-select:none;
-			outline:0;
-			}
-			#chrono{
-			position:absolute;
-			bottom:0;
-			right:0;
-			z-index:-1;
-			-webkit-touch-callout:none;
-			-webkit-user-select:none;
-			-khtml-user-select:none;
-			-moz-user-select:none;
-			-ms-user-select:none;
-			user-select:none;
-			outline:0;
-			}
-			svg{
-			border:1px solid #333;
-			}
-			#go{
-			color:rgba(255,255,255,0.5);
-			}
-			#win{
-			position:absolute;
-			background:rgba(0,0,0,0.5);
-			width:0;
-			height:0;
-			top:0;
-			left:0;
-			color:#fff;
-			z-index:1;
-			font-size:100px;
-			text-align:middle;
-			-webkit-touch-callout:none;
-			-webkit-user-select:none;
-			-khtml-user-select:none;
-			-moz-user-select:none;
-			-ms-user-select:none;
-			user-select:none;
-			outline:0;
-			text-align:center;
-			line-height:2;
-			}
-		</style><title>Grille</title></head><body onclick="frect(event)"><svg id="mysvg" width="0" height="0"><text x="0" y="0" font-size="0" id="n1" opacity="1" text-anchor="middle">1</text><text x="0" y="0" font-size="0" id="n2" opacity="1" text-anchor="middle">2</text><text x="0" y="0" font-size="0" id="n3" opacity="1" text-anchor="middle">3</text><text x="0" y="0" font-size="0" id="n4" opacity="1" text-anchor="middle">4</text><text x="0" y="0" font-size="0" id="n5" opacity="1" text-anchor="middle">5</text><text x="0" y="0" font-size="0" id="n6" opacity="1" text-anchor="middle">6</text><text x="0" y="0" font-size="0" id="n7" opacity="1" text-anchor="middle">7</text><text x="0" y="0" font-size="0" id="n8" opacity="1" text-anchor="middle">8</text><text x="0" y="0" font-size="0" id="n9" opacity="1" text-anchor="middle">9</text><rect x="0" y="0" width="0" height="0" id="r1" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r2" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r3" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r4" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r5" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r6" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r7" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r8" fill="#000" opacity="1"/><rect x="0" y="0" width="0" height="0" id="r9" fill="#000" opacity="1"/></svg><div id="txt"></div><div id="chrono"></div><div id="win"></div><script>
-			var ww=window.innerWidth;
-			var wh=window.innerHeight;
-			var mysvg=document.getElementById("mysvg");
-			var txt=document.getElementById("txt");
-			mysvg.setAttribute("width",ww);
-			mysvg.setAttribute("height",wh);
-			var a=Math.round(ww/8);
-			var a2=Math.round(a/2);
-			var b=Math.round(wh/5);
-			var rectn;
-			var clickn=0;
-			var score=0;
-			var n=[0,n1,n2,n3,n4,n5,n6,n7,n8,n9];
-			
-			var arr=[];
-			arr.push(0);
-			
-			while(arr.length<10){
-				var r=Math.floor(Math.random()*40)+1;
-				if(arr.indexOf(r)===-1)arr.push(r);
-				}
-			
-			var order=arr[1]+" "+arr[2]+" "+arr[3]+" "+arr[4]+" "+arr[5]+" "+arr[6]+" "+arr[7]+" "+arr[8]+" "+arr[9];
-			
-			n1=document.getElementById("n1");
-			n2=document.getElementById("n2");
-			n3=document.getElementById("n3");
-			n4=document.getElementById("n4");
-			n5=document.getElementById("n5");
-			n6=document.getElementById("n6");
-			n7=document.getElementById("n7");
-			n8=document.getElementById("n8");
-			n9=document.getElementById("n9");
-			
-			for(i=1;i<=9;i++){
-			document.getElementById("n"+i).setAttribute("font-size",(a-(a/3)));
-			if(arr[i]==1||arr[i]==9||arr[i]==17||arr[i]==25||arr[i]==33){document.getElementById("n"+i).setAttribute("x",a2);}
-			if(arr[i]==2||arr[i]==10||arr[i]==18||arr[i]==26||arr[i]==34){document.getElementById("n"+i).setAttribute("x",a+a2);}
-			if(arr[i]==3||arr[i]==11||arr[i]==19||arr[i]==27||arr[i]==35){document.getElementById("n"+i).setAttribute("x",a*2+a2);}
-			if(arr[i]==4||arr[i]==12||arr[i]==20||arr[i]==28||arr[i]==36){document.getElementById("n"+i).setAttribute("x",a*3+a2);}
-			if(arr[i]==5||arr[i]==13||arr[i]==21||arr[i]==29||arr[i]==37){document.getElementById("n"+i).setAttribute("x",a*4+a2);}
-			if(arr[i]==6||arr[i]==14||arr[i]==22||arr[i]==30||arr[i]==38){document.getElementById("n"+i).setAttribute("x",a*5+a2);}
-			if(arr[i]==7||arr[i]==15||arr[i]==23||arr[i]==31||arr[i]==39){document.getElementById("n"+i).setAttribute("x",a*6+a2);}
-			if(arr[i]==8||arr[i]==16||arr[i]==24||arr[i]==32||arr[i]==40){document.getElementById("n"+i).setAttribute("x",a*7+a2);}
-			if(arr[i]<9){document.getElementById("n"+i).setAttribute("y",b-(b/6));}
-			if(arr[i]>8&&arr[i]<17){document.getElementById("n"+i).setAttribute("y",b*2-(b/6));}
-			if(arr[i]>16&&arr[i]<25){document.getElementById("n"+i).setAttribute("y",b*3-(b/6));}
-			if(arr[i]>24&&arr[i]<33){document.getElementById("n"+i).setAttribute("y",b*4-(b/6));}
-			if(arr[i]>32&&arr[i]<41){document.getElementById("n"+i).setAttribute("y",b*5-(b/6));}
-			}
-			
-			for(var i=0;i<=8;i++){
-			var path=document.createElementNS(mysvg.namespaceURI,"path");
-				path.setAttribute("d","m"+(i*a)+" 0L"+(i*a)+" "+wh);
-				path.setAttribute("stroke","#333");
-				path.setAttribute("stoke-width","1");
-			mysvg.appendChild(path);
-				}
-			
-			for(var i=0;i<=5;i++){
-			var path=document.createElementNS(mysvg.namespaceURI,"path");
-				path.setAttribute("d","m0 "+(i*b)+"L"+ww+" "+(i*b));
-				path.setAttribute("stroke","#333");
-				path.setAttribute("stoke-width","1");
-			mysvg.appendChild(path);
-				}
-			
-			var time=0;
-			function tick(){
-			if(score<9){document.getElementById("chrono").innerHTML=time;time++;}
-			if(time>700){masknumb();}
-			}
-			setInterval(tick,1);
-			
-			function frect(event){
-			var ex=event.clientX;
-			var ey=event.clientY;
-			var top=[];
-			var rown=Math.round((ey/b)-0.5)+1;
-			var coln=Math.round((ex/a)-0.5)+1;
-			var rectn=((rown-1)*8)+coln;
-			clickn++;
-			if (rectn==arr[clickn]){score++;document.getElementById("n"+clickn).setAttribute("opacity",0);document.getElementById("r"+clickn).setAttribute("opacity",0);}
-			if (rectn!=arr[clickn]&&score<9){score="<span id=\"go\">Game Over :(</span>";document.getElementById("win").style.width="100%";document.getElementById("win").style.height="100%";document.getElementById("win").innerHTML="Game Over<br>Try Again (F5) !";document.getElementById("r"+clickn).setAttribute("opacity",0.5);}
-			if (score==9){top.push(time);score="Congratulations ! "+top;document.getElementById("win").style.width="100%";document.getElementById("win").style.height="100%";document.getElementById("win").innerHTML="Congratulations !<br>"+(top/1000)+" seconde(s)"}
-			txt.innerHTML="window width: "+ww+"<br>window height: "+wh+"<br>rect width: "+a+"<br>rect height: "+b+"<br>click nb: "+clickn+"<br>click X: "+ex+"<br>click Y: "+ey+"<br>row nb: "+rown+"<br>column nb: "+coln+"<br>rect nb: "+rectn+"<br>score: "+score;
-			}
-			
-			function masknumb(){
-			for (var i=1;i<=9;i++){
-			document.getElementById("r"+i).setAttribute("width",a);
-			if(arr[i]==1||arr[i]==9||arr[i]==17||arr[i]==25||arr[i]==33){document.getElementById("r"+i).setAttribute("x",0);}
-			if(arr[i]==2||arr[i]==10||arr[i]==18||arr[i]==26||arr[i]==34){document.getElementById("r"+i).setAttribute("x",a);}
-			if(arr[i]==3||arr[i]==11||arr[i]==19||arr[i]==27||arr[i]==35){document.getElementById("r"+i).setAttribute("x",a*2);}
-			if(arr[i]==4||arr[i]==12||arr[i]==20||arr[i]==28||arr[i]==36){document.getElementById("r"+i).setAttribute("x",a*3);}
-			if(arr[i]==5||arr[i]==13||arr[i]==21||arr[i]==29||arr[i]==37){document.getElementById("r"+i).setAttribute("x",a*4);}
-			if(arr[i]==6||arr[i]==14||arr[i]==22||arr[i]==30||arr[i]==38){document.getElementById("r"+i).setAttribute("x",a*5);}
-			if(arr[i]==7||arr[i]==15||arr[i]==23||arr[i]==31||arr[i]==39){document.getElementById("r"+i).setAttribute("x",a*6);}
-			if(arr[i]==8||arr[i]==16||arr[i]==24||arr[i]==32||arr[i]==40){document.getElementById("r"+i).setAttribute("x",a*7);}
-			
-			document.getElementById("r"+i).setAttribute("height",b);
-			if(arr[i]<9){document.getElementById("r"+i).setAttribute("y",0);}
-			if(arr[i]>8&&arr[i]<17){document.getElementById("r"+i).setAttribute("y",b);}
-			if(arr[i]>16&&arr[i]<25){document.getElementById("r"+i).setAttribute("y",b*2);}
-			if(arr[i]>24&&arr[i]<33){document.getElementById("r"+i).setAttribute("y",b*3);}
-			if(arr[i]>32&&arr[i]<41){document.getElementById("r"+i).setAttribute("y",b*4);}
-			}
-			}
-			
-			txt.innerHTML="svg width: "+ww+"<br>svg height: "+wh+"<br>rect width: "+a+"<br>rect height: "+b+"<br>click nb: "+clickn+"<br>order: "+order;
-		</script></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Test Mémoire</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: sans-serif;
+    background: #ff9955;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* ── Écrans (intro + résultat) ── */
+  .ecran {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    z-index: 100;
+    color: #fff;
+  }
+
+  /* ── Écran intro : image de fond uniquement ici ── */
+  #ecran-intro {
+    background: rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+    position: fixed; /* nécessaire pour ::before */
+  }
+  #ecran-intro::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('img/test_background.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+    z-index: 0;
+  }
+  #ecran-intro > * { position: relative; z-index: 1; }
+
+  #ecran-intro h1  { font-size: clamp(28px, 6vw, 64px); margin-bottom: 16px; }
+  #ecran-intro p   {
+    font-size: clamp(14px, 2.2vw, 20px);
+    max-width: 500px; line-height: 1.7;
+    margin-bottom: 32px;
+    color: rgba(255,255,255,.88);
+  }
+
+  /* ── Écran résultat ── */
+  #ecran-resultat {
+    display: none;
+    background: rgba(0, 0, 0, 0.65);
+  }
+  #ecran-resultat h1  { font-size: clamp(36px, 7vw, 80px); margin-bottom: 10px; }
+  #ecran-resultat .sub {
+    font-size: clamp(15px, 2.5vw, 24px);
+    color: rgba(255,255,255,.80);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .btns { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+
+  /* ── Boutons ── */
+  .btn {
+    background: #ff9955; color: #fff;
+    border: none; border-radius: 40px;
+    padding: 13px 38px;
+    font-size: clamp(15px, 2.2vw, 20px);
+    font-weight: bold; cursor: pointer;
+    transition: background .15s, transform .1s;
+  }
+  .btn:hover  { background: #e8843a; }
+  .btn:active { transform: scale(.97); }
+  .btn-defi   { background: #7c3aed; }
+  .btn-defi:hover { background: #6d28d9; }
+
+  /* ── HUD (chrono + niveau) ── */
+  #hud-chrono {
+    position: fixed; top: 12px; right: 16px;
+    font-size: 26px; font-weight: bold;
+    color: rgba(255,255,255,.88);
+    z-index: 10; pointer-events: none;
+  }
+  #hud-niveau {
+    position: fixed; top: 12px; left: 16px;
+    font-size: 18px; font-weight: bold;
+    color: rgba(255,255,255,.75);
+    z-index: 10; pointer-events: none;
+  }
+
+  /* ── Flash feedback ── */
+  #flash {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 90;
+    opacity: 0; transition: opacity .15s;
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG plein écran -->
+<svg id="mysvg" style="display:block;position:absolute;top:0;left:0;" width="0" height="0"></svg>
+
+<!-- HUD -->
+<div id="hud-chrono"></div>
+<div id="hud-niveau"></div>
+
+<!-- Flash -->
+<div id="flash"></div>
+
+<!-- ══ ÉCRAN INTRO ══ -->
+<div id="ecran-intro" class="ecran">
+  <h1>🧠 Test Mémoire</h1>
+  <p>
+    9 chiffres s'affichent brièvement sur la grille.<br>
+    Mémorise leur position, puis clique dessus<br>
+    <strong>dans l'ordre 1 → 9</strong> le plus vite possible.<br><br>
+    Les cases sont entièrement masquées avant que tu cliques.<br>
+    Tu commences avec <strong>3 secondes</strong> d'affichage.<br>
+    Si tu réussis, le temps diminue !
+  </p>
+  <button class="btn" onclick="demarrer()">C'est parti !</button>
+</div>
+
+<!-- ══ ÉCRAN RÉSULTAT ══ -->
+<div id="ecran-resultat" class="ecran">
+  <h1 id="res-titre"></h1>
+  <div class="sub" id="res-sous"></div>
+  <div class="btns" id="res-btns"></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   VARIABLES GLOBALES
+═══════════════════════════════════════════════════ */
+var ww, wh, a, a2, b;          // dimensions grille
+var arr = [];                   // arr[1..9] = numéros de case (1-40) pour chaque chiffre
+var clickn = 0, score = 0;
+var temps = 0;                  // chrono en ms
+var chronoID = null, masqueID = null, cdID = null;
+var enJeu = false;
+var tempsAffichage = 3000;      // ms — réduit à chaque victoire
+
+var mysvg    = document.getElementById("mysvg");
+var hudChron = document.getElementById("hud-chrono");
+var hudNiv   = document.getElementById("hud-niveau");
+var flashEl  = document.getElementById("flash");
+var ecranRes = document.getElementById("ecran-resultat");
+
+/* ═══════════════════════════════════════════════════
+   UTILITAIRES POSITION
+═══════════════════════════════════════════════════ */
+// case n (1-40) : colonne 0-7, ligne 0-4
+function caseCol(n) { return ((n - 1) % 8); }
+function caseLig(n) { return Math.floor((n - 1) / 8); }
+function caseX(n)   { return caseCol(n) * a; }
+function caseY(n)   { return caseLig(n) * b; }
+function caseCX(n)  { return caseX(n) + a2; }          // centre X
+function caseCY(n)  { return caseY(n) + Math.round(b * 0.5 + a2 * 0.36); } // centre Y visuel
+
+/* ═══════════════════════════════════════════════════
+   INIT DIMENSIONS
+═══════════════════════════════════════════════════ */
+function initDim() {
+  ww = window.innerWidth;
+  wh = window.innerHeight;
+  a  = Math.floor(ww / 8);
+  a2 = Math.floor(a / 2);
+  b  = Math.floor(wh / 5);
+}
+
+/* ═══════════════════════════════════════════════════
+   CONSTRUIRE LA GRILLE
+═══════════════════════════════════════════════════ */
+function construireGrille() {
+  mysvg.innerHTML = "";
+  mysvg.setAttribute("width",  ww);
+  mysvg.setAttribute("height", wh);
+
+  var ns = mysvg.namespaceURI;
+
+  /* Lignes verticales */
+  for (var i = 0; i <= 8; i++) {
+    var lv = document.createElementNS(ns, "line");
+    lv.setAttribute("x1", i * a); lv.setAttribute("y1", 0);
+    lv.setAttribute("x2", i * a); lv.setAttribute("y2", wh);
+    lv.setAttribute("stroke", "rgba(0,0,0,0.2)");
+    lv.setAttribute("stroke-width", "1");
+    mysvg.appendChild(lv);
+  }
+  /* Lignes horizontales */
+  for (var j = 0; j <= 5; j++) {
+    var lh = document.createElementNS(ns, "line");
+    lh.setAttribute("x1", 0);  lh.setAttribute("y1", j * b);
+    lh.setAttribute("x2", ww); lh.setAttribute("y2", j * b);
+    lh.setAttribute("stroke", "rgba(0,0,0,0.2)");
+    lh.setAttribute("stroke-width", "1");
+    mysvg.appendChild(lh);
+  }
+
+  var fs = Math.round(a * 0.55); // taille de fonte
+
+  for (var k = 1; k <= 9; k++) {
+    var cx = caseCX(arr[k]);
+    var cy = caseCY(arr[k]);
+
+    /* ── Chiffre ── */
+    var txt = document.createElementNS(ns, "text");
+    txt.setAttribute("id",          "n" + k);
+    txt.setAttribute("x",           cx);
+    txt.setAttribute("y",           cy);
+    txt.setAttribute("font-size",   fs);
+    txt.setAttribute("text-anchor", "middle");
+    txt.setAttribute("fill",        "rgba(255,255,255,0.92)");
+    txt.setAttribute("font-weight", "bold");
+    txt.setAttribute("font-family", "sans-serif");
+    txt.setAttribute("opacity",     "1");
+    txt.textContent = k;
+    mysvg.appendChild(txt);
+
+    /* ── Masque (rect opaque même couleur que fond) ──
+       opacity = 0 pendant l'affichage, passe à 1 pour occulter TOTALEMENT */
+    var rect = document.createElementNS(ns, "rect");
+    rect.setAttribute("id",      "r" + k);
+    rect.setAttribute("x",       caseX(arr[k]));
+    rect.setAttribute("y",       caseY(arr[k]));
+    rect.setAttribute("width",   a);
+    rect.setAttribute("height",  b);
+    rect.setAttribute("fill",    "#000000");   /* même couleur que le fond → invisible total */
+    rect.setAttribute("opacity", "0");
+    mysvg.appendChild(rect);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   MASQUER / RÉVÉLER
+═══════════════════════════════════════════════════ */
+function masquerTout() {
+  for (var i = 1; i <= 9; i++) {
+    var r = document.getElementById("r" + i);
+    if (r) r.setAttribute("opacity", "1");
+  }
+}
+
+function cacherChiffre(k) {
+  var n = document.getElementById("n" + k);
+  var r = document.getElementById("r" + k);
+  if (n) n.setAttribute("opacity", "0");
+  if (r) r.setAttribute("opacity", "0");
+}
+
+/* ═══════════════════════════════════════════════════
+   DÉMARRER / LANCER
+═══════════════════════════════════════════════════ */
+function demarrer() {
+  document.getElementById("ecran-intro").style.display = "none";
+  lancer();
+}
+
+function lancer() {
+  /* Générer 9 positions uniques parmi 1-40 */
+  arr = [0];
+  while (arr.length < 10) {
+    var r = Math.floor(Math.random() * 40) + 1;
+    if (arr.indexOf(r) === -1) arr.push(r);
+  }
+
+  clickn = 0; score = 0; temps = 0; enJeu = false;
+
+  clearInterval(chronoID);
+  clearTimeout(masqueID);
+  clearInterval(cdID);
+
+  initDim();
+  construireGrille();
+
+  hudNiv.textContent   = "⏱ " + (tempsAffichage / 1000).toFixed(1) + " s";
+  hudChron.textContent = "";
+
+  /* ── Compte à rebours 3…2…1 ── */
+  var cd = 3;
+  hudChron.textContent = cd + "…";
+  cdID = setInterval(function () {
+    cd--;
+    if (cd > 0) {
+      hudChron.textContent = cd + "…";
+    } else {
+      clearInterval(cdID);
+      /* ── Phase MÉMORISATION : chiffres visibles ── */
+      hudChron.textContent = "MÉMORISE !";
+      /* ── Après tempsAffichage : masquer tout ── */
+      masqueID = setTimeout(function () {
+        masquerTout();
+        /* ── Phase JEU : lancer le chrono ── */
+        enJeu = true;
+        temps = 0;
+        hudChron.textContent = "0.0 s";
+        hudNiv.textContent   = "0 / 9  —  ⏱ " + (tempsAffichage / 1000).toFixed(1) + " s";
+        chronoID = setInterval(function () {
+          if (enJeu) {
+            temps += 100;
+            hudChron.textContent = (temps / 1000).toFixed(1) + " s";
+          }
+        }, 100);
+      }, tempsAffichage);
+    }
+  }, 1000);
+}
+
+/* ═══════════════════════════════════════════════════
+   CLICS
+═══════════════════════════════════════════════════ */
+mysvg.addEventListener("click", function (e) {
+  if (!enJeu) return;
+
+  var coln  = Math.floor(e.clientX / a);           // 0-7
+  var rown  = Math.floor(e.clientY / b);            // 0-4
+  var rectn = rown * 8 + coln + 1;                 // 1-40
+
+  clickn++;
+  if (clickn > 9) return;
+
+  if (rectn === arr[clickn]) {
+    /* ✅ Bonne case */
+    score++;
+    hudNiv.textContent = score + " / 9  —  ⏱ " + (tempsAffichage / 1000).toFixed(1) + " s";
+    cacherChiffre(clickn);
+
+    if (score === 9) {
+      enJeu = false;
+      clearInterval(chronoID);
+      var sec = (temps / 1000).toFixed(2);
+      var prochainTemps = Math.max(500, tempsAffichage - 500);
+      afficherResultat(
+        "🎉 Bravo !",
+        "9 / 9 en <strong>" + sec + " s</strong> — affichage : " + (tempsAffichage / 1000).toFixed(1) + " s",
+        true, prochainTemps
+      );
+    }
+  } else {
+    /* ❌ Mauvaise case */
+    enJeu = false;
+    clearInterval(chronoID);
+    flash("rgba(200,0,0,0.3)");
+
+    /* Révéler toutes les cases restantes + mettre en jaune la bonne */
+    masquerTout();
+    var bonN = document.getElementById("n" + clickn);
+    var bonR = document.getElementById("r" + clickn);
+    if (bonN) { bonN.setAttribute("fill", "#ffe066"); bonN.setAttribute("opacity", "1"); }
+    if (bonR) bonR.setAttribute("opacity", "0");
+
+    setTimeout(function () {
+      afficherResultat(
+        "😅 Perdu !",
+        "Raté au chiffre <strong>" + clickn + "</strong> — la case en jaune était la bonne.<br>Affichage : " + (tempsAffichage / 1000).toFixed(1) + " s",
+        false, tempsAffichage
+      );
+    }, 800);
+  }
+});
+
+/* ═══════════════════════════════════════════════════
+   RÉSULTAT
+═══════════════════════════════════════════════════ */
+function afficherResultat(titre, sous, victoire, prochainTemps) {
+  document.getElementById("res-titre").textContent = titre;
+  document.getElementById("res-sous").innerHTML    = sous;
+
+  var btns = document.getElementById("res-btns");
+  btns.innerHTML = "";
+
+  if (victoire && prochainTemps < tempsAffichage) {
+    var b1 = document.createElement("button");
+    b1.className   = "btn btn-defi";
+    b1.textContent = "⚡ Plus difficile — " + (prochainTemps / 1000).toFixed(1) + " s";
+    b1.onclick = function () { tempsAffichage = prochainTemps; rejouer(); };
+    btns.appendChild(b1);
+  }
+
+  var b2 = document.createElement("button");
+  b2.className   = "btn";
+  b2.textContent = victoire
+    ? "↺ Rejouer — " + (tempsAffichage / 1000).toFixed(1) + " s"
+    : "↺ Réessayer";
+  b2.onclick = rejouer;
+  btns.appendChild(b2);
+
+  ecranRes.style.display = "flex";
+}
+
+function rejouer() {
+  ecranRes.style.display = "none";
+  lancer();
+}
+
+/* ═══════════════════════════════════════════════════
+   FLASH
+═══════════════════════════════════════════════════ */
+function flash(couleur) {
+  flashEl.style.background = couleur;
+  flashEl.style.opacity    = "1";
+  setTimeout(function () { flashEl.style.opacity = "0"; }, 350);
+}
+
+/* ═══════════════════════════════════════════════════
+   RESIZE
+═══════════════════════════════════════════════════ */
+window.addEventListener("resize", function () {
+  if (enJeu) { initDim(); construireGrille(); }
+});
+</script>
+</body>
+</html>
