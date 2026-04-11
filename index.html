@@ -1,124 +1,624 @@
 <!doctype html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Hour of Code</title>
-<link rel="shortcut icon" href="img/favicon.ico" />
-<link rel="stylesheet" type="text/css" href="style.css" />
+<title>Heure de Code</title>
+<link rel="shortcut icon" href="img/favicon.ico"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:        #f0f4ff;
+    --surface:   #ffffff;
+    --text:      #1a1a2e;
+    --muted:     #6b7280;
+    --radius:    16px;
+    --radius-sm: 10px;
+
+    --cat-code-bg:    #dbeafe; --cat-code-tx:    #1e40af;
+    --cat-game-bg:    #fce7f3; --cat-game-tx:    #9d174d;
+    --cat-music-bg:   #ede9fe; --cat-music-tx:   #5b21b6;
+    --cat-art-bg:     #fef3c7; --cat-art-tx:     #92400e;
+    --cat-internet-bg:#d1fae5; --cat-internet-tx:#065f46;
+    --cat-ai-bg:      #ffedd5; --cat-ai-tx:      #9a3412;
+    --cat-maths-bg:   #e0f2fe; --cat-maths-tx:   #0c4a6e;
+    --cat-3d-bg:      #f3e8ff; --cat-3d-tx:      #6b21a8;
+    --cat-fiches-bg:  #fef9c3; --cat-fiches-tx:  #713f12;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid #e5e7eb;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .menu-btn {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 2px solid #e5e7eb;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .15s;
+  }
+  .menu-btn:hover { background: #e0e7ff; }
+  .menu-btn svg { width: 20px; height: 20px; }
+
+  .header-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  #div1 {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  /* ── MAIN ── */
+  main { padding: 28px 16px 60px; max-width: 1100px; margin: 0 auto; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 36px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .section-icon { font-size: 22px; line-height: 1; }
+  .section-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .section-line {
+    flex: 1;
+    height: 2px;
+    background: #e5e7eb;
+    border-radius: 2px;
+  }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 2px solid #e5e7eb;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: #a5b4fc;
+    box-shadow: 0 8px 24px rgba(99,102,241,.15);
+  }
+
+  .card-thumb {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+    background: var(--bg);
+  }
+
+  .card-body {
+    padding: 8px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+  }
+
+  .card-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.25;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: .02em;
+    width: fit-content;
+  }
+  .b-code     { background: var(--cat-code-bg);     color: var(--cat-code-tx);     }
+  .b-game     { background: var(--cat-game-bg);     color: var(--cat-game-tx);     }
+  .b-music    { background: var(--cat-music-bg);    color: var(--cat-music-tx);    }
+  .b-art      { background: var(--cat-art-bg);      color: var(--cat-art-tx);      }
+  .b-internet { background: var(--cat-internet-bg); color: var(--cat-internet-tx); }
+  .b-ai       { background: var(--cat-ai-bg);       color: var(--cat-ai-tx);       }
+  .b-maths    { background: var(--cat-maths-bg);    color: var(--cat-maths-tx);    }
+  .b-3d       { background: var(--cat-3d-bg);       color: var(--cat-3d-tx);       }
+  .b-fiches   { background: var(--cat-fiches-bg);   color: var(--cat-fiches-tx);   }
+
+  /* ── MENU OVERLAY ── */
+  .overlay {
+    height: 100%; width: 0;
+    position: fixed; z-index: 200;
+    top: 0; left: 0;
+    background: rgba(26,26,46,.96);
+    overflow-x: hidden;
+    transition: width .3s ease;
+  }
+  .overlay-content {
+    position: relative;
+    top: 80px;
+    width: 100%;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .overlay-content a {
+    font-family: 'Baloo 2', cursive;
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    transition: background .15s;
+  }
+  .overlay-content a:hover { background: rgba(255,255,255,.1); }
+  .closebtn {
+    position: absolute;
+    top: 20px; right: 24px;
+    font-size: 34px;
+    color: #fff;
+    text-decoration: none;
+    line-height: 1;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+    .header-title { font-size: 18px; }
+    main { padding: 16px 10px 50px; }
+  }
+</style>
 </head>
 <body>
 
-<div class="container" id="mainContainer">
+<!-- ══ HEADER ══ -->
+<header>
+  <button class="menu-btn" onclick="openNav()" aria-label="Menu">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="2" y1="5"  x2="18" y2="5"/>
+      <line x1="2" y1="10" x2="18" y2="10"/>
+      <line x1="2" y1="15" x2="18" y2="15"/>
+    </svg>
+  </button>
+  <div>
+    <div class="header-title">🖥️ Heure de Code</div>
+    <div class="header-sub">Médiathèque de Rueil-Malmaison</div>
+  </div>
+  <div id="div1"></div>
+</header>
 
-  <div onclick="openNav()" style="border-radius:50%;"><img src="img/menu.png"/></div>
+<!-- ══ MAIN CONTENT ══ -->
+<main>
 
-  <a href="https://scratch.mit.edu/" target="_blank" title="Scratch"><div><img src="img/scratch.jpg"/></div></a>
-  <a href="fiches.html" target="_blank" title="fiches Scratch"><div><img src="img/fich.png"/></div></a>
-  <a href="https://code.org/en-US/hour-of-code/minecraft" target="_blank" title="Heure de Code Minecraft"><div><img src="img/minecraft.jpg"/></div></a>
-  <a href="https://code.org/starwars/" target="_blank" title="Heure de Code Star Wars"><div><img src="img/star.jpg"/></div></a>
-  <a href="https://studio.code.org/s/frozen/stage/1/puzzle/1/" target="_blank" title="Heure de Code Frozen"><div><img src="img/frz.jpg"/></div></a>
-  <a href="https://codecombat.com/play" target="_blank" title="Code Combat"><div><img src="img/cc.jpg"/></div></a>
-  <a href="https://www.tynker.com/dashboard/student/?obd=1" target="_blank" title="Tynker"><div><img src="img/tynker.png"/></div></a>
-  <a href="https://code.org/dance" target="_blank" title="Dance"><div><img src="img/dance.jpg"/></div></a>
-  <a href="https://lightbot.com/flash.html" target="_blank" title="Light Bot"><div><img src="img/light.jpg"/></div></a>
-  <a href="https://chromewebstore.google.com/detail/ruffle-flash-emulator/donbcfbmhbcapadipfkeojnmajbakjdc?hl=fr" target="_blank" title="Ruffle"><div><img src="img/ruffle.jpg"/></div></a>
-  <a href="http://lightbot.lu/" target="_blank" title="Light Bot Bootleg"><div><img src="img/light2.png"/></div></a>
-  <a href="http://compute-it.toxicode.fr/" target="_blank" title="Compute it"><div><img src="img/compute.jpg"/></div></a>
-  <a href="test.html" target="_blank" title="Test mémoire"><div><img src="img/test.png"/></div></a>
-  <a href="https://fr.khanacademy.org/computing/computer-programming" target="_blank" title="Khan Academy"><div><img src="img/khan.png"/></div></a>
-  <a href="https://hourofcode.com/us/fr/learn" target="_blank" title="Hour of Code"><div><img src="img/hoc.png"/></div></a>
-  <a href="https://studio.code.org/projects/public" target="_blank" title="Studio Code"><div><img src="img/hoc2.jpg"/></div></a>
-  <a href="http://little-dot.toxicode.fr/" target="_blank" title="Little Dot"><div><img src="img/dot.png"/></div></a>
-  <a href="https://www.w3schools.com/codegame/index.html" target="_blank" title="Code Game"><div><img src="img/lynx.png"/></div></a>
-  <a href="http://gamejam.toxicode.fr/" target="_blank" title="Code n Slash"><div><img src="img/hero.png"/></div></a>
-  <a href="https://codeweek.eu/challenges" target="_blank" title="Codeweek Challenges"><div><img src="img/codeweek_visual.jpg"/></div></a>
-  <a href="https://blockly.games/" target="_blank" title="Jeux Blockly"><div><img src="img/bl.jpg"/></div></a>
-  <a href="https://arcade.makecode.com/" target="_blank" title="Make Code Arcade"><div><img src="img/mc.jpg"/></div></a>
-  <a href="https://learningmusic.ableton.com/fr/the-playground.html" target="_blank" title="Learning Music"><div><img src="img/able1.jpg"/></div></a>
-  <a href="https://learningsynths.ableton.com/fr/playground" target="_blank" title="Learning Synth"><div><img src="img/able2.jpg"/></div></a>
-  <a href="https://www.internetsanscrainte.fr/" target="_blank" title="Internet Sans Crainte"><div><img src="img/int.jpg"/></div></a>
-  <a href="https://doodles.google/doodle/gerald-jerry-lawsons-82nd-birthday/" target="_blank" title="Jerry Lawson"><div><img src="img/lawson.png"/></div></a>
-  <a href="https://projects.raspberrypi.org/fr-FR/projects" target="_blank" title="Boat Race"><div><img src="img/boat.jpg"/></div></a>
-  <a href="https://experiments.withgoogle.com/giga-manga" target="_blank" title="Giga Manga"><div><img src="img/manga.jpg"/></div></a>
-  <a href="https://www.mecabricks.com/fr/workshop" target="_blank" title="LEGO Mecabricks"><div><img src="img/leo.jpg"/></div></a>
-  <a href="https://earsketch.gatech.edu/landing/#/" target="_blank" title="Ear Sketch"><div><img src="img/es.jpg"/></div></a>
-  <a href="https://recursivearts.com/virtual-piano/" target="_blank" title="Virtual Piano"><div><img src="img/piano.jpg"/></div></a>
-  <a href="https://www.codingame.com/start/fr/" target="_blank" title="CodinGame"><div><img src="img/cg.jpg"/></div></a>
-  <a href="https://www.tinkercad.com/" target="_blank" title="Tinkercad"><div><img src="img/tink.jpg"/></div></a>
-  <a href="https://www.kwyk.fr/algorithme/" target="_blank" title="Kwyk"><div><img src="img/kwyk.png"/></div></a>
-  <a href="https://www.algoblocs.fr/index.php" target="_blank" title="Algo Blocs"><div><img src="img/ab.png"/></div></a>
-  <a href="https://artsandculture.google.com/play" target="_blank" title="Google Arts Play"><div><img src="img/ga.png"/></div></a>
-  <a href="https://i4ds.github.io/CargoBot/?state=1" target="_blank" title="Cargo-Bot"><div><img src="img/01.png"/></div></a>
-  <a href="https://www.lego.com/assets/FranchiseSites/Portal/BitsAndBricks2/v10/deploydsd/index.html" target="_blank" title="Bits'n'Bricks"><div><img src="img/02.png"/></div></a>
-  <a href="https://openprocessing.org/" target="_blank" title="OpenProcessing"><div><img src="img/op.png"/></div></a>
-  <a href="https://www.logicieleducatif.fr/jeu/le-chevalier-de-la-programmation" target="_blank" title="Le chevalier de la Programmation"><div><img src="img/chev.png"/></div></a>
-  <a href="https://app.citizencode.net/demo/backend-driven" target="_blank" title="Future Engineer"><div><img src="img/fe.png"/></div></a>
-  <a href="ai.html" title="Intelligence Artificielle"><div><img src="img/ai.gif"/></div></a>
-  <!-- <a href="https://leblog92.github.io/hoc/ai/" title="Intelligence Artificielle Atelier"><div><img src="https://www.bing.com/th/id/OIP.5me0ms3oU0Vm1R7KX_sz4QHaHa?w=210&h=211&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"/></div></a> -->
+  <!-- 1. Débuter avec Scratch -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🐱</span>
+      <span class="section-title">Débuter avec Scratch</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
 
-  <span id="hid" style="visibility:hidden;">
-    <a href="https://www.engineering.com/GamesPuzzles/tabid/82/Default.aspx" target="_blank" title="Engineering"><div><img src="img/eng.jpg"/></div></a>
-    <a href="https://www.mathsisfun.com/puzzles/" target="_blank" title="Engineering"><div><img src="img/eng.jpg"/></div></a>
-    <a href="https://www.puzzleprime.com/puzzle-games/" target="_blank" title="Engineering"><div><img src="img/eng.jpg"/></div></a>
-    <a href="https://www.puzzleprime.com" target="_blank" title="Engineering"><div><img src="img/eng.jpg"/></div></a>
+      <a class="card" href="https://scratch.mit.edu/" target="_blank">
+        <img class="card-thumb" src="img/scratch.jpg" alt="Scratch" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Scratch</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="fiches.html" target="_blank">
+        <img class="card-thumb" src="img/fich.png" alt="Fiches Scratch" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Fiches Scratch</div><span class="badge b-fiches">Fiches</span></div>
+      </a>
+
+      <a class="card" href="https://hourofcode.com/us/fr/learn" target="_blank">
+        <img class="card-thumb" src="img/hoc.png" alt="Hour of Code" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Hour of Code</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="https://studio.code.org/projects/public" target="_blank">
+        <img class="card-thumb" src="img/hoc2.jpg" alt="Studio Code" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Studio Code</div><span class="badge b-code">Code</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 2. Jeux de code -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🎮</span>
+      <span class="section-title">Jeux de code</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://code.org/en-US/hour-of-code/minecraft" target="_blank">
+        <img class="card-thumb" src="img/minecraft.jpg" alt="Minecraft" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Minecraft HOC</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://code.org/starwars/" target="_blank">
+        <img class="card-thumb" src="img/star.jpg" alt="Star Wars" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Star Wars HOC</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://studio.code.org/s/frozen/stage/1/puzzle/1/" target="_blank">
+        <img class="card-thumb" src="img/frz.jpg" alt="Frozen" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Frozen HOC</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://code.org/dance" target="_blank">
+        <img class="card-thumb" src="img/dance.jpg" alt="Dance Party" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Dance Party</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://codecombat.com/play" target="_blank">
+        <img class="card-thumb" src="img/cc.jpg" alt="Code Combat" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Code Combat</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://www.tynker.com/dashboard/student/?obd=1" target="_blank">
+        <img class="card-thumb" src="img/tynker.png" alt="Tynker" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Tynker</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://lightbot.com/flash.html" target="_blank">
+        <img class="card-thumb" src="img/light.jpg" alt="Light Bot" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Light Bot</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="http://lightbot.lu/" target="_blank">
+        <img class="card-thumb" src="img/light2.png" alt="Light Bot 2" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Light Bot 2</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="http://compute-it.toxicode.fr/" target="_blank">
+        <img class="card-thumb" src="img/compute.jpg" alt="Compute it" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Compute it</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="http://little-dot.toxicode.fr/" target="_blank">
+        <img class="card-thumb" src="img/dot.png" alt="Little Dot" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Little Dot</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="http://gamejam.toxicode.fr/" target="_blank">
+        <img class="card-thumb" src="img/hero.png" alt="Code n Slash" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Code n Slash</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://www.w3schools.com/codegame/index.html" target="_blank">
+        <img class="card-thumb" src="img/lynx.png" alt="Code Game" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Code Game</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://i4ds.github.io/CargoBot/?state=1" target="_blank">
+        <img class="card-thumb" src="img/01.png" alt="Cargo-Bot" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Cargo-Bot</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://www.logicieleducatif.fr/jeu/le-chevalier-de-la-programmation" target="_blank">
+        <img class="card-thumb" src="img/chev.png" alt="Chevalier" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Chevalier de la prog.</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://www.codingame.com/start/fr/" target="_blank">
+        <img class="card-thumb" src="img/cg.jpg" alt="CodinGame" loading="lazy"/>
+        <div class="card-body"><div class="card-name">CodinGame</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+      <a class="card" href="https://app.citizencode.net/demo/backend-driven" target="_blank">
+        <img class="card-thumb" src="img/fe.png" alt="Future Engineer" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Future Engineer</div><span class="badge b-game">Jeu</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 3. Apprendre à coder -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">💡</span>
+      <span class="section-title">Apprendre à coder</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://blockly.games/" target="_blank">
+        <img class="card-thumb" src="img/bl.jpg" alt="Blockly" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Jeux Blockly</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="https://arcade.makecode.com/" target="_blank">
+        <img class="card-thumb" src="img/mc.jpg" alt="Make Code" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Make Code Arcade</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="https://fr.khanacademy.org/computing/computer-programming" target="_blank">
+        <img class="card-thumb" src="img/khan.png" alt="Khan Academy" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Khan Academy</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="https://codeweek.eu/challenges" target="_blank">
+        <img class="card-thumb" src="img/codeweek_visual.jpg" alt="Codeweek" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Codeweek Challenges</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="https://www.algoblocs.fr/index.php" target="_blank">
+        <img class="card-thumb" src="img/ab.png" alt="AlgoBlocs" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Algo Blocs</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="https://www.kwyk.fr/algorithme/" target="_blank">
+        <img class="card-thumb" src="img/kwyk.png" alt="Kwyk" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Kwyk</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="https://openprocessing.org/" target="_blank">
+        <img class="card-thumb" src="img/op.png" alt="OpenProcessing" loading="lazy"/>
+        <div class="card-body"><div class="card-name">OpenProcessing</div><span class="badge b-code">Code</span></div>
+      </a>
+
+      <a class="card" href="test.html" target="_blank">
+        <img class="card-thumb" src="img/test.png" alt="Test mémoire" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Test mémoire</div><span class="badge b-code">Code</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 4. Musique & son -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🎵</span>
+      <span class="section-title">Musique &amp; son</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://learningmusic.ableton.com/fr/the-playground.html" target="_blank">
+        <img class="card-thumb" src="img/able1.jpg" alt="Learning Music" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Learning Music</div><span class="badge b-music">Musique</span></div>
+      </a>
+
+      <a class="card" href="https://learningsynths.ableton.com/fr/playground" target="_blank">
+        <img class="card-thumb" src="img/able2.jpg" alt="Learning Synth" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Learning Synth</div><span class="badge b-music">Musique</span></div>
+      </a>
+
+      <a class="card" href="https://recursivearts.com/virtual-piano/" target="_blank">
+        <img class="card-thumb" src="img/piano.jpg" alt="Piano virtuel" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Piano virtuel</div><span class="badge b-music">Musique</span></div>
+      </a>
+
+      <a class="card" href="https://earsketch.gatech.edu/landing/#/" target="_blank">
+        <img class="card-thumb" src="img/es.jpg" alt="Ear Sketch" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Ear Sketch</div><span class="badge b-music">Musique</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 5. Art & création -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🎨</span>
+      <span class="section-title">Art &amp; création</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://artsandculture.google.com/play" target="_blank">
+        <img class="card-thumb" src="img/ga.png" alt="Google Arts" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Google Arts Play</div><span class="badge b-art">Art</span></div>
+      </a>
+
+      <a class="card" href="https://experiments.withgoogle.com/giga-manga" target="_blank">
+        <img class="card-thumb" src="img/manga.jpg" alt="Giga Manga" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Giga Manga</div><span class="badge b-art">Art</span></div>
+      </a>
+
+      <a class="card" href="https://doodles.google/doodle/gerald-jerry-lawsons-82nd-birthday/" target="_blank">
+        <img class="card-thumb" src="img/lawson.png" alt="Jerry Lawson" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Jerry Lawson</div><span class="badge b-art">Art</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 6. 3D & construction -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🧱</span>
+      <span class="section-title">3D &amp; construction</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://www.tinkercad.com/" target="_blank">
+        <img class="card-thumb" src="img/tink.jpg" alt="Tinkercad" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Tinkercad</div><span class="badge b-3d">3D</span></div>
+      </a>
+
+      <a class="card" href="https://www.mecabricks.com/fr/workshop" target="_blank">
+        <img class="card-thumb" src="img/leo.jpg" alt="LEGO Mecabricks" loading="lazy"/>
+        <div class="card-body"><div class="card-name">LEGO Mecabricks</div><span class="badge b-3d">3D</span></div>
+      </a>
+
+      <a class="card" href="https://www.lego.com/assets/FranchiseSites/Portal/BitsAndBricks2/v10/deploydsd/index.html" target="_blank">
+        <img class="card-thumb" src="img/02.png" alt="Bits'n'Bricks" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Bits'n'Bricks</div><span class="badge b-3d">3D</span></div>
+      </a>
+
+      <a class="card" href="https://projects.raspberrypi.org/fr-FR/projects" target="_blank">
+        <img class="card-thumb" src="img/boat.jpg" alt="Raspberry Pi" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Raspberry Pi Projects</div><span class="badge b-3d">3D</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 7. Internet & sécurité -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🌐</span>
+      <span class="section-title">Internet &amp; sécurité</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://www.internetsanscrainte.fr/" target="_blank">
+        <img class="card-thumb" src="img/int.jpg" alt="Internet sans crainte" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Internet sans crainte</div><span class="badge b-internet">Internet</span></div>
+      </a>
+
+      <a class="card" href="https://chromewebstore.google.com/detail/ruffle-flash-emulator/donbcfbmhbcapadipfkeojnmajbakjdc?hl=fr" target="_blank">
+        <img class="card-thumb" src="img/ruffle.jpg" alt="Ruffle" loading="lazy"/>
+        <div class="card-body"><div class="card-name">Ruffle (Flash)</div><span class="badge b-internet">Internet</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 8. Intelligence Artificielle -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🤖</span>
+      <span class="section-title">Intelligence Artificielle</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="ai.html">
+        <img class="card-thumb" src="img/ai.gif" alt="IA introduction" loading="lazy"/>
+        <div class="card-body"><div class="card-name">IA — introduction</div><span class="badge b-ai">IA</span></div>
+      </a>
+
+      <a class="card" href="https://leblog92.github.io/hoc/ai/">
+        <img class="card-thumb" src="img/ai1.png" alt="IA atelier" loading="lazy"/>
+        <div class="card-body"><div class="card-name">IA — atelier</div><span class="badge b-ai">IA</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 9. Liens cachés (horaires) -->
+  <span id="hid" style="visibility:hidden; display:contents;">
+    <section class="section">
+      <div class="section-header">
+        <span class="section-icon">🧩</span>
+        <span class="section-title">Puzzles &amp; défis</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="grid">
+        <a class="card" href="https://www.engineering.com/GamesPuzzles/tabid/82/Default.aspx" target="_blank">
+          <img class="card-thumb" src="img/eng.jpg" alt="Engineering" loading="lazy"/>
+          <div class="card-body"><div class="card-name">Engineering Games</div><span class="badge b-maths">Maths</span></div>
+        </a>
+        <a class="card" href="https://www.mathsisfun.com/puzzles/" target="_blank">
+          <img class="card-thumb" src="img/eng.jpg" alt="Maths is Fun" loading="lazy"/>
+          <div class="card-body"><div class="card-name">Maths is Fun</div><span class="badge b-maths">Maths</span></div>
+        </a>
+        <a class="card" href="https://www.puzzleprime.com/puzzle-games/" target="_blank">
+          <img class="card-thumb" src="img/eng.jpg" alt="Puzzle Prime Games" loading="lazy"/>
+          <div class="card-body"><div class="card-name">Puzzle Prime Games</div><span class="badge b-maths">Maths</span></div>
+        </a>
+        <a class="card" href="https://www.puzzleprime.com" target="_blank">
+          <img class="card-thumb" src="img/eng.jpg" alt="Puzzle Prime" loading="lazy"/>
+          <div class="card-body"><div class="card-name">Puzzle Prime</div><span class="badge b-maths">Maths</span></div>
+        </a>
+      </div>
+    </section>
   </span>
 
-</div>
+</main>
 
-<div id="myNav" class="overlay">
+<!-- ══ MENU OVERLAY ══ -->
+<nav id="myNav" class="overlay">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
   <div class="overlay-content">
-    <a href="https://www.mediatheque-rueilmalmaison.fr/nos-services/latelier-multimedia" target="_blank">A propos</a>
+    <a href="https://www.mediatheque-rueilmalmaison.fr/nos-services/latelier-multimedia" target="_blank">À propos</a>
     <a href="https://www.mediatheque-rueilmalmaison.fr/" target="_blank">Médiathèque</a>
     <a href="https://catalogue.mediatheque-rueilmalmaison.fr/" target="_blank">Catalogue</a>
     <a href="https://fr-fr.facebook.com/mediathequerueil/" target="_blank">Facebook</a>
-    <a href="https://www.instagram.com/mediathequerueil/?hl=fr" target="_blank">Instagram</a>
+    <a href="https://www.instagram.com/mediathequerueil/" target="_blank">Instagram</a>
   </div>
-</div>
-
-<div id="div1"></div>
-<div id="div2"></div>
+</nav>
 
 <script>
-  // ============================================================
-  // HEURE — affichage et visibilité des liens supplémentaires
-  // ============================================================
-  var hid  = document.getElementById("hid");
+  function openNav()  { document.getElementById("myNav").style.width = "280px"; }
+  function closeNav() { document.getElementById("myNav").style.width = "0"; }
+
   var div1 = document.getElementById("div1");
+  var hid  = document.getElementById("hid");
 
   function checkTime() {
-    var d      = new Date();
-    var hour   = d.getHours();
-    var minute = d.getMinutes();
-    div1.innerHTML = hour + " " + minute;
+    var d = new Date(), h = d.getHours(), m = d.getMinutes();
+    div1.textContent = h + "h" + (m < 10 ? "0" : "") + m;
 
-    if ( (hour == 11 && minute > 49) || (hour == 14 && minute > 49) || (hour == 15 && minute < 10) ) {
-      hid.style.visibility = "visible";
-    }
-    if ( (hour == 12 && minute > 10) || (hour == 15 && minute > 10) ) {
-      hid.style.visibility = "hidden";
-    }
-    if ( (hour == 16 && minute > 49) || (hour == 17 && minute < 10) ) {
-      hid.style.visibility = "visible";
-    }
+    var show = (h == 11 && m > 49)
+            || (h == 14 && m > 49)
+            || (h == 15 && m <  10)
+            || (h == 16 && m > 49)
+            || (h == 17 && m <  10);
+    hid.style.visibility = show ? "visible" : "hidden";
   }
-
   checkTime();
-  setInterval(checkTime, 60000);
-</script>
-
-<script>
-  function openNav() {
-    document.getElementById("myNav").style.width = "100%";
-  }
-  function closeNav() {
-    document.getElementById("myNav").style.width = "0%";
-  }
-  function chgcol() {
-    document.body.style.backgroundColor = "#" + Math.round(0xFFFFFF * Math.random()).toString(16);
-  }
-  setInterval(chgcol, 3000);
+  setInterval(checkTime, 30000);
 </script>
 
 </body>
