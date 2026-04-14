@@ -15,344 +15,410 @@
     -webkit-user-select: none;
   }
 
-  /* ── SVG plein écran ── */
-  #mysvg {
-    display: block;
-    position: absolute;
-    top: 0; left: 0;
-    cursor: crosshair;
-  }
-
-  /* ── Chrono ── */
-  #chrono {
-    position: fixed;
-    top: 12px; right: 16px;
-    font-size: 28px;
-    font-weight: bold;
-    color: rgba(255,255,255,0.85);
-    z-index: 10;
-    pointer-events: none;
-    letter-spacing: 1px;
-  }
-
-  /* ── Score courant ── */
-  #score-display {
-    position: fixed;
-    top: 12px; left: 16px;
-    font-size: 22px;
-    font-weight: bold;
-    color: rgba(255,255,255,0.75);
-    z-index: 10;
-    pointer-events: none;
-  }
-
-  /* ── Écrans plein écran (intro / fin) ── */
-  .screen {
+  /* ── Écrans (intro + résultat) ── */
+  .ecran {
     position: fixed;
     inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 50;
     text-align: center;
     padding: 24px;
-  }
-
-  /* ── Écran intro ── */
-  #screen-intro {
-    background: rgba(0,0,0,0.55);
+    z-index: 100;
     color: #fff;
   }
-  #screen-intro h1 {
-    font-size: clamp(28px, 6vw, 64px);
-    margin-bottom: 16px;
+
+  /* ── Écran intro : image de fond uniquement ici ── */
+  #ecran-intro {
+    background: rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+    position: fixed; /* nécessaire pour ::before */
   }
-  #screen-intro p {
-    font-size: clamp(14px, 2.5vw, 22px);
-    max-width: 520px;
-    line-height: 1.6;
+  #ecran-intro::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('img/test_background.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+    z-index: 0;
+  }
+  #ecran-intro > * { position: relative; z-index: 1; }
+
+  #ecran-intro h1  { font-size: clamp(28px, 6vw, 64px); margin-bottom: 16px; }
+  #ecran-intro p   {
+    font-size: clamp(14px, 2.2vw, 20px);
+    max-width: 500px; line-height: 1.7;
     margin-bottom: 32px;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,.88);
   }
 
   /* ── Écran résultat ── */
-  #screen-result {
+  #ecran-resultat {
     display: none;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
+    background: rgba(0, 0, 0, 0.65);
   }
-  #screen-result h1 {
-    font-size: clamp(32px, 7vw, 80px);
-    margin-bottom: 12px;
-  }
-  #screen-result .sub {
-    font-size: clamp(16px, 3vw, 28px);
-    color: rgba(255,255,255,0.8);
-    margin-bottom: 36px;
+  #ecran-resultat h1  { font-size: clamp(36px, 7vw, 80px); margin-bottom: 10px; }
+  #ecran-resultat .sub {
+    font-size: clamp(15px, 2.5vw, 24px);
+    color: rgba(255,255,255,.80);
+    margin-bottom: 32px;
+    line-height: 1.6;
   }
 
-  /* ── Bouton ── */
+  .btns { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+
+  /* ── Boutons ── */
   .btn {
-    background: #ff9955;
-    color: #fff;
-    border: none;
-    border-radius: 40px;
-    padding: 14px 40px;
-    font-size: clamp(16px, 2.5vw, 22px);
-    font-weight: bold;
-    cursor: pointer;
+    background: #ff9955; color: #fff;
+    border: none; border-radius: 40px;
+    padding: 13px 38px;
+    font-size: clamp(15px, 2.2vw, 20px);
+    font-weight: bold; cursor: pointer;
     transition: background .15s, transform .1s;
   }
-  .btn:hover { background: #e8843a; }
-  .btn:active { transform: scale(0.97); }
+  .btn:hover  { background: #e8843a; }
+  .btn:active { transform: scale(.97); }
+  .btn-defi   { background: #7c3aed; }
+  .btn-defi:hover { background: #6d28d9; }
 
-  /* ── Flash de feedback ── */
+  /* ── HUD (chrono + niveau) ── */
+  #hud-chrono {
+    position: fixed; top: 12px; right: 16px;
+    font-size: 26px; font-weight: bold;
+    color: rgba(255,255,255,.88);
+    z-index: 10; pointer-events: none;
+  }
+  #hud-niveau {
+    position: fixed; top: 12px; left: 16px;
+    font-size: 18px; font-weight: bold;
+    color: rgba(255,255,255,.75);
+    z-index: 10; pointer-events: none;
+  }
+
+  /* ── Flash feedback ── */
   #flash {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 40;
-    opacity: 0;
-    transition: opacity 0.15s;
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 90;
+    opacity: 0; transition: opacity .15s;
   }
 </style>
 </head>
 <body>
 
-<!-- SVG de jeu -->
-<svg id="mysvg" width="0" height="0"></svg>
+<!-- SVG plein écran -->
+<svg id="mysvg" style="display:block;position:absolute;top:0;left:0;" width="0" height="0"></svg>
 
-<!-- Chrono -->
-<div id="chrono"></div>
+<!-- HUD -->
+<div id="hud-chrono"></div>
+<div id="hud-niveau"></div>
 
-<!-- Score -->
-<div id="score-display"></div>
-
-<!-- Flash feedback -->
+<!-- Flash -->
 <div id="flash"></div>
 
-<!-- Écran d'introduction -->
-<div id="screen-intro" class="screen">
+<!-- ══ ÉCRAN INTRO ══ -->
+<div id="ecran-intro" class="ecran">
   <h1>🧠 Test Mémoire</h1>
   <p>
-    9 chiffres apparaissent sur la grille.<br>
-    Mémorise-les, puis clique sur les cases<br>
-    <strong>dans l'ordre croissant</strong> le plus vite possible !
+    9 chiffres s'affichent brièvement sur la grille.<br>
+    Mémorise leur position, puis clique dessus<br>
+    <strong>dans l'ordre 1 → 9</strong> le plus vite possible.<br><br>
+    Les cases sont entièrement masquées avant que tu cliques.<br>
+    Tu commences avec <strong>3 secondes</strong> d'affichage.<br>
+    Si tu réussis, le temps diminue !
   </p>
   <button class="btn" onclick="demarrer()">C'est parti !</button>
 </div>
 
-<!-- Écran résultat -->
-<div id="screen-result" class="screen">
-  <h1 id="result-title"></h1>
-  <div class="sub" id="result-sub"></div>
-  <button class="btn" onclick="recommencer()">Rejouer</button>
+<!-- ══ ÉCRAN RÉSULTAT ══ -->
+<div id="ecran-resultat" class="ecran">
+  <h1 id="res-titre"></h1>
+  <div class="sub" id="res-sous"></div>
+  <div class="btns" id="res-btns"></div>
 </div>
 
 <script>
-  /* ─── Variables ─── */
-  var ww, wh, a, a2, b;
-  var arr = [];
-  var clickn = 0, score = 0;
-  var time = 0, timerID = null, chronoID = null;
-  var masqueActif = false;
-  var jeuEnCours = false;
+/* ═══════════════════════════════════════════════════
+   VARIABLES GLOBALES
+═══════════════════════════════════════════════════ */
+var ww, wh, a, a2, b;          // dimensions grille
+var arr = [];                   // arr[1..9] = numéros de case (1-40) pour chaque chiffre
+var clickn = 0, score = 0;
+var temps = 0;                  // chrono en ms
+var chronoID = null, masqueID = null, cdID = null;
+var enJeu = false;
+var tempsAffichage = 3000;      // ms — réduit à chaque victoire
 
-  var mysvg    = document.getElementById("mysvg");
-  var chronoEl = document.getElementById("chrono");
-  var scoreEl  = document.getElementById("score-display");
-  var flashEl  = document.getElementById("flash");
-  var screenResult = document.getElementById("screen-result");
+var mysvg    = document.getElementById("mysvg");
+var hudChron = document.getElementById("hud-chrono");
+var hudNiv   = document.getElementById("hud-niveau");
+var flashEl  = document.getElementById("flash");
+var ecranRes = document.getElementById("ecran-resultat");
 
-  /* ─── Init dimensions ─── */
-  function initDim() {
-    ww = window.innerWidth;
-    wh = window.innerHeight;
-    a  = Math.round(ww / 8);
-    a2 = Math.round(a / 2);
-    b  = Math.round(wh / 5);
+/* ═══════════════════════════════════════════════════
+   UTILITAIRES POSITION
+═══════════════════════════════════════════════════ */
+// case n (1-40) : colonne 0-7, ligne 0-4
+function caseCol(n) { return ((n - 1) % 8); }
+function caseLig(n) { return Math.floor((n - 1) / 8); }
+function caseX(n)   { return caseCol(n) * a; }
+function caseY(n)   { return caseLig(n) * b; }
+function caseCX(n)  { return caseX(n) + a2; }          // centre X
+function caseCY(n)  { return caseY(n) + Math.round(b * 0.5 + a2 * 0.36); } // centre Y visuel
+
+/* ═══════════════════════════════════════════════════
+   INIT DIMENSIONS
+═══════════════════════════════════════════════════ */
+function initDim() {
+  ww = window.innerWidth;
+  wh = window.innerHeight;
+  a  = Math.floor(ww / 8);
+  a2 = Math.floor(a / 2);
+  b  = Math.floor(wh / 5);
+}
+
+/* ═══════════════════════════════════════════════════
+   CONSTRUIRE LA GRILLE
+═══════════════════════════════════════════════════ */
+function construireGrille() {
+  mysvg.innerHTML = "";
+  mysvg.setAttribute("width",  ww);
+  mysvg.setAttribute("height", wh);
+
+  var ns = mysvg.namespaceURI;
+
+  /* Lignes verticales */
+  for (var i = 0; i <= 8; i++) {
+    var lv = document.createElementNS(ns, "line");
+    lv.setAttribute("x1", i * a); lv.setAttribute("y1", 0);
+    lv.setAttribute("x2", i * a); lv.setAttribute("y2", wh);
+    lv.setAttribute("stroke", "rgba(0,0,0,0.2)");
+    lv.setAttribute("stroke-width", "1");
+    mysvg.appendChild(lv);
+  }
+  /* Lignes horizontales */
+  for (var j = 0; j <= 5; j++) {
+    var lh = document.createElementNS(ns, "line");
+    lh.setAttribute("x1", 0);  lh.setAttribute("y1", j * b);
+    lh.setAttribute("x2", ww); lh.setAttribute("y2", j * b);
+    lh.setAttribute("stroke", "rgba(0,0,0,0.2)");
+    lh.setAttribute("stroke-width", "1");
+    mysvg.appendChild(lh);
   }
 
-  /* ─── Colonne X d'un numéro de case (1-40) ─── */
-  function colX(n) { return ((n - 1) % 8) * a; }
-  function rowY(n) { return Math.floor((n - 1) / 8) * b; }
+  var fs = Math.round(a * 0.55); // taille de fonte
 
-  /* ─── Construire la grille SVG ─── */
-  function construireGrille() {
-    mysvg.innerHTML = "";
-    mysvg.setAttribute("width", ww);
-    mysvg.setAttribute("height", wh);
+  for (var k = 1; k <= 9; k++) {
+    var cx = caseCX(arr[k]);
+    var cy = caseCY(arr[k]);
 
-    /* Grille de fond */
-    for (var i = 0; i <= 8; i++) {
-      var lv = document.createElementNS(mysvg.namespaceURI, "line");
-      lv.setAttribute("x1", i * a); lv.setAttribute("y1", 0);
-      lv.setAttribute("x2", i * a); lv.setAttribute("y2", wh);
-      lv.setAttribute("stroke", "rgba(0,0,0,0.15)"); lv.setAttribute("stroke-width", "1");
-      mysvg.appendChild(lv);
-    }
-    for (var j = 0; j <= 5; j++) {
-      var lh = document.createElementNS(mysvg.namespaceURI, "line");
-      lh.setAttribute("x1", 0);  lh.setAttribute("y1", j * b);
-      lh.setAttribute("x2", ww); lh.setAttribute("y2", j * b);
-      lh.setAttribute("stroke", "rgba(0,0,0,0.15)"); lh.setAttribute("stroke-width", "1");
-      mysvg.appendChild(lh);
-    }
+    /* ── Chiffre ── */
+    var txt = document.createElementNS(ns, "text");
+    txt.setAttribute("id",          "n" + k);
+    txt.setAttribute("x",           cx);
+    txt.setAttribute("y",           cy);
+    txt.setAttribute("font-size",   fs);
+    txt.setAttribute("text-anchor", "middle");
+    txt.setAttribute("fill",        "rgba(255,255,255,0.92)");
+    txt.setAttribute("font-weight", "bold");
+    txt.setAttribute("font-family", "sans-serif");
+    txt.setAttribute("opacity",     "1");
+    txt.textContent = k;
+    mysvg.appendChild(txt);
 
-    /* Chiffres et masques */
-    for (var k = 1; k <= 9; k++) {
-      var cx = colX(arr[k]) + a2;
-      var cy = rowY(arr[k]) + b * 0.62;
-      var fs = Math.round(a * 0.55);
+    /* ── Masque (rect opaque même couleur que fond) ──
+       opacity = 0 pendant l'affichage, passe à 1 pour occulter TOTALEMENT */
+    var rect = document.createElementNS(ns, "rect");
+    rect.setAttribute("id",      "r" + k);
+    rect.setAttribute("x",       caseX(arr[k]));
+    rect.setAttribute("y",       caseY(arr[k]));
+    rect.setAttribute("width",   a);
+    rect.setAttribute("height",  b);
+    rect.setAttribute("fill",    "#000000");   /* même couleur que le fond → invisible total */
+    rect.setAttribute("opacity", "0");
+    mysvg.appendChild(rect);
+  }
+}
 
-      /* Masque (rect noir) */
-      var rect = document.createElementNS(mysvg.namespaceURI, "rect");
-      rect.setAttribute("id", "r" + k);
-      rect.setAttribute("x",      colX(arr[k]));
-      rect.setAttribute("y",      rowY(arr[k]));
-      rect.setAttribute("width",  a);
-      rect.setAttribute("height", b);
-      rect.setAttribute("fill",   "rgba(0,0,0,0.45)");
-      rect.setAttribute("opacity", "0");
-      mysvg.appendChild(rect);
+/* ═══════════════════════════════════════════════════
+   MASQUER / RÉVÉLER
+═══════════════════════════════════════════════════ */
+function masquerTout() {
+  for (var i = 1; i <= 9; i++) {
+    var r = document.getElementById("r" + i);
+    if (r) r.setAttribute("opacity", "1");
+  }
+}
 
-      /* Chiffre */
-      var txt = document.createElementNS(mysvg.namespaceURI, "text");
-      txt.setAttribute("id",          "n" + k);
-      txt.setAttribute("x",           cx);
-      txt.setAttribute("y",           cy);
-      txt.setAttribute("font-size",   fs);
-      txt.setAttribute("text-anchor", "middle");
-      txt.setAttribute("fill",        "rgba(255,255,255,0.85)");
-      txt.setAttribute("font-family", "sans-serif");
-      txt.setAttribute("font-weight", "bold");
-      txt.textContent = k; /* on affiche 1..9 dans l'ordre de mémorisation */
-      mysvg.appendChild(txt);
-    }
+function cacherChiffre(k) {
+  var n = document.getElementById("n" + k);
+  var r = document.getElementById("r" + k);
+  if (n) n.setAttribute("opacity", "0");
+  if (r) r.setAttribute("opacity", "0");
+}
+
+/* ═══════════════════════════════════════════════════
+   DÉMARRER / LANCER
+═══════════════════════════════════════════════════ */
+function demarrer() {
+  document.getElementById("ecran-intro").style.display = "none";
+  lancer();
+}
+
+function lancer() {
+  /* Générer 9 positions uniques parmi 1-40 */
+  arr = [0];
+  while (arr.length < 10) {
+    var r = Math.floor(Math.random() * 40) + 1;
+    if (arr.indexOf(r) === -1) arr.push(r);
   }
 
-  /* ─── Démarrer le jeu ─── */
-  function demarrer() {
-    document.getElementById("screen-intro").style.display = "none";
-    scoreEl.textContent = "0 / 9";
-    lancer();
-  }
+  clickn = 0; score = 0; temps = 0; enJeu = false;
 
-  function lancer() {
-    /* Générer 9 cases aléatoires dans 1..40 */
-    arr = [0];
-    while (arr.length < 10) {
-      var r = Math.floor(Math.random() * 40) + 1;
-      if (arr.indexOf(r) === -1) arr.push(r);
-    }
+  clearInterval(chronoID);
+  clearTimeout(masqueID);
+  clearInterval(cdID);
 
-    clickn = 0; score = 0; time = 0; masqueActif = false; jeuEnCours = true;
+  initDim();
+  construireGrille();
 
-    initDim();
-    construireGrille();
+  hudNiv.textContent   = "⏱ " + (tempsAffichage / 1000).toFixed(1) + " s";
+  hudChron.textContent = "";
 
-    /* Chrono */
-    chronoEl.textContent = "0.0";
-    clearInterval(chronoID);
-    chronoID = setInterval(function() {
-      if (jeuEnCours) {
-        time += 100;
-        chronoEl.textContent = (time / 1000).toFixed(1) + " s";
-      }
-    }, 100);
-
-    /* Masquage automatique après 5 secondes */
-    clearTimeout(timerID);
-    timerID = setTimeout(masquer, 5000);
-  }
-
-  /* ─── Masquer les chiffres ─── */
-  function masquer() {
-    masqueActif = true;
-    for (var i = 1; i <= 9; i++) {
-      var r = document.getElementById("r" + i);
-      if (r) r.setAttribute("opacity", "1");
-    }
-  }
-
-  /* ─── Clic sur la grille ─── */
-  mysvg.addEventListener("click", function(e) {
-    if (!jeuEnCours) return;
-
-    var ex = e.clientX, ey = e.clientY;
-    var coln = Math.floor(ex / a) + 1;
-    var rown = Math.floor(ey / b) + 1;
-    var rectn = (rown - 1) * 8 + coln;
-
-    clickn++;
-    if (clickn > 9) return;
-
-    if (rectn === arr[clickn]) {
-      /* Bonne case */
-      score++;
-      scoreEl.textContent = score + " / 9";
-      var nEl = document.getElementById("n" + clickn);
-      var rEl = document.getElementById("r" + clickn);
-      if (nEl) nEl.setAttribute("opacity", "0");
-      if (rEl) rEl.setAttribute("opacity", "0");
-
-      if (score === 9) {
-        jeuEnCours = false;
-        clearInterval(chronoID);
-        var sec = (time / 1000).toFixed(2);
-        showResult("🎉 Bravo !", "Tu as trouvé les 9 chiffres en " + sec + " seconde(s) !");
-      }
+  /* ── Compte à rebours 3…2…1 ── */
+  var cd = 3;
+  hudChron.textContent = cd + "…";
+  cdID = setInterval(function () {
+    cd--;
+    if (cd > 0) {
+      hudChron.textContent = cd + "…";
     } else {
-      /* Mauvaise case — feedback rouge puis game over */
-      jeuEnCours = false;
+      clearInterval(cdID);
+      /* ── Phase MÉMORISATION : chiffres visibles ── */
+      hudChron.textContent = "MÉMORISE !";
+      /* ── Après tempsAffichage : masquer tout ── */
+      masqueID = setTimeout(function () {
+        masquerTout();
+        /* ── Phase JEU : lancer le chrono ── */
+        enJeu = true;
+        temps = 0;
+        hudChron.textContent = "0.0 s";
+        hudNiv.textContent   = "0 / 9  —  ⏱ " + (tempsAffichage / 1000).toFixed(1) + " s";
+        chronoID = setInterval(function () {
+          if (enJeu) {
+            temps += 100;
+            hudChron.textContent = (temps / 1000).toFixed(1) + " s";
+          }
+        }, 100);
+      }, tempsAffichage);
+    }
+  }, 1000);
+}
+
+/* ═══════════════════════════════════════════════════
+   CLICS
+═══════════════════════════════════════════════════ */
+mysvg.addEventListener("click", function (e) {
+  if (!enJeu) return;
+
+  var coln  = Math.floor(e.clientX / a);           // 0-7
+  var rown  = Math.floor(e.clientY / b);            // 0-4
+  var rectn = rown * 8 + coln + 1;                 // 1-40
+
+  clickn++;
+  if (clickn > 9) return;
+
+  if (rectn === arr[clickn]) {
+    /* ✅ Bonne case */
+    score++;
+    hudNiv.textContent = score + " / 9  —  ⏱ " + (tempsAffichage / 1000).toFixed(1) + " s";
+    cacherChiffre(clickn);
+
+    if (score === 9) {
+      enJeu = false;
       clearInterval(chronoID);
-      flashEcran("rgba(220,30,30,0.35)");
-      /* Révéler toutes les cases pour voir les erreurs */
-      masquer();
-      /* Montrer où était la bonne réponse */
-      var bonEl = document.getElementById("n" + clickn);
-      if (bonEl) {
-        bonEl.setAttribute("fill", "#ffe066");
-        bonEl.setAttribute("opacity", "1");
-        var bonR = document.getElementById("r" + clickn);
-        if (bonR) bonR.setAttribute("opacity", "0");
-      }
-      setTimeout(function() {
-        showResult("😅 Perdu !", "Tu t'es trompé(e) au chiffre " + clickn + ".<br>La case en jaune était la bonne.");
-      }, 600);
+      var sec = (temps / 1000).toFixed(2);
+      var prochainTemps = Math.max(500, tempsAffichage - 500);
+      afficherResultat(
+        "🎉 Bravo !",
+        "9 / 9 en <strong>" + sec + " s</strong> — affichage : " + (tempsAffichage / 1000).toFixed(1) + " s",
+        true, prochainTemps
+      );
     }
-  });
+  } else {
+    /* ❌ Mauvaise case */
+    enJeu = false;
+    clearInterval(chronoID);
+    flash("rgba(200,0,0,0.3)");
 
-  /* ─── Flash de feedback ─── */
-  function flashEcran(couleur) {
-    flashEl.style.background = couleur;
-    flashEl.style.opacity = "1";
-    setTimeout(function() { flashEl.style.opacity = "0"; }, 300);
+    /* Révéler toutes les cases restantes + mettre en jaune la bonne */
+    masquerTout();
+    var bonN = document.getElementById("n" + clickn);
+    var bonR = document.getElementById("r" + clickn);
+    if (bonN) { bonN.setAttribute("fill", "#ffe066"); bonN.setAttribute("opacity", "1"); }
+    if (bonR) bonR.setAttribute("opacity", "0");
+
+    setTimeout(function () {
+      afficherResultat(
+        "😅 Perdu !",
+        "Raté au chiffre <strong>" + clickn + "</strong> — la case en jaune était la bonne.<br>Affichage : " + (tempsAffichage / 1000).toFixed(1) + " s",
+        false, tempsAffichage
+      );
+    }, 800);
+  }
+});
+
+/* ═══════════════════════════════════════════════════
+   RÉSULTAT
+═══════════════════════════════════════════════════ */
+function afficherResultat(titre, sous, victoire, prochainTemps) {
+  document.getElementById("res-titre").textContent = titre;
+  document.getElementById("res-sous").innerHTML    = sous;
+
+  var btns = document.getElementById("res-btns");
+  btns.innerHTML = "";
+
+  if (victoire && prochainTemps < tempsAffichage) {
+    var b1 = document.createElement("button");
+    b1.className   = "btn btn-defi";
+    b1.textContent = "⚡ Plus difficile — " + (prochainTemps / 1000).toFixed(1) + " s";
+    b1.onclick = function () { tempsAffichage = prochainTemps; rejouer(); };
+    btns.appendChild(b1);
   }
 
-  /* ─── Afficher l'écran résultat ─── */
-  function showResult(titre, sub) {
-    document.getElementById("result-title").textContent = titre;
-    document.getElementById("result-sub").innerHTML = sub;
-    screenResult.style.display = "flex";
-  }
+  var b2 = document.createElement("button");
+  b2.className   = "btn";
+  b2.textContent = victoire
+    ? "↺ Rejouer — " + (tempsAffichage / 1000).toFixed(1) + " s"
+    : "↺ Réessayer";
+  b2.onclick = rejouer;
+  btns.appendChild(b2);
 
-  /* ─── Rejouer ─── */
-  function recommencer() {
-    screenResult.style.display = "none";
-    scoreEl.textContent = "0 / 9";
-    chronoEl.textContent = "";
-    lancer();
-  }
+  ecranRes.style.display = "flex";
+}
 
-  /* ─── Redimensionnement ─── */
-  window.addEventListener("resize", function() {
-    if (jeuEnCours) {
-      initDim();
-      construireGrille();
-    }
-  });
+function rejouer() {
+  ecranRes.style.display = "none";
+  lancer();
+}
+
+/* ═══════════════════════════════════════════════════
+   FLASH
+═══════════════════════════════════════════════════ */
+function flash(couleur) {
+  flashEl.style.background = couleur;
+  flashEl.style.opacity    = "1";
+  setTimeout(function () { flashEl.style.opacity = "0"; }, 350);
+}
+
+/* ═══════════════════════════════════════════════════
+   RESIZE
+═══════════════════════════════════════════════════ */
+window.addEventListener("resize", function () {
+  if (enJeu) { initDim(); construireGrille(); }
+});
 </script>
 </body>
 </html>
