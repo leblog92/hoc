@@ -1,0 +1,731 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+  :root {
+    --cream: #fdf6ee;
+    --peach: #f7c89b;
+    --rose: #f4a7b9;
+    --lavender: #c9b8f0;
+    --mint: #a8e6cf;
+    --gold: #f0c060;
+    --fur: #c8a882;
+    --bg: #fff9f4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { font-family: 'Nunito', sans-serif; }
+
+  #game {
+    background: var(--bg);
+    min-height: 600px;
+    padding: 0;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px 10px;
+    background: var(--cream);
+    border-bottom: 2px solid #f0dfc8;
+    position: relative;
+    z-index: 10;
+  }
+
+  #game-title {
+    font-size: 18px;
+    font-weight: 900;
+    color: #9b6b3a;
+    letter-spacing: -0.3px;
+  }
+
+  .stat-group {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #b8956a;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .stat-bar-wrap {
+    width: 70px;
+    height: 10px;
+    background: #f0dfc8;
+    border-radius: 99px;
+    overflow: hidden;
+    border: 1px solid #e0cba8;
+  }
+
+  .stat-bar {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+
+  #bar-bonheur { background: linear-gradient(90deg, #f4a7b9, #ff7eb3); }
+  #bar-energie { background: linear-gradient(90deg, #f0c060, #ffaa00); }
+  #bar-faim    { background: linear-gradient(90deg, #a8e6cf, #4ecb8d); }
+
+  .stat-val {
+    font-size: 10px;
+    font-weight: 700;
+    color: #9b6b3a;
+  }
+
+  #scene {
+    position: relative;
+    height: 300px;
+    background: linear-gradient(180deg, #e8f4ff 0%, #d4edff 40%, var(--cream) 100%);
+    overflow: visible;
+  }
+
+  .cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+    opacity: 0.75;
+    animation: drift linear infinite;
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+  }
+  .cloud::before { width: 55%; height: 150%; top: -30%; left: 10%; }
+  .cloud::after  { width: 40%; height: 130%; top: -20%; right: 10%; }
+  @keyframes drift { from { transform: translateX(-120px); } to { transform: translateX(800px); } }
+
+  #ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: #a8d878;
+    border-radius: 40% 40% 0 0 / 20px 20px 0 0;
+  }
+
+  #ground::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 14px;
+    background: #8ec860;
+    border-radius: 40% 40% 0 0 / 14px 14px 0 0;
+  }
+
+  #dog-container {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s;
+    z-index: 5;
+    overflow: visible;
+  }
+
+  #dog-container:hover { transform: translateX(-50%) scale(1.04); }
+  #dog-container:active { transform: translateX(-50%) scale(0.97); }
+
+  #dog-img {
+    width: 190px;
+    height: 190px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.13));
+    transition: opacity 0.2s ease;
+  }
+
+  #dog-img.fade { opacity: 0; }
+
+  #emotion-bubble {
+    position: absolute;
+    left: 50%;
+    bottom: 230px;
+    transform: translateX(-50%) scale(0);
+    background: white;
+    border: 3px solid #f4a7b9;
+    border-radius: 24px;
+    padding: 8px 18px;
+    font-size: 40px;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  #emotion-bubble.show {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+
+  #emotion-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -12px; left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #f4a7b9;
+  }
+
+  #speech-bubble {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    background: white;
+    border: 2px solid var(--lavender);
+    border-radius: 16px;
+    padding: 10px 14px;
+    max-width: 160px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #7a5a9a;
+    line-height: 1.4;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: opacity 0.4s, transform 0.4s;
+    z-index: 10;
+  }
+
+  #speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; left: 20px;
+    border: 5px solid transparent;
+    border-top-color: var(--lavender);
+  }
+
+  #actions {
+    padding: 16px 16px 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 12px 6px;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.18s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .action-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+  .action-btn:active { transform: translateY(0) scale(0.96); }
+  .action-btn.disabled { opacity: 0.4; pointer-events: none; }
+
+  .btn-icon { font-size: 26px; }
+  .btn-label { font-size: 11px; font-weight: 800; color: #9b6b3a; }
+  .btn-cost  { font-size: 10px; font-weight: 600; color: #b8a090; }
+
+  .btn-calin  { border-color: #f4a7b9; background: #fff5f8; }
+  .btn-manger { border-color: #a8e6cf; background: #f5fff9; }
+  .btn-jouer  { border-color: #c9b8f0; background: #f8f5ff; }
+  .btn-dormir { border-color: #f0c060; background: #fffdf0; }
+  .btn-bain   { border-color: #b8d8f0; background: #f0f8ff; }
+  .btn-sortir { border-color: #c8e8a0; background: #f5fff0; }
+  .btn-photo  { border-color: #f0a880; background: #fff8f5; }
+  .btn-trick  { border-color: #e0b8e8; background: #fdf5ff; }
+
+  #bottom-bar {
+    padding: 10px 16px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--cream);
+    border-top: 2px solid #f0dfc8;
+  }
+
+  #level-info {
+    font-size: 12px;
+    font-weight: 800;
+    color: #9b6b3a;
+  }
+
+  #coins {
+    font-size: 14px;
+    font-weight: 900;
+    color: #c8921a;
+  }
+
+  #mood-label {
+    font-size: 13px;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #f4a7b9;
+    color: #8a2a4a;
+  }
+
+  #floating-particles {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 15;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    font-size: 22px;
+    animation: floatUp 1.4s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(-120px) scale(0.5) rotate(20deg); }
+  }
+
+  @keyframes wagTail {
+    0%,100% { transform: translateX(-50%) rotate(-2deg); }
+    50%      { transform: translateX(-50%) rotate(2deg); }
+  }
+
+  @keyframes bounce {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50%      { transform: translateX(-50%) translateY(-12px); }
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(-50%); }
+    20%,60% { transform: translateX(calc(-50% - 8px)); }
+    40%,80% { transform: translateX(calc(-50% + 8px)); }
+  }
+
+  @keyframes spin {
+    0% { transform: translateX(-50%) rotate(0deg); }
+    100% { transform: translateX(-50%) rotate(360deg); }
+  }
+
+  .dog-bounce { animation: bounce 0.5s ease-in-out 2; }
+  .dog-shake  { animation: shake 0.5s ease-in-out; }
+  .dog-wag    { animation: wagTail 0.3s ease-in-out 4; }
+  .dog-spin   { animation: spin 0.6s ease-in-out; }
+
+  #name-tag {
+    position: absolute;
+    top: 8px; left: 18px;
+    font-size: 13px;
+    font-weight: 900;
+    color: #9b6b3a;
+    background: white;
+    border: 2px solid #f0dfc8;
+    border-radius: 20px;
+    padding: 4px 12px;
+    z-index: 10;
+  }
+
+  #trick-result {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--lavender);
+    color: #4a2878;
+    font-weight: 900;
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 20;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  #trick-result.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+  }
+
+  #photo-flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 30;
+    transition: opacity 0.1s;
+  }
+  #photo-flash.flash {
+    opacity: 1;
+    transition: opacity 0s;
+  }
+</style>
+
+<div id="game">
+
+  <div id="top-bar">
+    <div id="game-title">🐾 Shih Tzu Sim</div>
+    <div class="stat-group">
+      <div class="stat">
+        <span class="stat-label">Bonheur</span>
+        <div class="stat-bar-wrap"><div class="stat-bar" id="bar-bonheur" style="width:80%"></div></div>
+        <span class="stat-val" id="val-bonheur">80</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Énergie</span>
+        <div class="stat-bar-wrap"><div class="stat-bar" id="bar-energie" style="width:90%"></div></div>
+        <span class="stat-val" id="val-energie">90</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Faim</span>
+        <div class="stat-bar-wrap"><div class="stat-bar" id="bar-faim" style="width:60%"></div></div>
+        <span class="stat-val" id="val-faim">60</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="scene">
+    <div class="cloud" style="width:80px;height:28px;top:30px;left:60px;animation-duration:18s;"></div>
+    <div class="cloud" style="width:55px;height:20px;top:55px;left:200px;animation-duration:24s;animation-delay:-8s;opacity:0.5;"></div>
+    <div class="cloud" style="width:70px;height:24px;top:20px;right:80px;animation-duration:21s;animation-delay:-12s;"></div>
+
+    <div id="name-tag">🎀 Mochi</div>
+
+    <div id="speech-bubble">Clique sur moi pour un câlin ! 🥺</div>
+
+    <div id="emotion-bubble">✨</div>
+
+    <div id="dog-container" onclick="caresseDog()">
+      <img id="dog-img" src="dog-happy.png" alt="Shih Tzu" draggable="false">
+      <div id="trick-result">Bravo ! ⭐</div>
+    </div>
+
+    <div id="ground"></div>
+    <div id="floating-particles"></div>
+    <div id="photo-flash"></div>
+  </div>
+
+  <div id="actions">
+    <button class="action-btn btn-calin"  onclick="action('calin')">
+      <span class="btn-icon">🤗</span>
+      <span class="btn-label">Câlin</span>
+      <span class="btn-cost">+10 💗</span>
+    </button>
+    <button class="action-btn btn-manger" onclick="action('manger')">
+      <span class="btn-icon">🍖</span>
+      <span class="btn-label">Manger</span>
+      <span class="btn-cost">+20 🌿</span>
+    </button>
+    <button class="action-btn btn-jouer"  onclick="action('jouer')">
+      <span class="btn-icon">🎾</span>
+      <span class="btn-label">Jouer</span>
+      <span class="btn-cost">−15 ⚡</span>
+    </button>
+    <button class="action-btn btn-dormir" onclick="action('dormir')">
+      <span class="btn-icon">😴</span>
+      <span class="btn-label">Dodo</span>
+      <span class="btn-cost">+40 ⚡</span>
+    </button>
+    <button class="action-btn btn-bain"   onclick="action('bain')">
+      <span class="btn-icon">🛁</span>
+      <span class="btn-label">Bain</span>
+      <span class="btn-cost">+5 ✨</span>
+    </button>
+    <button class="action-btn btn-sortir" onclick="action('sortir')">
+      <span class="btn-icon">🌸</span>
+      <span class="btn-label">Sortie</span>
+      <span class="btn-cost">+15 💗</span>
+    </button>
+    <button class="action-btn btn-photo"  onclick="action('photo')">
+      <span class="btn-icon">📸</span>
+      <span class="btn-label">Photo</span>
+      <span class="btn-cost">+1 🪙</span>
+    </button>
+    <button class="action-btn btn-trick"  onclick="action('trick')">
+      <span class="btn-icon">🎪</span>
+      <span class="btn-label">Tour</span>
+      <span class="btn-cost">+3 🪙</span>
+    </button>
+  </div>
+
+  <div id="bottom-bar">
+    <div id="level-info">Niv. <span id="level-num">1</span> — <span id="xp-val">0</span>/100 XP</div>
+    <div id="mood-label">😊 Heureuse</div>
+    <div id="coins">🪙 <span id="coins-val">0</span></div>
+  </div>
+</div>
+
+<script>
+const state = {
+  bonheur: 80,
+  energie: 90,
+  faim: 60,
+  coins: 0,
+  xp: 0,
+  level: 1,
+  currentMood: 'happy'
+};
+
+const moods = {
+  happy:     { label: '😊 Heureuse',  emoji: '😄', color: '#f4a7b9' },
+  excited:   { label: '🤩 Surexcitée', emoji: '🤩', color: '#c9b8f0' },
+  grumpy:    { label: '😤 Grognonne', emoji: '😤', color: '#f0a880' },
+  sleepy:    { label: '😴 Fatiguée',  emoji: '😴', color: '#b8d8f0' },
+  hungry:    { label: '🥺 Affamée',   emoji: '🥺', color: '#a8e6cf' },
+  surprised: { label: '😲 Surprise',  emoji: '😲', color: '#f0c060' },
+  clean:     { label: '✨ Impeccable', emoji: '✨', color: '#c8e8a0' },
+  default:   { label: '🐾 Calme',     emoji: '🐕', color: '#d4b896' }
+};
+
+  const dogImages = {
+    happy:     'dog-happy.png',
+    excited:   'dog-excited.png',
+    grumpy:    'dog-grumpy.png',
+    sleepy:    'dog-sleepy.png',
+    hungry:    'dog-hungry.png',
+    surprised: 'dog-surprised.png',
+    clean:     'dog-clean.png',
+    walk:      'dog-walk.png',
+    default:   'dog-default.png'
+  };
+
+const speeches = {
+  happy:     ['Je suis si heureuse ! 🌸', 'La vie est belle ! 🎀', 'Je t\'aime fort ! 💕'],
+  excited:   ['OUAH OUAH OUAH ! 🎉', 'Encore encore ! 🌟', 'C\'est le meilleur jour ! 🎊'],
+  grumpy:    ['Laisse-moi tranquille... 😒', 'Hmph.', 'J\'ai besoin d\'amour ! 💔'],
+  sleepy:    ['Zzzz... 💤', 'Juste 5 minutes... 😪', 'Si fatiguée... 🌙'],
+  hungry:    ['J\'ai faim ! 🍖', 'Mes croquettes ? 🥺', 'Tu n\'as pas oublié mon repas ?'],
+  surprised: ['Oh là là ! 😲', 'Je ne m\'y attendais pas ! 🎊', 'Qu\'est-ce que c\'est ?!'],
+  clean:     ['Je suis une princesse ! 👑', 'Je sens si bon ! 🌸', 'Regarde ma belle fourrure ✨'],
+  default:   ['Clique sur moi ! 🥺', 'Que fait-on aujourd\'hui ? 🌷', 'Je suis là ! 🐾']
+};
+
+const tricks = [
+  'Assis ! 🐾', 'La patte ! 🤝', 'Tourne ! 🌀',
+  'Fais le beau ! 🌟', 'Roule ! 🎪', 'Saute ! 🎉'
+];
+
+let trickIndex = 0;
+
+function clamp(v, mn=0, mx=100) { return Math.max(mn, Math.min(mx, v)); }
+
+function updateUI() {
+  ['bonheur', 'energie', 'faim'].forEach(s => {
+    const v = Math.round(state[s]);
+    document.getElementById('bar-' + s).style.width = v + '%';
+    document.getElementById('val-' + s).textContent = v;
+  });
+  document.getElementById('coins-val').textContent = state.coins;
+  document.getElementById('xp-val').textContent = state.xp;
+  document.getElementById('level-num').textContent = state.level;
+
+  let mood = 'default';
+  if (state.faim < 20) mood = 'hungry';
+  else if (state.energie < 20) mood = 'sleepy';
+  else if (state.bonheur < 30) mood = 'grumpy';
+  else if (state.bonheur >= 85) mood = 'excited';
+  else if (state.bonheur >= 65) mood = 'happy';
+
+  if (mood !== state.currentMood) {
+    state.currentMood = mood;
+    setMood(mood);
+  }
+
+  const m = moods[mood] || moods.default;
+  const moodEl = document.getElementById('mood-label');
+  moodEl.textContent = m.label;
+  moodEl.style.background = m.color;
+}
+
+function setMood(mood) {
+  const img = document.getElementById('dog-img');
+  const src = dogImages[mood] || dogImages.default;
+  img.classList.add('fade');
+  setTimeout(() => {
+    img.src = src;
+    img.classList.remove('fade');
+  }, 200);
+}
+
+function showEmotion(emoji) {
+  const el = document.getElementById('emotion-bubble');
+  el.textContent = emoji;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+  clearTimeout(window._emoTimeout);
+  window._emoTimeout = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function showSpeech() {
+  const list = speeches[state.currentMood] || speeches.default;
+  const txt = list[Math.floor(Math.random() * list.length)];
+  const el = document.getElementById('speech-bubble');
+  el.textContent = txt;
+  el.style.opacity = '1';
+  el.style.transform = 'scale(1)';
+  clearTimeout(window._speechTimeout);
+  window._speechTimeout = setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'scale(0.95)';
+  }, 3000);
+}
+
+
+
+function addXP(amount) {
+  state.xp += amount;
+  if (state.xp >= 100) {
+    state.xp -= 100;
+    state.level++;
+    spawnParticles('⭐', 6);
+    showTrickResult('Niveau ' + state.level + ' ! 🌟');
+  }
+}
+
+function spawnParticles(emoji, count=3) {
+  const container = document.getElementById('floating-particles');
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.textContent = emoji;
+      p.style.left = (30 + Math.random() * 140) + 'px';
+      p.style.bottom = (70 + Math.random() * 80) + 'px';
+      p.style.animationDuration = (1 + Math.random() * 0.6) + 's';
+      p.style.animationDelay = (i * 0.12) + 's';
+      container.appendChild(p);
+      setTimeout(() => p.remove(), 2000);
+    }, i * 80);
+  }
+}
+
+function dogAnim(cls, duration=700) {
+  const d = document.getElementById('dog-container');
+  d.classList.add(cls);
+  setTimeout(() => d.classList.remove(cls), duration);
+}
+
+function showTrickResult(txt) {
+  const el = document.getElementById('trick-result');
+  el.textContent = txt;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function caresseDog() {
+  state.bonheur = clamp(state.bonheur + 8);
+  showEmotion('💕');
+  dogAnim('dog-wag');
+  spawnParticles('💕', 3);
+  showSpeech();
+  addXP(2);
+  updateUI();
+}
+
+function action(type) {
+  switch(type) {
+    case 'calin':
+      state.bonheur = clamp(state.bonheur + 10);
+      state.energie = clamp(state.energie - 3);
+      showEmotion('💗'); dogAnim('dog-wag'); spawnParticles('💗', 4);
+      addXP(5); break;
+
+    case 'manger':
+      if (state.faim >= 95) { showTrickResult('Pas faim ! 🙅'); return; }
+      state.faim = clamp(state.faim + 20);
+      state.bonheur = clamp(state.bonheur + 5);
+      showEmotion('😋'); dogAnim('dog-bounce'); spawnParticles('🍖', 3);
+      addXP(4); break;
+
+    case 'jouer':
+      if (state.energie < 15) { showTrickResult('Trop fatiguée ! 😪'); return; }
+      state.energie = clamp(state.energie - 15);
+      state.bonheur = clamp(state.bonheur + 18);
+      state.faim = clamp(state.faim - 10);
+      showEmotion('🎾'); dogAnim('dog-bounce'); spawnParticles('🎾', 3); spawnParticles('⭐', 2);
+      addXP(8); break;
+
+    case 'dormir':
+      state.energie = clamp(state.energie + 40);
+      state.bonheur = clamp(state.bonheur - 5);
+      showEmotion('😴'); spawnParticles('💤', 4);
+      showTrickResult('Bonne sieste ! 🌙');
+      addXP(3); break;
+
+    case 'bain':
+      state.bonheur = clamp(state.bonheur + 5);
+      state.currentMood = 'clean';
+      showEmotion('✨'); dogAnim('dog-shake'); spawnParticles('💦', 4); spawnParticles('✨', 3);
+      showTrickResult('Princesse propre ! 👑');
+      addXP(5); break;
+
+    case 'sortir':
+      state.bonheur = clamp(state.bonheur + 15);
+      state.energie = clamp(state.energie - 10);
+      state.faim = clamp(state.faim - 8);
+      showEmotion('🌸'); dogAnim('dog-bounce'); spawnParticles('🌸', 5); spawnParticles('🐾', 3);
+      addXP(7); break;
+
+    case 'photo':
+      state.coins++;
+      const flash = document.getElementById('photo-flash');
+      flash.classList.add('flash');
+      setTimeout(() => flash.classList.remove('flash'), 100);
+      showEmotion('📸'); spawnParticles('⭐', 2);
+      showTrickResult('Pose parfaite ! 📸');
+      addXP(2); break;
+
+    case 'trick':
+      if (state.energie < 10) { showTrickResult('Trop fatiguée ! 😪'); return; }
+      state.energie = clamp(state.energie - 8);
+      state.bonheur = clamp(state.bonheur + 12);
+      state.coins += 3;
+      const t = tricks[trickIndex % tricks.length];
+      trickIndex++;
+      showEmotion('🎪'); dogAnim('dog-spin', 650); spawnParticles('⭐', 5);
+      showTrickResult(t);
+      addXP(10); break;
+  }
+
+  showSpeech();
+  updateUI();
+}
+
+setInterval(() => {
+  state.bonheur = clamp(state.bonheur - 0.5);
+  state.energie = clamp(state.energie - 0.2);
+  state.faim    = clamp(state.faim    - 0.3);
+  updateUI();
+}, 5000);
+
+updateUI();
+showSpeech();
+</script>
