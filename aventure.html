@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'Île des Énigmes — Heure du Code</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #1a1f4e;
+    --sky2: #2d3a7c;
+    --sand: #f5c842;
+    --sand2: #e8a820;
+    --ocean: #1bbfe0;
+    --ocean2: #0e8fad;
+    --jungle: #2db85a;
+    --jungle2: #1a8a3e;
+    --coral: #ff6b6b;
+    --purple: #9b5de5;
+    --white: #fff;
+    --ui-bg: rgba(255,255,255,0.07);
+    --ui-border: rgba(255,255,255,0.15);
+    --text: #fff;
+    --text-dim: rgba(255,255,255,0.7);
+    --success: #4ade80;
+    --fail: #f87171;
+    --star: #fbbf24;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(160deg, var(--sky) 0%, var(--sky2) 100%);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ——— STARS BACKGROUND ——— */
+  .stars {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse at 20% 20%, #2d3a7c 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, #1a1f4e 0%, transparent 60%);
+  }
+  .stars::before, .stars::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 10%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 70%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 55%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 85%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 90%, rgba(255,255,255,0.5) 0%, transparent 100%);
+  }
+
+  /* ——— SCREENS ——— */
+  .screen {
+    display: none;
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  /* ——— HEADER HUD ——— */
+  .hud {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: none;
+    justify-content: space-between; align-items: center;
+    padding: 10px 20px;
+    background: rgba(10,15,40,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--ui-border);
+  }
+  .hud.visible { display: flex; }
+  .hud-title { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: var(--sand); }
+  .hud-info { display: flex; gap: 16px; align-items: center; }
+  .hud-stat { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 700; }
+  .hud-stat span { font-size: 1.1rem; }
+
+  /* ——— TITLE SCREEN ——— */
+  .title-island {
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-family: 'Fredoka One', cursive;
+    text-align: center;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--sand) 0%, #ff9f43 50%, var(--coral) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 4px 24px rgba(245,200,66,0.3));
+    margin-bottom: 8px;
+  }
+  .title-sub {
+    font-size: 1.1rem; color: var(--text-dim); text-align: center; margin-bottom: 40px;
+  }
+
+  .card {
+    background: var(--ui-bg);
+    border: 1px solid var(--ui-border);
+    border-radius: 20px;
+    padding: 28px 32px;
+    max-width: 560px;
+    width: 100%;
+    backdrop-filter: blur(12px);
+  }
+
+  /* ——— LEVEL SELECT ——— */
+  .level-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    width: 100%;
+    max-width: 640px;
+  }
+  .level-card {
+    background: var(--ui-bg);
+    border: 2px solid var(--ui-border);
+    border-radius: 18px;
+    padding: 20px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform .2s, border-color .2s, background .2s;
+    user-select: none;
+  }
+  .level-card:hover { transform: translateY(-4px) scale(1.04); border-color: var(--sand); background: rgba(255,255,255,0.12); }
+  .level-card.locked { opacity: 0.4; cursor: not-allowed; }
+  .level-card.locked:hover { transform: none; }
+  .level-card.completed { border-color: var(--success); }
+  .level-icon { font-size: 2.8rem; margin-bottom: 8px; }
+  .level-name { font-family: 'Fredoka One', cursive; font-size: 1.1rem; margin-bottom: 4px; }
+  .level-desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.3; }
+  .level-stars { color: var(--star); font-size: 1.1rem; margin-top: 6px; letter-spacing: 2px; }
+
+  /* ——— PUZZLE SCREEN ——— */
+  #puzzle-screen { padding-top: 80px; }
+  .puzzle-header {
+    text-align: center; margin-bottom: 24px;
+  }
+  .puzzle-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8rem;
+    color: var(--sand);
+    margin-bottom: 6px;
+  }
+  .puzzle-instruction {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--ui-border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    max-width: 680px;
+    margin: 0 auto 24px;
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .puzzle-zone {
+    width: 100%; max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* ——— BUTTONS ——— */
+  .btn {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    border: none; border-radius: 50px; cursor: pointer;
+    padding: 13px 32px;
+    transition: transform .15s, filter .15s, box-shadow .15s;
+    letter-spacing: 0.3px;
+    user-select: none;
+  }
+  .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: linear-gradient(135deg, var(--sand) 0%, var(--sand2) 100%); color: #1a1f4e; box-shadow: 0 6px 20px rgba(245,200,66,0.35); }
+  .btn-secondary { background: rgba(255,255,255,0.12); color: var(--text); border: 1px solid var(--ui-border); }
+  .btn-success { background: linear-gradient(135deg, #4ade80, #16a34a); color: #fff; box-shadow: 0 6px 20px rgba(74,222,128,0.35); }
+  .btn-danger  { background: linear-gradient(135deg, #f87171, #dc2626); color: #fff; }
+  .btn-big { font-size: 1.25rem; padding: 16px 44px; }
+
+  /* ——— FEEDBACK OVERLAY ——— */
+  .feedback-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(10,15,40,0.88);
+    backdrop-filter: blur(10px);
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 20px;
+  }
+  .feedback-overlay.show { display: flex; }
+  .feedback-emoji { font-size: 5rem; animation: popIn .4s cubic-bezier(.34,1.56,.64,1); }
+  .feedback-title { font-family: 'Fredoka One', cursive; font-size: 2.5rem; }
+  .feedback-msg { font-size: 1.05rem; color: var(--text-dim); max-width: 420px; line-height: 1.6; }
+  .feedback-stars { font-size: 2rem; letter-spacing: 6px; color: var(--star); }
+  .feedback-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+
+  @keyframes popIn {
+    from { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  /* ——— PROGRESS BAR ——— */
+  .progress-bar {
+    width: 100%; height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px; overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ocean), var(--sand));
+    border-radius: 10px;
+    transition: width .5s cubic-bezier(.34,1.2,.64,1);
+  }
+
+  /* ——— BADGE LIVES ——— */
+  .lives { display: flex; gap: 6px; }
+  .heart { font-size: 1.2rem; transition: transform .2s; }
+  .heart.lost { opacity: 0.25; transform: scale(0.8); }
+
+  /* ============================
+     PUZZLE TYPES
+  ============================ */
+
+  /* — SEQUENCE PUZZLE — */
+  .sequence-row {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    justify-content: center; margin-bottom: 20px;
+  }
+  .seq-item {
+    width: 70px; height: 70px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    border: 2px solid var(--ui-border);
+    background: rgba(255,255,255,0.08);
+    position: relative;
+  }
+  .seq-item.answer-slot {
+    border: 2px dashed rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.04);
+    cursor: default;
+    font-size: 1.2rem;
+    color: var(--text-dim);
+  }
+  .seq-item.answer-slot.filled {
+    border-style: solid;
+    border-color: var(--sand);
+    background: rgba(245,200,66,0.12);
+    font-size: 2rem;
+    color: var(--text);
+  }
+  .seq-choices { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .seq-choice {
+    width: 70px; height: 70px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    border: 2px solid var(--ui-border);
+    background: rgba(255,255,255,0.1);
+    cursor: pointer; transition: transform .15s, border-color .15s, background .15s;
+  }
+  .seq-choice:hover { transform: scale(1.1); border-color: var(--ocean); background: rgba(27,191,224,0.15); }
+  .seq-choice.used { opacity: 0.3; pointer-events: none; }
+
+  /* — GRID PUZZLE (couleurs/formes) — */
+  .grid-puzzle {
+    display: grid;
+    gap: 8px;
+    margin: 0 auto 20px;
+    width: fit-content;
+  }
+  .grid-cell {
+    width: 64px; height: 64px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; border: 2px solid var(--ui-border);
+    background: rgba(255,255,255,0.06);
+  }
+  .grid-cell.question {
+    border: 2px dashed var(--sand); cursor: pointer;
+    background: rgba(245,200,66,0.08);
+    color: var(--text-dim);
+    font-size: 1.2rem;
+  }
+  .grid-cell.question:hover { background: rgba(245,200,66,0.18); }
+  .grid-choices-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .grid-choice {
+    width: 64px; height: 64px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; border: 2px solid var(--ui-border);
+    background: rgba(255,255,255,0.1);
+    cursor: pointer; transition: transform .15s, border-color .15s;
+  }
+  .grid-choice:hover { transform: scale(1.08); border-color: var(--ocean); }
+  .grid-choice.selected { border-color: var(--sand); background: rgba(245,200,66,0.18); }
+
+  /* — CODE MACHINE — */
+  .code-rule {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.06); border-radius: 12px;
+    padding: 12px 16px; margin-bottom: 10px; font-size: 1rem;
+  }
+  .code-rule .rule-icon { font-size: 1.5rem; }
+  .code-display {
+    display: flex; gap: 10px; justify-content: center;
+    margin: 20px 0;
+  }
+  .code-digit {
+    width: 60px; height: 80px; border-radius: 12px;
+    background: rgba(255,255,255,0.1); border: 2px solid var(--ui-border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka One', cursive; font-size: 2.5rem;
+    color: var(--sand);
+  }
+  .code-inputs { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+  .code-input {
+    width: 60px; height: 80px; border-radius: 12px;
+    background: rgba(255,255,255,0.08); border: 2px dashed var(--ui-border);
+    text-align: center; font-family: 'Fredoka One', cursive; font-size: 2.5rem;
+    color: var(--sand); outline: none; -webkit-appearance: none;
+  }
+  .code-input:focus { border-color: var(--ocean); border-style: solid; background: rgba(27,191,224,0.1); }
+
+  /* — LABYRINTH — */
+  .maze-wrapper {
+    display: flex; justify-content: center;
+    margin-bottom: 16px;
+  }
+  canvas#maze { border-radius: 14px; border: 2px solid var(--ui-border); display: block; }
+  .maze-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .maze-btn {
+    width: 56px; height: 56px; border-radius: 12px;
+    background: rgba(255,255,255,0.1); border: 1px solid var(--ui-border);
+    color: var(--text); font-size: 1.5rem; cursor: pointer;
+    transition: background .15s, transform .1s; display: flex; align-items: center; justify-content: center;
+  }
+  .maze-btn:hover { background: rgba(255,255,255,0.2); }
+  .maze-btn:active { transform: scale(0.93); }
+
+  /* — DEDUCTION — */
+  .deduction-grid {
+    overflow-x: auto; margin-bottom: 20px;
+  }
+  .deduction-table {
+    border-collapse: collapse; margin: 0 auto;
+  }
+  .deduction-table th, .deduction-table td {
+    border: 1px solid var(--ui-border);
+    padding: 10px 12px; text-align: center;
+    font-size: 0.95rem;
+  }
+  .deduction-table th { background: rgba(255,255,255,0.1); font-weight: 700; font-size: 0.85rem; }
+  .deduction-cell {
+    cursor: pointer; width: 44px; height: 44px;
+    border-radius: 8px; transition: background .15s;
+    font-size: 1.2rem;
+  }
+  .deduction-cell:hover { background: rgba(255,255,255,0.15); }
+  .deduction-cell.yes { background: rgba(74,222,128,0.2); color: var(--success); }
+  .deduction-cell.no  { background: rgba(248,113,113,0.15); color: var(--fail); }
+  .deduction-clues { margin-bottom: 16px; }
+  .clue-item {
+    background: rgba(255,255,255,0.06); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 8px; font-size: 0.9rem; line-height: 1.5;
+  }
+  .clue-item::before { content: '🔎 '; }
+
+  /* ——— SCORE SCREEN ——— */
+  .score-big {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(3rem, 10vw, 6rem);
+    color: var(--sand);
+    text-align: center;
+  }
+  .score-stars { font-size: 3rem; text-align: center; letter-spacing: 8px; margin: 12px 0; }
+  .achievement { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.06); border-radius: 12px; padding: 12px 16px; margin-bottom: 10px; }
+
+  /* ——— ANIMATIONS ——— */
+  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes wiggle  { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-6deg)} 75%{transform:rotate(6deg)} }
+  @keyframes confetti-fall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  .slide-in { animation: slideUp .5s cubic-bezier(.34,1.2,.64,1) both; }
+
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px; z-index: 300;
+    border-radius: 2px; pointer-events: none;
+    animation: confetti-fall 2.5s ease-in forwards;
+  }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+
+<!-- HUD -->
+<div class="hud" id="hud">
+  <div class="hud-title">🏝️ L'Île des Énigmes</div>
+  <div class="hud-info">
+    <div class="hud-stat"><span>⭐</span> <span id="hud-score">0</span></div>
+    <div class="lives" id="hud-lives"></div>
+    <div class="hud-stat" id="hud-level-name"></div>
+  </div>
+</div>
+
+<!-- ══════════════ ÉCRAN TITRE ══════════════ -->
+<div class="screen active" id="title-screen">
+  <div class="title-island slide-in">🏝️ L'Île<br>des Énigmes</div>
+  <div class="title-sub" style="animation: slideUp .5s .15s both">Aventure · Logique · Déduction</div>
+
+  <div class="card slide-in" style="animation-delay:.25s; text-align:center;">
+    <p style="font-size:1.05rem; margin-bottom:20px; line-height:1.7; color:var(--text-dim)">
+      Tu es naufragé(e) sur une île mystérieuse ! Pour trouver le chemin de retour,
+      tu dois résoudre des énigmes et déjouer les pièges de l'île. 🌴
+    </p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:20px;">
+      <div style="text-align:center">
+        <div style="font-size:1.6rem">🧩</div>
+        <div style="font-size:0.8rem; color:var(--text-dim)">Séquences</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:1.6rem">🔢</div>
+        <div style="font-size:0.8rem; color:var(--text-dim)">Codes secrets</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:1.6rem">🗺️</div>
+        <div style="font-size:0.8rem; color:var(--text-dim)">Labyrinthes</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:1.6rem">🔎</div>
+        <div style="font-size:0.8rem; color:var(--text-dim)">Déduction</div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-big" onclick="showLevelSelect()">Commencer l'aventure !</button>
+  </div>
+</div>
+
+<!-- ══════════════ CHOIX DES NIVEAUX ══════════════ -->
+<div class="screen" id="level-screen">
+  <div style="text-align:center; margin-bottom:28px;">
+    <div style="font-family:'Fredoka One',cursive; font-size:2rem; color:var(--sand); margin-bottom:6px">Choisis ta mission</div>
+    <div style="color:var(--text-dim); font-size:0.95rem">Résous les 5 énigmes pour repartir de l'île !</div>
+  </div>
+
+  <div class="level-grid" id="level-grid"></div>
+
+  <div style="margin-top:24px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+    <button class="btn btn-secondary" onclick="showTitle()">← Accueil</button>
+    <button class="btn btn-secondary" id="btn-final" onclick="showFinal()" style="display:none">🏆 Résultats finaux</button>
+  </div>
+</div>
+
+<!-- ══════════════ ÉCRAN PUZZLE ══════════════ -->
+<div class="screen" id="puzzle-screen">
+  <div class="puzzle-header">
+    <div class="puzzle-title" id="puzzle-title">Énigme</div>
+    <div class="progress-bar"><div class="progress-fill" id="puzzle-progress" style="width:0%"></div></div>
+  </div>
+  <div class="puzzle-instruction" id="puzzle-instruction"></div>
+  <div class="puzzle-zone" id="puzzle-zone"></div>
+  <div style="display:flex; gap:12px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+    <button class="btn btn-secondary" onclick="showLevelSelect()">← Niveaux</button>
+    <button class="btn btn-primary" id="btn-validate" onclick="validatePuzzle()">Vérifier ✓</button>
+    <button class="btn btn-secondary" onclick="showHint()" id="btn-hint">💡 Indice</button>
+  </div>
+</div>
+
+<!-- ══════════════ RÉSULTATS FINAUX ══════════════ -->
+<div class="screen" id="final-screen">
+  <div style="font-family:'Fredoka One',cursive; font-size:2rem; color:var(--sand); text-align:center; margin-bottom:8px">🎉 Mission accomplie !</div>
+  <div class="score-stars" id="final-stars"></div>
+  <div class="score-big" id="final-score"></div>
+  <div style="font-size:1rem; color:var(--text-dim); text-align:center; margin-bottom:24px">points gagnés</div>
+  <div id="achievements" style="max-width:500px; width:100%; margin-bottom:28px;"></div>
+  <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+    <button class="btn btn-primary btn-big" onclick="resetGame()">🔄 Rejouer</button>
+    <button class="btn btn-secondary" onclick="showLevelSelect()">← Niveaux</button>
+  </div>
+</div>
+
+<!-- FEEDBACK OVERLAY -->
+<div class="feedback-overlay" id="feedback">
+  <div class="feedback-emoji" id="fb-emoji"></div>
+  <div class="feedback-title" id="fb-title"></div>
+  <div class="feedback-msg"   id="fb-msg"></div>
+  <div class="feedback-stars" id="fb-stars"></div>
+  <div class="feedback-actions" id="fb-actions"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+const state = {
+  score: 0,
+  lives: 3,
+  completedLevels: {},
+  currentLevel: null,
+  currentPuzzleIndex: 0,
+  attempts: 0,
+  hintUsed: false,
+};
+
+// ══════════════════════════════════════════
+//  LEVELS DEFINITION
+// ══════════════════════════════════════════
+const LEVELS = [
+  {
+    id: 'jungle',
+    name: 'La Jungle',
+    icon: '🌿',
+    color: '#2db85a',
+    desc: 'Retrouve les séquences cachées dans la jungle',
+    puzzles: [
+      {
+        type: 'sequence',
+        title: 'Le sentier des animaux',
+        instruction: 'Les animaux se déplacent dans un ordre précis. Quel animal vient ensuite dans la séquence ?',
+        hint: 'Regarde si les animaux se répètent selon un motif de 2 ou 3.',
+        sequence: ['🐒','🦜','🐍','🐒','🦜','🐍','🐒','🦜','?'],
+        answer: '🐍',
+        choices: ['🐊','🦁','🐍','🦋'],
+      },
+      {
+        type: 'sequence',
+        title: 'Les fruits de la jungle',
+        instruction: 'Complète les deux cases manquantes pour continuer la suite !',
+        hint: 'Les fruits alternent par paires : 2 du même, 2 du même…',
+        sequence: ['🍌','🍌','🥭','🥭','🍍','🍍','?','?'],
+        answers: ['🍌','🍌'],
+        multiAnswer: true,
+        choices: ['🥭','🍌','🍍','🍇'],
+      },
+    ]
+  },
+  {
+    id: 'caverne',
+    name: 'La Caverne',
+    icon: '🪨',
+    color: '#888',
+    desc: 'Décode les messages secrets gravés dans la roche',
+    puzzles: [
+      {
+        type: 'code',
+        title: 'Le coffre de pierre',
+        instruction: 'Le gardien a laissé des indices pour ouvrir le coffre. Quel est le code à 3 chiffres ?',
+        hint: 'Applique chaque règle une par une sur le nombre de départ.',
+        rules: [
+          { icon: '🔢', text: 'Le nombre de départ est 4' },
+          { icon: '➕', text: 'Ajoute 3' },
+          { icon: '✖️', text: 'Multiplie par 2' },
+          { icon: '➖', text: 'Enlève 4' },
+        ],
+        answer: '10',
+        digits: 2,
+      },
+      {
+        type: 'code',
+        title: 'La porte secrète',
+        instruction: 'Suis les règles dans l\'ordre pour trouver le code !',
+        hint: 'Commence par multiplier, puis ajoute, puis soustrais.',
+        rules: [
+          { icon: '🔢', text: 'Commence avec 5' },
+          { icon: '✖️', text: 'Multiplie par 3' },
+          { icon: '➕', text: 'Ajoute 5' },
+          { icon: '➖', text: 'Enlève 10' },
+        ],
+        answer: '10',
+        digits: 2,
+      },
+    ]
+  },
+  {
+    id: 'plage',
+    name: 'La Plage',
+    icon: '🏖️',
+    color: '#f5c842',
+    desc: 'Résous les mystères laissés sur le sable',
+    puzzles: [
+      {
+        type: 'grid',
+        title: 'Les coquillages magiques',
+        instruction: 'Chaque ligne et chaque colonne doit contenir chacun des 3 coquillages exactement une fois. Quelle case est manquante ?',
+        hint: 'Regarde d\'abord la colonne de la case vide, puis sa ligne.',
+        grid: [
+          ['🐚','🦀','🦞'],
+          ['🦀','?','🐚'],
+          ['🦞','🐚','🦀'],
+        ],
+        answer: '🦞',
+        choices: ['🐚','🦀','🦞','🐠'],
+        questionPos: [1,1],
+      },
+      {
+        type: 'grid',
+        title: 'Les étoiles de mer',
+        instruction: 'Chaque ligne et chaque colonne contient 🌟, 🐠 et 🐡 une seule fois. Où manque-t-il quelque chose ?',
+        hint: 'La colonne du milieu : elle a déjà 🐡 et 🐠, donc il manque…',
+        grid: [
+          ['🌟','🐡','🐠'],
+          ['🐠','?','🌟'],
+          ['🐡','🌟','🐠'],
+        ],
+        answer: '🐡',
+        choices: ['🌟','🐠','🐡','🦈'],
+        questionPos: [1,1],
+      },
+    ]
+  },
+  {
+    id: 'phare',
+    name: 'Le Phare',
+    icon: '🗺️',
+    color: '#1bbfe0',
+    desc: 'Trouve ton chemin dans le labyrinthe du phare',
+    puzzles: [
+      {
+        type: 'maze',
+        title: 'Le labyrinthe du phare',
+        instruction: 'Guide le bateau 🚢 jusqu\'au phare 🏠 ! Utilise les boutons directionnels. Tu peux aussi utiliser les touches ← ↑ ↓ → de ton clavier.',
+        hint: 'Essaie d\'aller vers le haut en premier, puis à droite.',
+        mazeData: {
+          cols: 7, rows: 7,
+          walls: [
+            // Walls encoded as [row, col, direction] where direction: 0=top, 1=right, 2=bottom, 3=left
+            // We'll use a pre-built simple maze
+          ],
+          start: [6,0], end: [0,6],
+          map: [
+            [0,1,0,1,0,1,2],
+            [0,0,0,1,0,1,0],
+            [1,1,0,0,0,0,0],
+            [0,0,0,1,1,0,1],
+            [0,1,0,0,1,0,0],
+            [0,1,1,0,0,1,0],
+            [3,0,0,1,0,0,0],
+          ]
+          // 0=open, 1=wall-right, 2=exit, 3=start; maze drawn from cells
+        }
+      },
+    ]
+  },
+  {
+    id: 'temple',
+    name: 'Le Temple',
+    icon: '🏛️',
+    color: '#9b5de5',
+    desc: 'Déduction logique pour percer les secrets du temple',
+    puzzles: [
+      {
+        type: 'deduction',
+        title: 'Le trésor du temple',
+        instruction: 'Trois explorateurs ont trouvé un trésor chacun. Lis les indices et trouve qui a trouvé quoi !',
+        hint: 'Commence par l\'indice le plus simple — une affirmation directe — et remplis d\'abord les cases certaines.',
+        subjects: ['Alice','Bob','Carla'],
+        objects:  ['💎 Gemme','🏺 Vase','🗡️ Épée'],
+        clues: [
+          'Alice n\'a pas trouvé le Vase.',
+          'Bob a trouvé quelque chose qui brille — c\'est une Gemme.',
+          'Carla n\'a pas trouvé la Gemme.',
+        ],
+        solution: {
+          'Alice': '🗡️ Épée',
+          'Bob':   '💎 Gemme',
+          'Carla': '🏺 Vase',
+        }
+      },
+    ]
+  },
+];
+
+// ══════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showTitle() {
+  document.getElementById('hud').classList.remove('visible');
+  showScreen('title-screen');
+}
+
+function showLevelSelect() {
+  document.getElementById('hud').classList.remove('visible');
+  hideFeedback();
+  renderLevelGrid();
+  showScreen('level-screen');
+  const allDone = LEVELS.every(l => state.completedLevels[l.id]);
+  document.getElementById('btn-final').style.display = allDone ? 'inline-flex' : 'none';
+}
+
+function showTitle() {
+  document.getElementById('hud').classList.remove('visible');
+  showScreen('title-screen');
+}
+
+function renderLevelGrid() {
+  const grid = document.getElementById('level-grid');
+  grid.innerHTML = '';
+  LEVELS.forEach((lvl, i) => {
+    const done = !!state.completedLevels[lvl.id];
+    const locked = i > 0 && !state.completedLevels[LEVELS[i-1].id];
+    const div = document.createElement('div');
+    div.className = 'level-card' + (locked ? ' locked' : '') + (done ? ' completed' : '');
+    const stars = done ? '⭐'.repeat(state.completedLevels[lvl.id]) : (locked ? '🔒' : '');
+    div.innerHTML = `<div class="level-icon">${lvl.icon}</div>
+      <div class="level-name" style="color:${lvl.color}">${lvl.name}</div>
+      <div class="level-desc">${lvl.desc}</div>
+      <div class="level-stars">${stars}</div>`;
+    if (!locked) div.onclick = () => startLevel(lvl.id);
+    grid.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════════════
+//  LEVEL START
+// ══════════════════════════════════════════
+function startLevel(levelId) {
+  const lvl = LEVELS.find(l => l.id === levelId);
+  state.currentLevel = lvl;
+  state.currentPuzzleIndex = 0;
+  state.attempts = 0;
+  state.hintUsed = false;
+  state.lives = 3;
+  updateHUD();
+  document.getElementById('hud').classList.add('visible');
+  loadPuzzle();
+  showScreen('puzzle-screen');
+}
+
+function updateHUD() {
+  document.getElementById('hud-score').textContent = state.score;
+  document.getElementById('hud-level-name').textContent =
+    state.currentLevel ? state.currentLevel.name : '';
+  const lives = document.getElementById('hud-lives');
+  lives.innerHTML = [0,1,2].map(i =>
+    `<div class="heart${i >= state.lives ? ' lost' : ''}">❤️</div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════
+//  PUZZLE LOADER
+// ══════════════════════════════════════════
+function loadPuzzle() {
+  const lvl = state.currentLevel;
+  const puzzle = lvl.puzzles[state.currentPuzzleIndex];
+  state.attempts = 0;
+  state.hintUsed = false;
+
+  // Progress
+  const prog = ((state.currentPuzzleIndex) / lvl.puzzles.length) * 100;
+  document.getElementById('puzzle-progress').style.width = prog + '%';
+
+  document.getElementById('puzzle-title').textContent =
+    lvl.icon + ' ' + puzzle.title;
+  document.getElementById('puzzle-instruction').textContent = puzzle.instruction;
+
+  const zone = document.getElementById('puzzle-zone');
+  zone.innerHTML = '';
+
+  switch(puzzle.type) {
+    case 'sequence': renderSequence(puzzle, zone); break;
+    case 'code':     renderCode(puzzle, zone);     break;
+    case 'grid':     renderGrid(puzzle, zone);     break;
+    case 'maze':     renderMaze(puzzle, zone);     break;
+    case 'deduction':renderDeduction(puzzle, zone);break;
+  }
+}
+
+// ══════════════════════════════════════════
+//  SEQUENCE PUZZLE
+// ══════════════════════════════════════════
+function renderSequence(puzzle, zone) {
+  const answerCount = puzzle.multiAnswer ? puzzle.answers.length : 1;
+  let selected = new Array(answerCount).fill(null);
+
+  function refresh() {
+    zone.innerHTML = '';
+    const row = document.createElement('div');
+    row.className = 'sequence-row';
+    puzzle.sequence.forEach((item, i) => {
+      if (item === '?') {
+        const slot = document.createElement('div');
+        slot.className = 'seq-item answer-slot' + (selected[0] ? ' filled' : '');
+        slot.textContent = selected[0] || '?';
+        slot.onclick = () => { selected[0] = null; used = {}; refresh(); };
+        row.appendChild(slot);
+      } else if (item === '??' || (puzzle.multiAnswer && i >= puzzle.sequence.length - answerCount)) {
+        for (let k = 0; k < answerCount; k++) {
+          const slot = document.createElement('div');
+          slot.className = 'seq-item answer-slot' + (selected[k] ? ' filled' : '');
+          slot.textContent = selected[k] || '?';
+          slot.dataset.k = k;
+          slot.onclick = () => { selected[parseInt(slot.dataset.k)] = null; refresh(); };
+          row.appendChild(slot);
+        }
+        return;
+      } else {
+        const el = document.createElement('div');
+        el.className = 'seq-item';
+        el.textContent = item;
+        row.appendChild(el);
+      }
+    });
+
+    // Rebuild: handle multi-answer
+    if (puzzle.multiAnswer) {
+      zone.innerHTML = '';
+      const r2 = document.createElement('div');
+      r2.className = 'sequence-row';
+      puzzle.sequence.forEach((item, i) => {
+        const isQ = i >= puzzle.sequence.length - answerCount;
+        const qIdx = i - (puzzle.sequence.length - answerCount);
+        const el = document.createElement('div');
+        if (isQ) {
+          el.className = 'seq-item answer-slot' + (selected[qIdx] ? ' filled' : '');
+          el.textContent = selected[qIdx] || '?';
+          el.dataset.idx = qIdx;
+          el.onclick = () => { selected[parseInt(el.dataset.idx)] = null; refresh(); };
+        } else {
+          el.className = 'seq-item';
+          el.textContent = item;
+        }
+        r2.appendChild(el);
+      });
+      zone.appendChild(r2);
+    } else {
+      zone.appendChild(row);
+    }
+
+    // Choices
+    const choicesRow = document.createElement('div');
+    choicesRow.className = 'seq-choices';
+    choicesRow.style.marginTop = '16px';
+    puzzle.choices.forEach(ch => {
+      const usedCount = selected.filter(s => s === ch).length;
+      // A choice is exhausted only when all answer slots are filled with it
+      // i.e. it has been placed as many times as there are slots that need it,
+      // but never more than the total number of answer slots
+      const slotsFilledWithThis = usedCount;
+      const totalSlots = answerCount;
+      // Only grey out if ALL remaining empty slots couldn't accept this choice,
+      // meaning we've already used it as many times as it appears in answers (if known),
+      // OR simply: grey out only when all slots are full (selected has no null left)
+      const allSlotsFull = selected.indexOf(null) === -1;
+      const exhausted = allSlotsFull;
+      const btn = document.createElement('div');
+      btn.className = 'seq-choice' + (exhausted ? ' used' : '');
+      btn.textContent = ch;
+      btn.onclick = () => {
+        if (exhausted) return;
+        const emptyIdx = selected.indexOf(null);
+        if (emptyIdx !== -1) {
+          selected[emptyIdx] = ch;
+          refresh();
+        }
+      };
+      choicesRow.appendChild(btn);
+    });
+    zone.appendChild(choicesRow);
+
+    // Store answer for validation
+    zone._getAnswer = () => puzzle.multiAnswer ? selected : selected[0];
+  }
+  refresh();
+}
+
+// ══════════════════════════════════════════
+//  CODE PUZZLE
+// ══════════════════════════════════════════
+function renderCode(puzzle, zone) {
+  const rulesDiv = document.createElement('div');
+  puzzle.rules.forEach(r => {
+    const d = document.createElement('div');
+    d.className = 'code-rule';
+    d.innerHTML = `<span class="rule-icon">${r.icon}</span> <span>${r.text}</span>`;
+    rulesDiv.appendChild(d);
+  });
+  zone.appendChild(rulesDiv);
+
+  const inputsDiv = document.createElement('div');
+  inputsDiv.className = 'code-inputs';
+  for (let i = 0; i < puzzle.digits; i++) {
+    const inp = document.createElement('input');
+    inp.type = 'number'; inp.min = 0; inp.max = 9;
+    inp.className = 'code-input';
+    inp.placeholder = '?';
+    inp.id = `code-digit-${i}`;
+    inp.addEventListener('input', () => {
+      if (inp.value.length > 1) inp.value = inp.value.slice(-1);
+    });
+    inputsDiv.appendChild(inp);
+  }
+  zone.appendChild(inputsDiv);
+
+  zone._getAnswer = () => {
+    return Array.from({length: puzzle.digits}, (_,i) =>
+      document.getElementById(`code-digit-${i}`).value
+    ).join('');
+  };
+}
+
+// ══════════════════════════════════════════
+//  GRID PUZZLE
+// ══════════════════════════════════════════
+function renderGrid(puzzle, zone) {
+  let userAnswer = null;
+
+  const gridDiv = document.createElement('div');
+  gridDiv.className = 'grid-puzzle';
+  gridDiv.style.gridTemplateColumns = `repeat(${puzzle.grid[0].length}, 64px)`;
+
+  puzzle.grid.forEach((row, ri) => {
+    row.forEach((cell, ci) => {
+      const el = document.createElement('div');
+      if (cell === '?') {
+        el.className = 'grid-cell question';
+        el.textContent = userAnswer || '?';
+        el.id = 'grid-q';
+      } else {
+        el.className = 'grid-cell';
+        el.textContent = cell;
+      }
+      gridDiv.appendChild(el);
+    });
+  });
+  zone.appendChild(gridDiv);
+
+  const choicesRow = document.createElement('div');
+  choicesRow.className = 'grid-choices-row';
+  choicesRow.style.marginTop = '16px';
+  puzzle.choices.forEach(ch => {
+    const btn = document.createElement('div');
+    btn.className = 'grid-choice' + (userAnswer === ch ? ' selected' : '');
+    btn.textContent = ch;
+    btn.onclick = () => {
+      userAnswer = ch;
+      document.getElementById('grid-q').textContent = ch;
+      document.getElementById('grid-q').style.fontSize = '1.6rem';
+      choicesRow.querySelectorAll('.grid-choice').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    };
+    choicesRow.appendChild(btn);
+  });
+  zone.appendChild(choicesRow);
+
+  zone._getAnswer = () => userAnswer;
+}
+
+// ══════════════════════════════════════════
+//  MAZE PUZZLE
+// ══════════════════════════════════════════
+function renderMaze(puzzle, zone) {
+  const md = puzzle.mazeData;
+  const CELL = 52;
+  const W = md.cols * CELL;
+  const H = md.rows * CELL;
+
+  // Build a simple maze using a wall-set (each cell has walls)
+  // Using pre-defined passable map — 1 = wall right, other bits = open
+  // We'll define walls manually for a fun maze
+  const mazeGrid = [
+    // Each cell: [hasWallRight, hasWallBottom]  (top and left are neighbors' bottom/right)
+    [[0,0],[1,0],[0,0],[1,0],[0,0],[1,0],[0,1]],
+    [[0,1],[0,0],[0,1],[0,0],[0,0],[0,1],[0,0]],
+    [[1,0],[1,1],[0,0],[0,0],[0,1],[0,0],[0,0]],
+    [[0,0],[0,1],[0,0],[1,0],[1,1],[0,0],[1,0]],
+    [[0,0],[1,0],[0,1],[0,0],[1,0],[0,0],[0,0]],
+    [[0,1],[1,1],[0,0],[0,1],[0,0],[1,0],[0,0]],
+    [[0,0],[0,0],[1,0],[0,0],[0,0],[0,0],[0,0]],
+  ];
+
+  const canvas = document.createElement('canvas');
+  canvas.id = 'maze';
+  canvas.width = W; canvas.height = H;
+  canvas.style.maxWidth = '100%';
+  const ctx = canvas.getContext('2d');
+
+  let player = { r: md.start[0], c: md.start[1] };
+  const goal = { r: md.end[0], c: md.end[1] };
+  let won = false;
+
+  function drawMaze() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = '#1a1f4e';
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid
+    for (let r = 0; r < md.rows; r++) {
+      for (let c = 0; c < md.cols; c++) {
+        const x = c * CELL, y = r * CELL;
+        // Cell bg
+        ctx.fillStyle = 'rgba(255,255,255,0.03)';
+        ctx.fillRect(x+1, y+1, CELL-2, CELL-2);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 2;
+
+        // Outer border
+        if (r === 0) { ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+CELL,y); ctx.stroke(); }
+        if (c === 0) { ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+CELL); ctx.stroke(); }
+        if (r === md.rows-1) { ctx.beginPath(); ctx.moveTo(x,y+CELL); ctx.lineTo(x+CELL,y+CELL); ctx.stroke(); }
+        if (c === md.cols-1) { ctx.beginPath(); ctx.moveTo(x+CELL,y); ctx.lineTo(x+CELL,y+CELL); ctx.stroke(); }
+
+        // Inner walls
+        ctx.strokeStyle = 'rgba(100,150,255,0.5)';
+        ctx.lineWidth = 3;
+        if (mazeGrid[r][c][0]) { // wall right
+          ctx.beginPath(); ctx.moveTo(x+CELL,y); ctx.lineTo(x+CELL,y+CELL); ctx.stroke();
+        }
+        if (mazeGrid[r][c][1]) { // wall bottom
+          ctx.beginPath(); ctx.moveTo(x,y+CELL); ctx.lineTo(x+CELL,y+CELL); ctx.stroke();
+        }
+      }
+    }
+
+    // Goal
+    ctx.font = `${CELL*0.65}px serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('🏠', goal.c*CELL + CELL/2, goal.r*CELL + CELL/2);
+
+    // Trail
+    ctx.fillStyle = 'rgba(27,191,224,0.15)';
+    ctx.fillRect(player.c*CELL+4, player.r*CELL+4, CELL-8, CELL-8);
+
+    // Player
+    ctx.font = `${CELL*0.65}px serif`;
+    ctx.fillText('🚢', player.c*CELL + CELL/2, player.r*CELL + CELL/2);
+  }
+
+  function canMove(r, c, dr, dc) {
+    const nr = r+dr, nc = c+dc;
+    if (nr < 0 || nr >= md.rows || nc < 0 || nc >= md.cols) return false;
+    // Check walls
+    if (dr === 0 && dc === 1) return !mazeGrid[r][c][0]; // right
+    if (dr === 0 && dc === -1) return !mazeGrid[r][nc][0]; // left
+    if (dr === 1 && dc === 0) return !mazeGrid[r][c][1]; // down
+    if (dr === -1 && dc === 0) return !mazeGrid[nr][c][1]; // up
+    return false;
+  }
+
+  function move(dr, dc) {
+    if (won) return;
+    if (canMove(player.r, player.c, dr, dc)) {
+      player.r += dr; player.c += dc;
+      drawMaze();
+      if (player.r === goal.r && player.c === goal.c) {
+        won = true;
+        zone._mazeWon = true;
+      }
+    }
+  }
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'maze-wrapper';
+  wrapper.appendChild(canvas);
+  zone.appendChild(wrapper);
+
+  const controls = document.createElement('div');
+  controls.className = 'maze-controls';
+  controls.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,56px);gap:8px;justify-content:center">
+      <div></div>
+      <button class="maze-btn" onclick="mazeMv(-1,0)">↑</button>
+      <div></div>
+      <button class="maze-btn" onclick="mazeMv(0,-1)">←</button>
+      <button class="maze-btn" style="font-size:1rem;color:var(--text-dim)" onclick="mazeReset()">↺</button>
+      <button class="maze-btn" onclick="mazeMv(0,1)">→</button>
+      <div></div>
+      <button class="maze-btn" onclick="mazeMv(1,0)">↓</button>
+      <div></div>
+    </div>
+  `;
+  zone.appendChild(controls);
+
+  window.mazeMv = move;
+  window.mazeReset = () => { player = {r:md.start[0],c:md.start[1]}; won=false; zone._mazeWon=false; drawMaze(); };
+  zone._getAnswer = () => zone._mazeWon ? 'ok' : '';
+  zone._mazeWon = false;
+
+  // Keyboard control
+  zone._keyHandler = (e) => {
+    if (e.key==='ArrowUp')    move(-1,0);
+    if (e.key==='ArrowDown')  move(1,0);
+    if (e.key==='ArrowLeft')  move(0,-1);
+    if (e.key==='ArrowRight') move(0,1);
+  };
+  document.addEventListener('keydown', zone._keyHandler);
+
+  drawMaze();
+
+  // Remove listener when leaving
+  document.getElementById('btn-validate').dataset.mazeZone = true;
+}
+
+// ══════════════════════════════════════════
+//  DEDUCTION PUZZLE
+// ══════════════════════════════════════════
+function renderDeduction(puzzle, zone) {
+  const cluesDiv = document.createElement('div');
+  cluesDiv.className = 'deduction-clues';
+  puzzle.clues.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'clue-item';
+    d.textContent = c;
+    cluesDiv.appendChild(d);
+  });
+  zone.appendChild(cluesDiv);
+
+  // Build table
+  const tableWrap = document.createElement('div');
+  tableWrap.className = 'deduction-grid';
+  const table = document.createElement('table');
+  table.className = 'deduction-table';
+
+  const state_grid = {};
+  puzzle.subjects.forEach(s => {
+    state_grid[s] = {};
+    puzzle.objects.forEach(o => state_grid[s][o] = null);
+  });
+
+  function buildTable() {
+    table.innerHTML = '';
+    const thead = document.createElement('thead');
+    const hrow = document.createElement('tr');
+    hrow.appendChild(document.createElement('th'));
+    puzzle.objects.forEach(o => {
+      const th = document.createElement('th');
+      th.textContent = o;
+      hrow.appendChild(th);
+    });
+    thead.appendChild(hrow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    puzzle.subjects.forEach(s => {
+      const tr = document.createElement('tr');
+      const th = document.createElement('th');
+      th.textContent = s;
+      tr.appendChild(th);
+      puzzle.objects.forEach(o => {
+        const td = document.createElement('td');
+        const cell = document.createElement('div');
+        cell.className = 'deduction-cell' +
+          (state_grid[s][o] === true ? ' yes' : '') +
+          (state_grid[s][o] === false ? ' no' : '');
+        cell.textContent = state_grid[s][o] === true ? '✓' :
+                           state_grid[s][o] === false ? '✗' : '';
+        cell.onclick = () => {
+          state_grid[s][o] = state_grid[s][o] === null ? true :
+                              state_grid[s][o] === true ? false : null;
+          buildTable();
+        };
+        td.appendChild(cell);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+  }
+  buildTable();
+  tableWrap.appendChild(table);
+  zone.appendChild(tableWrap);
+
+  const help = document.createElement('p');
+  help.style.cssText = 'font-size:.85rem;color:var(--text-dim);text-align:center;margin-top:8px';
+  help.textContent = 'Clique sur une case : ✓ = oui, ✗ = non, vide = peut-être';
+  zone.appendChild(help);
+
+  zone._getAnswer = () => {
+    let correct = true;
+    puzzle.subjects.forEach(s => {
+      puzzle.objects.forEach(o => {
+        const expected = puzzle.solution[s] === o;
+        if (state_grid[s][o] !== expected) correct = false;
+      });
+    });
+    return correct ? 'ok' : '';
+  };
+}
+
+// ══════════════════════════════════════════
+//  VALIDATION
+// ══════════════════════════════════════════
+function validatePuzzle() {
+  const lvl = state.currentLevel;
+  const puzzle = lvl.puzzles[state.currentPuzzleIndex];
+  const zone = document.getElementById('puzzle-zone');
+  const answer = zone._getAnswer ? zone._getAnswer() : null;
+
+  let correct = false;
+  if (puzzle.type === 'sequence' && puzzle.multiAnswer) {
+    correct = Array.isArray(answer) &&
+      answer.length === puzzle.answers.length &&
+      answer.every((a,i) => a === puzzle.answers[i]);
+  } else if (puzzle.type === 'sequence') {
+    correct = answer === puzzle.answer;
+  } else if (puzzle.type === 'code') {
+    correct = String(answer).replace(/\s/g,'') === String(puzzle.answer);
+  } else if (puzzle.type === 'grid') {
+    correct = answer === puzzle.answer;
+  } else if (puzzle.type === 'maze' || puzzle.type === 'deduction') {
+    correct = answer === 'ok';
+  }
+
+  state.attempts++;
+
+  if (correct) {
+    // Clean up maze keyboard listener
+    if (zone._keyHandler) document.removeEventListener('keydown', zone._keyHandler);
+
+    const stars = state.hintUsed ? 1 : state.attempts === 1 ? 3 : 2;
+    const points = stars * 100;
+    state.score += points;
+    updateHUD();
+
+    // Advance
+    const nextIdx = state.currentPuzzleIndex + 1;
+    if (nextIdx >= lvl.puzzles.length) {
+      // Level done
+      const maxStars = lvl.puzzles.length * 3;
+      const earnedStars = Math.min(3, Math.round((points / 300) * 3) + (stars === 3 ? 1 : 0));
+      state.completedLevels[lvl.id] = Math.max(
+        state.completedLevels[lvl.id] || 0, stars
+      );
+      showFeedback(true, stars, points, true);
+    } else {
+      state.currentPuzzleIndex = nextIdx;
+      showFeedback(true, stars, points, false);
+    }
+  } else {
+    state.lives = Math.max(0, state.lives - 1);
+    updateHUD();
+
+    if (state.lives === 0) {
+      state.lives = 3;
+      showFeedback(false, 0, 0, false, true);
+    } else {
+      showFeedback(false, 0, 0, false, false);
+    }
+  }
+}
+
+function showHint() {
+  const puzzle = state.currentLevel.puzzles[state.currentPuzzleIndex];
+  state.hintUsed = true;
+  document.getElementById('puzzle-instruction').textContent =
+    '💡 Indice : ' + puzzle.hint;
+  document.getElementById('puzzle-instruction').style.background = 'rgba(155,93,229,0.15)';
+  document.getElementById('puzzle-instruction').style.border = '1px solid rgba(155,93,229,0.4)';
+  document.getElementById('btn-hint').disabled = true;
+  document.getElementById('btn-hint').style.opacity = '0.4';
+}
+
+// ══════════════════════════════════════════
+//  FEEDBACK
+// ══════════════════════════════════════════
+function showFeedback(success, stars, points, levelDone, gameOver=false) {
+  const fb = document.getElementById('feedback');
+  document.getElementById('fb-emoji').textContent =
+    gameOver ? '😵' : success ? ['🎉','🏆','🌟'][Math.floor(Math.random()*3)] : ['😅','🤔','💪'][Math.floor(Math.random()*3)];
+  document.getElementById('fb-title').textContent =
+    gameOver ? 'Oh non !' : success ? (stars===3 ? 'Parfait !' : stars===2 ? 'Bravo !' : 'Bien joué !') : 'Pas encore...';
+  document.getElementById('fb-msg').textContent =
+    gameOver ? 'Tu n\'as plus de vies ! Recommençons ce niveau.' :
+    success ? (levelDone ? 'Tu as terminé ce niveau ! 🎊' : `+${points} points ! Prochaine énigme…`) :
+    'Ce n\'est pas encore la bonne réponse. Réessaie !';
+  document.getElementById('fb-stars').textContent = success ? '⭐'.repeat(stars) + '☆'.repeat(3-stars) : '';
+
+  const actions = document.getElementById('fb-actions');
+  actions.innerHTML = '';
+  if (success && levelDone) {
+    const b1 = document.createElement('button');
+    b1.className = 'btn btn-primary';
+    b1.textContent = '← Choisir un niveau';
+    b1.onclick = () => { hideFeedback(); showLevelSelect(); };
+    actions.appendChild(b1);
+    launchConfetti();
+  } else if (success) {
+    const b1 = document.createElement('button');
+    b1.className = 'btn btn-success';
+    b1.textContent = 'Énigme suivante →';
+    b1.onclick = () => { hideFeedback(); loadPuzzle(); };
+    actions.appendChild(b1);
+  } else if (gameOver) {
+    const b1 = document.createElement('button');
+    b1.className = 'btn btn-primary';
+    b1.textContent = 'Recommencer le niveau';
+    b1.onclick = () => { hideFeedback(); startLevel(state.currentLevel.id); };
+    actions.appendChild(b1);
+    const b2 = document.createElement('button');
+    b2.className = 'btn btn-secondary';
+    b2.textContent = '← Niveaux';
+    b2.onclick = () => { hideFeedback(); showLevelSelect(); };
+    actions.appendChild(b2);
+  } else {
+    const b1 = document.createElement('button');
+    b1.className = 'btn btn-primary';
+    b1.textContent = 'Réessayer';
+    b1.onclick = () => hideFeedback();
+    actions.appendChild(b1);
+  }
+
+  fb.classList.add('show');
+}
+
+function hideFeedback() {
+  document.getElementById('feedback').classList.remove('show');
+}
+
+// ══════════════════════════════════════════
+//  FINAL SCORE
+// ══════════════════════════════════════════
+function showFinal() {
+  document.getElementById('hud').classList.remove('visible');
+  document.getElementById('final-score').textContent = state.score;
+
+  const totalStars = Object.values(state.completedLevels).reduce((a,b) => a+b, 0);
+  document.getElementById('final-stars').textContent = '⭐'.repeat(totalStars);
+
+  const ach = document.getElementById('achievements');
+  ach.innerHTML = '';
+
+  const badges = [
+    { cond: totalStars >= 15, icon: '🏆', name: 'Maître de l\'île', desc: '15 étoiles obtenues !' },
+    { cond: state.score >= 2000, icon: '💫', name: 'Génie logique', desc: '2000 points ou plus !' },
+    { cond: !!state.completedLevels['temple'], icon: '🔎', name: 'Grand Détective', desc: 'Temple complété !' },
+    { cond: !!state.completedLevels['phare'], icon: '🗺️', name: 'Navigateur', desc: 'Labyrinthe résolu !' },
+  ];
+
+  badges.forEach(b => {
+    if (b.cond) {
+      const d = document.createElement('div');
+      d.className = 'achievement';
+      d.innerHTML = `<span style="font-size:1.8rem">${b.icon}</span>
+        <div><div style="font-weight:700">${b.name}</div>
+        <div style="font-size:0.85rem;color:var(--text-dim)">${b.desc}</div></div>`;
+      ach.appendChild(d);
+    }
+  });
+
+  showScreen('final-screen');
+}
+
+function resetGame() {
+  state.score = 0;
+  state.lives = 3;
+  state.completedLevels = {};
+  state.currentLevel = null;
+  showLevelSelect();
+}
+
+// ══════════════════════════════════════════
+//  CONFETTI
+// ══════════════════════════════════════════
+function launchConfetti() {
+  const colors = ['#f5c842','#1bbfe0','#9b5de5','#ff6b6b','#2db85a','#fff'];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.cssText = `
+        left: ${Math.random()*100}vw;
+        top: -10px;
+        background: ${colors[Math.floor(Math.random()*colors.length)]};
+        width: ${6+Math.random()*8}px;
+        height: ${6+Math.random()*8}px;
+        border-radius: ${Math.random()>0.5?'50%':'2px'};
+        animation-duration: ${1.5+Math.random()*2}s;
+        animation-delay: ${Math.random()*0.5}s;
+      `;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 3500);
+    }, i * 30);
+  }
+}
+</script>
+</body>
+</html>
