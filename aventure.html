@@ -602,9 +602,9 @@ const LEVELS = [
         type: 'grid',
         title: 'Les étoiles de mer',
         instruction: 'Chaque ligne et chaque colonne contient 🌟, 🐠 et 🐡 une seule fois. Où manque-t-il quelque chose ?',
-        hint: 'La colonne du milieu : elle a déjà 🐡 et 🐠, donc il manque…',
+        hint: 'La colonne du milieu contient déjà 🐠 et 🌟, donc il manque…',
         grid: [
-          ['🌟','🐡','🐠'],
+          ['🌟','🐠','🐡'],
           ['🐠','?','🌟'],
           ['🐡','🌟','🐠'],
         ],
@@ -692,15 +692,16 @@ function showTitle() {
 function showLevelSelect() {
   document.getElementById('hud').classList.remove('visible');
   hideFeedback();
+  // Nettoyer un éventuel écouteur clavier de labyrinthe resté actif
+  const z = document.getElementById('puzzle-zone');
+  if (z && z._keyHandler) {
+    document.removeEventListener('keydown', z._keyHandler);
+    z._keyHandler = null;
+  }
   renderLevelGrid();
   showScreen('level-screen');
   const allDone = LEVELS.every(l => state.completedLevels[l.id]);
   document.getElementById('btn-final').style.display = allDone ? 'inline-flex' : 'none';
-}
-
-function showTitle() {
-  document.getElementById('hud').classList.remove('visible');
-  showScreen('title-screen');
 }
 
 function renderLevelGrid() {
@@ -756,13 +757,28 @@ function loadPuzzle() {
   state.attempts = 0;
   state.hintUsed = false;
 
+  // Nettoyer un éventuel écouteur clavier de labyrinthe resté actif
+  const oldZone = document.getElementById('puzzle-zone');
+  if (oldZone && oldZone._keyHandler) {
+    document.removeEventListener('keydown', oldZone._keyHandler);
+    oldZone._keyHandler = null;
+  }
+
+  // Réactiver le bouton indice
+  const hintBtn = document.getElementById('btn-hint');
+  hintBtn.disabled = false;
+  hintBtn.style.opacity = '1';
+
   // Progress
   const prog = ((state.currentPuzzleIndex) / lvl.puzzles.length) * 100;
   document.getElementById('puzzle-progress').style.width = prog + '%';
 
   document.getElementById('puzzle-title').textContent =
     lvl.icon + ' ' + puzzle.title;
-  document.getElementById('puzzle-instruction').textContent = puzzle.instruction;
+  const instr = document.getElementById('puzzle-instruction');
+  instr.textContent = puzzle.instruction;
+  instr.style.background = '';
+  instr.style.border = '';
 
   const zone = document.getElementById('puzzle-zone');
   zone.innerHTML = '';
@@ -783,81 +799,41 @@ function renderSequence(puzzle, zone) {
   const answerCount = puzzle.multiAnswer ? puzzle.answers.length : 1;
   let selected = new Array(answerCount).fill(null);
 
+  // Index de chaque case réponse ('?') dans la séquence
+  const slotIndices = [];
+  puzzle.sequence.forEach((item, i) => { if (item === '?') slotIndices.push(i); });
+
   function refresh() {
     zone.innerHTML = '';
+
+    // Rangée de la séquence
     const row = document.createElement('div');
     row.className = 'sequence-row';
     puzzle.sequence.forEach((item, i) => {
+      const el = document.createElement('div');
       if (item === '?') {
-        const slot = document.createElement('div');
-        slot.className = 'seq-item answer-slot' + (selected[0] ? ' filled' : '');
-        slot.textContent = selected[0] || '?';
-        slot.onclick = () => { selected[0] = null; used = {}; refresh(); };
-        row.appendChild(slot);
-      } else if (item === '??' || (puzzle.multiAnswer && i >= puzzle.sequence.length - answerCount)) {
-        for (let k = 0; k < answerCount; k++) {
-          const slot = document.createElement('div');
-          slot.className = 'seq-item answer-slot' + (selected[k] ? ' filled' : '');
-          slot.textContent = selected[k] || '?';
-          slot.dataset.k = k;
-          slot.onclick = () => { selected[parseInt(slot.dataset.k)] = null; refresh(); };
-          row.appendChild(slot);
-        }
-        return;
+        const k = slotIndices.indexOf(i);
+        el.className = 'seq-item answer-slot' + (selected[k] ? ' filled' : '');
+        el.textContent = selected[k] || '?';
+        el.onclick = () => { selected[k] = null; refresh(); };
       } else {
-        const el = document.createElement('div');
         el.className = 'seq-item';
         el.textContent = item;
-        row.appendChild(el);
       }
+      row.appendChild(el);
     });
+    zone.appendChild(row);
 
-    // Rebuild: handle multi-answer
-    if (puzzle.multiAnswer) {
-      zone.innerHTML = '';
-      const r2 = document.createElement('div');
-      r2.className = 'sequence-row';
-      puzzle.sequence.forEach((item, i) => {
-        const isQ = i >= puzzle.sequence.length - answerCount;
-        const qIdx = i - (puzzle.sequence.length - answerCount);
-        const el = document.createElement('div');
-        if (isQ) {
-          el.className = 'seq-item answer-slot' + (selected[qIdx] ? ' filled' : '');
-          el.textContent = selected[qIdx] || '?';
-          el.dataset.idx = qIdx;
-          el.onclick = () => { selected[parseInt(el.dataset.idx)] = null; refresh(); };
-        } else {
-          el.className = 'seq-item';
-          el.textContent = item;
-        }
-        r2.appendChild(el);
-      });
-      zone.appendChild(r2);
-    } else {
-      zone.appendChild(row);
-    }
-
-    // Choices
+    // Choix
     const choicesRow = document.createElement('div');
     choicesRow.className = 'seq-choices';
     choicesRow.style.marginTop = '16px';
+    const allSlotsFull = selected.indexOf(null) === -1;
     puzzle.choices.forEach(ch => {
-      const usedCount = selected.filter(s => s === ch).length;
-      // A choice is exhausted only when all answer slots are filled with it
-      // i.e. it has been placed as many times as there are slots that need it,
-      // but never more than the total number of answer slots
-      const slotsFilledWithThis = usedCount;
-      const totalSlots = answerCount;
-      // Only grey out if ALL remaining empty slots couldn't accept this choice,
-      // meaning we've already used it as many times as it appears in answers (if known),
-      // OR simply: grey out only when all slots are full (selected has no null left)
-      const allSlotsFull = selected.indexOf(null) === -1;
-      const exhausted = allSlotsFull;
       const btn = document.createElement('div');
-      btn.className = 'seq-choice' + (exhausted ? ' used' : '');
+      btn.className = 'seq-choice' + (allSlotsFull ? ' used' : '');
       btn.textContent = ch;
       btn.onclick = () => {
-        if (exhausted) return;
         const emptyIdx = selected.indexOf(null);
         if (emptyIdx !== -1) {
           selected[emptyIdx] = ch;
@@ -867,10 +843,10 @@ function renderSequence(puzzle, zone) {
       choicesRow.appendChild(btn);
     });
     zone.appendChild(choicesRow);
-
-    // Store answer for validation
-    zone._getAnswer = () => puzzle.multiAnswer ? selected : selected[0];
   }
+
+  // Réponse pour la validation
+  zone._getAnswer = () => puzzle.multiAnswer ? selected : selected[0];
   refresh();
 }
 
@@ -970,13 +946,14 @@ function renderMaze(puzzle, zone) {
   // We'll define walls manually for a fun maze
   const mazeGrid = [
     // Each cell: [hasWallRight, hasWallBottom]  (top and left are neighbors' bottom/right)
-    [[0,0],[1,0],[0,0],[1,0],[0,0],[1,0],[0,1]],
-    [[0,1],[0,0],[0,1],[0,0],[0,0],[0,1],[0,0]],
-    [[1,0],[1,1],[0,0],[0,0],[0,1],[0,0],[0,0]],
-    [[0,0],[0,1],[0,0],[1,0],[1,1],[0,0],[1,0]],
-    [[0,0],[1,0],[0,1],[0,0],[1,0],[0,0],[0,0]],
-    [[0,1],[1,1],[0,0],[0,1],[0,0],[1,0],[0,0]],
-    [[0,0],[0,0],[1,0],[0,0],[0,0],[0,0],[0,0]],
+    // Labyrinthe parfait garanti résoluble de [6,0] (départ 🚢) à [0,6] (arrivée 🏠)
+    [[0,0],[1,0],[0,0],[0,1],[1,0],[0,0],[1,0]],
+    [[1,1],[1,0],[1,0],[0,0],[1,0],[1,0],[1,0]],
+    [[0,0],[1,1],[1,0],[1,0],[1,1],[1,0],[1,0]],
+    [[1,0],[0,0],[1,1],[0,1],[0,1],[1,1],[1,0]],
+    [[0,1],[0,1],[0,1],[1,1],[0,0],[0,1],[1,1]],
+    [[0,0],[1,0],[0,0],[1,0],[0,1],[0,1],[1,0]],
+    [[1,1],[0,1],[1,1],[0,1],[0,1],[0,1],[1,1]],
   ];
 
   const canvas = document.createElement('canvas');
@@ -1228,9 +1205,8 @@ function validatePuzzle() {
     // Advance
     const nextIdx = state.currentPuzzleIndex + 1;
     if (nextIdx >= lvl.puzzles.length) {
-      // Level done
-      const maxStars = lvl.puzzles.length * 3;
-      const earnedStars = Math.min(3, Math.round((points / 300) * 3) + (stars === 3 ? 1 : 0));
+      // Niveau terminé : on garde le meilleur score d'étoiles obtenu
+      document.getElementById('puzzle-progress').style.width = '100%';
       state.completedLevels[lvl.id] = Math.max(
         state.completedLevels[lvl.id] || 0, stars
       );
