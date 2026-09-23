@@ -103,12 +103,6 @@
     margin: 0;
     opacity: 0.95;
   }
-  /* Tux en SVG qui se dandine */
-  .tux-wrap{ animation: dandine 2.4s ease-in-out infinite; display:inline-block; }
-  @keyframes dandine{
-    0%,100%{ transform: rotate(-4deg); }
-    50%{ transform: rotate(4deg); }
-  }
 
   /* ============ SECTIONS ============ */
   section{
@@ -359,6 +353,9 @@
   .confetti{
     position: fixed; top:-10px; border-radius:2px; pointer-events:none; z-index: 999;
   }
+  button{
+  color:#ffffff;
+  }
 </style>
 </head>
 <body>
@@ -371,7 +368,7 @@
   <div class="bulle" style="width:30px;height:30px;top:120px;left:20%;animation-delay:2s;"></div>
   <div class="bulle" style="width:18px;height:18px;top:40px;left:60%;animation-delay:0.5s;"></div>
 
-  <div class="tux-wrap" aria-hidden="true">
+  <div aria-hidden="true">
     <!-- Tux en SVG simple -->
     
 	<svg version="1.1" viewBox="0 0 216 256" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100px">
@@ -888,6 +885,12 @@
   <section>
     <h2 class="titre-section">Les commandes : de vrais sorts magiques ! 🪄</h2>
     <p style="text-align:center;">Dans Linux, on peut parler avec une baguette spéciale : le <strong>terminal</strong>. On y tape des mots magiques pour donner des ordres à l'ordinateur !</p>
+    <div class="grille-sorts" id="grille-sorts"></div>
+  </section>
+
+  <section>
+    <h2 class="titre-section">Quelques exemples de bureaux</h2>
+    <p style="text-align:center;"><a href="img/desktops.png" target="_blank"><img width="730px" height="100%" src="img/desktops.png"/></a></p>
     <div class="grille-sorts" id="grille-sorts"></div>
   </section>
 
